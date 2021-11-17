@@ -1,32 +1,28 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_strlcat.c                                       :+:      :+:    :+:   */
+/*   ft_strnstr.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: gyepark <gyepark@student.42seoul.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/11/17 19:54:10 by gyepark           #+#    #+#             */
-/*   Updated: 2021/11/17 19:54:11 by gyepark          ###   ########.fr       */
+/*   Created: 2021/11/17 21:18:21 by gyepark           #+#    #+#             */
+/*   Updated: 2021/11/17 21:18:21 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
-size_t	ft_strlcat(char *dst, const char *src, size_t dstsize)
+char	*ft_strnstr(const char *haystack, const char *needle, size_t len)
 {
-	size_t	len_dest;
-	size_t	len_src;
 	size_t	i;
+	int		len_needle;
 
-	len_dest = ft_strlen(dest);
-	len_src = ft_strlen(src);
-	if (size == 0 || size <= len_dest)
-		return (size + len_src);
-	i = 0;
-	while (len_dest + i + 1 < size && src[i])
-	{
-		dest[len_dest + i] = src[i];
-		i++;
-	}
-	dest[len_dest + i] = '\0';
-	return (len_dest + len_src);
+	if (!(*needle))
+		return ((char *)haystack);
+	i = -1;
+	len_needle = ft_strlen(needle);
+	while (++i + len_needle - 1 < len) /*ith character considered twice because of i and len_needle*/
+		if (haystack[i] == *needle 
+				&& !ft_strncmp(&(haystack[i]), needle, len_needle))
+			return ((char *)(haystack + i));
+	return (0);
 }

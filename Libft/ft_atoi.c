@@ -1,32 +1,32 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_strlcat.c                                       :+:      :+:    :+:   */
+/*   ft_atoi.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: gyepark <gyepark@student.42seoul.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/11/17 19:54:10 by gyepark           #+#    #+#             */
-/*   Updated: 2021/11/17 19:54:11 by gyepark          ###   ########.fr       */
+/*   Created: 2021/11/17 21:17:57 by gyepark           #+#    #+#             */
+/*   Updated: 2021/11/17 21:17:59 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
-size_t	ft_strlcat(char *dst, const char *src, size_t dstsize)
+int	ft_atoi(const char *str)
 {
-	size_t	len_dest;
-	size_t	len_src;
-	size_t	i;
+	int	sign;
+	int	result;
 
-	len_dest = ft_strlen(dest);
-	len_src = ft_strlen(src);
-	if (size == 0 || size <= len_dest)
-		return (size + len_src);
-	i = 0;
-	while (len_dest + i + 1 < size && src[i])
+	while ((8 < *str && *str < 14) || *str == 32)
+		str++;
+	sign = 1;
+	if (*str == '-' || *str == '+')
 	{
-		dest[len_dest + i] = src[i];
-		i++;
-	}
-	dest[len_dest + i] = '\0';
-	return (len_dest + len_src);
+		if (*str == '-')
+			sign = -1;
+		str++;
+	}	
+	result = 0;
+	while (ft_isdigit(*str))
+		result = 10 * result + sign * (*(str++) - 48);
+	return (result);
 }
