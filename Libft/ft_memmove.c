@@ -1,33 +1,22 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   ft_memmove.c                                       :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/11/16 19:03:08 by gyepark           #+#    #+#             */
-/*   Updated: 2021/11/16 19:03:09 by gyepark          ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
-#include <unistd.h>
+#include "libft.h"
 void	*ft_memmove(void *dst, const void *src, size_t len)
 {
-	size_t	i;
+	size_t			i;
+	unsigned char	*dst_char;
+	unsigned char	*src_char;
 
-	dst = (unsigned char *)dst;
-	src = (unsigned char *)src;
-	if (src + len >= dst)
+	dst_char = (unsigned char *)dst;
+	src_char = (unsigned char *)src;
+	if (src_char + len > dst_char)
 	{
 		while (len--)
-			dst[len] = src[len]
+			dst_char[len] = src_char[len];
 	}
 	else
 	{
 		i = -1;
 		while (++i < len)
-			dst[i] = src[i];
+			dst_char[i] = src_char[i];
 	}
-	return ((void *)dst)
+	return ((void *)dst);
 }
-

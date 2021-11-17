@@ -1,23 +1,12 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   ft_memset.c                                        :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/11/16 18:57:15 by gyepark           #+#    #+#             */
-/*   Updated: 2021/11/16 18:57:16 by gyepark          ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
-#include <unistd.h>
+#include "libft.h"
 void	*ft_memset(void *b, int c, size_t len)
 {
 	size_t	i;
+	unsigned char	*b_temp;
 
 	i = 0;
-	b = (unsigned char *)b;
+	b_temp = (unsigned char *)b;
 	while (i < len)
-		b[i++] = (unsigned char)c;
+		b_temp[i++] = (unsigned char)c;
 	return ((void *)b);
 }

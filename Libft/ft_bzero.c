@@ -1,22 +1,11 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   ft_bzero.c                                         :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/11/16 15:34:48 by gyepark           #+#    #+#             */
-/*   Updated: 2021/11/16 15:34:49 by gyepark          ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
-#include <unistd.h>
+#include "libft.h"
 void	ft_bzero(void *s, size_t n)
 {
-	size_t	i;
+	size_t			i;
+	unsigned char	*s_temp;
 
 	i = 0;
-	s = (unsigned char *)s;
+	s_temp = (unsigned char *)s;
 	while (i < n)
-		s[i++] = 0;
+		s_temp[i++] = 0;
 }

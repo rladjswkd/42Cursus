@@ -1,24 +1,14 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   ft_memcpy.c                                        :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/11/16 18:54:42 by gyepark           #+#    #+#             */
-/*   Updated: 2021/11/16 18:54:50 by gyepark          ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
-#include <unistd.h>
+#include "libft.h"
 void	*ft_memcpy(void *dst, const void *src, size_t n)
 {
-	size_t	i;
+	size_t			i;
+	unsigned char	*dst_temp; 
+	unsigned char	*src_temp;
 
 	i = -1;
-	dst = (unsigned char *)dst;
-	src = (unsigned char *)src;
+	dst_temp = (unsigned char *)dst;
+	src_temp = (unsigned char *)src;
 	while (++i < n)
-		dst[i] = src[i];
+		dst_temp[i] = src_temp[i];
 	return ((void *)dst);
 }
