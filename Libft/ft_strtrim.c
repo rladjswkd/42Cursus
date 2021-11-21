@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ft_strtrim.c                                       :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: gyepark <gyepark@student.42seoul.fr>       +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2021/11/21 23:49:17 by gyepark           #+#    #+#             */
+/*   Updated: 2021/11/21 23:49:18 by gyepark          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "libft.h"
 char	*ft_strtrim(char const *s1, char const *set)
 {
@@ -8,17 +20,12 @@ char	*ft_strtrim(char const *s1, char const *set)
 
 	start = -1;
 	end = len(s1);
-	// ft_strchr 문을 while문의 조건문으로 넣고 while문의 body를 {}로 해도 norminette 통과하는지 확인하기!
 	while (s1[++start])
-	{
 		if (ft_strchr(set, s1[start]) == 0)
-			break;
-	}
+			break ;
 	while (s1[--end] && start <= end)
-	{
 		if (ft_strchr(set, s1[end]) == 0)
-			break;
-	}
+			break ;
 	if (end < start)
 		len_output = 1;
 	else
