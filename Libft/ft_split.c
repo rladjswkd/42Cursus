@@ -5,13 +5,13 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: gyepark <gyepark@student.42seoul.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/11/22 00:58:08 by gyepark           #+#    #+#             */
-/*   Updated: 2021/11/22 00:58:10 by gyepark          ###   ########.fr       */
+/*   Created: 2021/11/22 16:31:55 by gyepark           #+#    #+#             */
+/*   Updated: 2021/11/22 16:32:35 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
-static int	count_words(char const *s)
+static int	count_words(char const *s, char c)
 {
 	int	cnt;
 	int	start;
@@ -44,11 +44,11 @@ static char	**free_assigned(char **output, int to)
 
 char	**ft_split(char const *s, char c)
 {
-	char	**output;
-	char	*start;
-	int		i;
+	char		**output;
+	const char	*start;
+	int			i;
 
-	output = (char **)malloc(sizeof(char *) * (count_words(s) + 1));
+	output = (char **)malloc(sizeof(char *) * (count_words(s, c) + 1));
 	if (output == 0)
 		return (0);
 	start = s;

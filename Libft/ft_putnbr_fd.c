@@ -5,13 +5,13 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: gyepark <gyepark@student.42seoul.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/11/22 15:08:01 by gyepark           #+#    #+#             */
-/*   Updated: 2021/11/22 15:08:01 by gyepark          ###   ########.fr       */
+/*   Created: 2021/11/22 16:33:23 by gyepark           #+#    #+#             */
+/*   Updated: 2021/11/22 16:33:24 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 void	ft_putnbr_fd(int n, int fd)
 {
-	ft_putstr_fd(ft_atoi(n), fd);
+	ft_putstr_fd(ft_itoa(n), fd);
 }

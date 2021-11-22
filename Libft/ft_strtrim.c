@@ -5,8 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: gyepark <gyepark@student.42seoul.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/11/21 23:49:17 by gyepark           #+#    #+#             */
-/*   Updated: 2021/11/21 23:49:18 by gyepark          ###   ########.fr       */
+/*   Created: 2021/11/22 16:29:16 by gyepark           #+#    #+#             */
+/*   Updated: 2021/11/22 16:29:17 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ char	*ft_strtrim(char const *s1, char const *set)
 	int		len_output;
 
 	start = -1;
-	end = len(s1);
+	end = ft_strlen(s1);
 	while (s1[++start])
 		if (ft_strchr(set, s1[start]) == 0)
 			break ;

@@ -5,8 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: gyepark <gyepark@student.42seoul.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/11/21 23:57:02 by gyepark           #+#    #+#             */
-/*   Updated: 2021/11/21 23:57:03 by gyepark          ###   ########.fr       */
+/*   Created: 2021/11/22 16:29:49 by gyepark           #+#    #+#             */
+/*   Updated: 2021/11/22 16:29:50 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,6 @@ char	*ft_strjoin(char const *s1, char const *s2)
 {
 	int		len_s1;
 	int		len_s2;
-	int		i;
 	char	*output;
 
 	len_s1 = ft_strlen(s1);
