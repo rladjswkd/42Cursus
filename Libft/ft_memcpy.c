@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_memcpy.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+        */
+/*   By: gyepark <gyepark@student.42seoul.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/11/17 16:24:07 by gyepark           #+#    #+#             */
-/*   Updated: 2021/11/17 16:24:08 by gyepark          ###   ########.fr       */
+/*   Created: 2021/11/22 20:40:55 by gyepark           #+#    #+#             */
+/*   Updated: 2021/11/22 20:40:57 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,8 @@ void	*ft_memcpy(void *dst, const void *src, size_t n)
 	unsigned char	*dst_temp;
 	unsigned char	*src_temp;
 
+	if (dst == 0 && src == 0)
+		return (0);
 	i = -1;
 	dst_temp = (unsigned char *)dst;
 	src_temp = (unsigned char *)src;

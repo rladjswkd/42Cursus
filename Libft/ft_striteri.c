@@ -5,8 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: gyepark <gyepark@student.42seoul.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/11/22 14:15:47 by gyepark           #+#    #+#             */
-/*   Updated: 2021/11/22 14:15:48 by gyepark          ###   ########.fr       */
+/*   Created: 2021/11/22 19:30:48 by gyepark           #+#    #+#             */
+/*   Updated: 2021/11/22 19:30:49 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@ void	ft_striteri(char *s, void (*f)(unsigned int, char*))
 {
 	unsigned int	i;
 
-	i = 0;
-	while (s[i])
+	i = -1;
+	while (s[++i])
 		(*f)(i, s + i);
 }
