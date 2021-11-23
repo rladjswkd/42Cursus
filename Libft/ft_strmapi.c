@@ -6,7 +6,7 @@
 /*   By: gyepark <gyepark@student.42seoul.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/22 14:14:07 by gyepark           #+#    #+#             */
-/*   Updated: 2021/11/22 14:14:09 by gyepark          ###   ########.fr       */
+/*   Updated: 2021/11/23 20:11:49 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,5 +22,6 @@ char	*ft_strmapi(char const *s, char (*f)(unsigned int, char))
 	i = -1;
 	while (s[++i])
 		output[i] = (*f)(i, s[i]);
+	output[i] = 0;
 	return (output);
 }

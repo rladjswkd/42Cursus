@@ -6,7 +6,7 @@
 /*   By: gyepark <gyepark@student.42seoul.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/22 16:31:55 by gyepark           #+#    #+#             */
-/*   Updated: 2021/11/22 16:32:35 by gyepark          ###   ########.fr       */
+/*   Updated: 2021/11/23 20:08:38 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,30 +42,46 @@ static char	**free_assigned(char **output, int to)
 	return (0);
 }
 
-char	**ft_split(char const *s, char c)
+static int	get_size(char const *start, char const *s, char c)
 {
-	char		**output;
+	if (*s == c && start < s)
+		return (s - start + 1);
+	else
+		return (s - start + 2);
+}
+
+static char	**do_split(char **output, char const *s, char c)
+{
 	const char	*start;
 	int			i;
 
-	output = (char **)malloc(sizeof(char *) * (count_words(s, c) + 1));
-	if (output == 0)
-		return (0);
 	start = s;
 	i = 0;
 	while (*s)
 	{
 		if ((*s == c && start < s) || (*s != c && *(s + 1) == 0 && start <= s))
 		{
-			output[i] = (char *)malloc(sizeof(char) * (s - start + 1));
+			output[i] = (char *)malloc(sizeof(char) * get_size(start, s, c));
 			if (output[i] == 0)
 				return (free_assigned(output, i));
-			ft_strlcpy(output[i++], start, s - start + 1);
+			ft_strlcpy(output[i++], start, get_size(start, s, c));
 			start = ++s;
 		}
+		else if (*s == c)
+			start = ++s;
 		else
 			s++;
 	}
 	output[i] = 0;
 	return (output);
+}
+
+char	**ft_split(char const *s, char c)
+{
+	char		**output;
+
+	output = (char **)malloc(sizeof(char *) * (count_words(s, c) + 1));
+	if (output == 0)
+		return (0);
+	return (do_split(output, s, c));
 }
