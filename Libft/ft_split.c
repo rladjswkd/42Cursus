@@ -6,7 +6,7 @@
 /*   By: gyepark <gyepark@student.42seoul.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/22 16:31:55 by gyepark           #+#    #+#             */
-/*   Updated: 2021/11/23 20:08:38 by gyepark          ###   ########.fr       */
+/*   Updated: 2021/11/23 23:30:51 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,10 +22,11 @@ static int	count_words(char const *s, char c)
 	end = -1;
 	while (s[++end])
 	{
-		if (s[end] == c && start < end)
+		if (s[end] == c)
 		{
+			if (start < end)
+				cnt++;
 			start = end + 1;
-			cnt++;
 		}
 	}
 	return (cnt + (start != end));
