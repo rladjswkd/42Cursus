@@ -6,7 +6,7 @@
 /*   By: gyepark <gyepark@student.42seoul.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/17 19:53:15 by gyepark           #+#    #+#             */
-/*   Updated: 2021/11/17 19:53:16 by gyepark          ###   ########.fr       */
+/*   Updated: 2021/11/23 22:59:59 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,11 +14,13 @@
 char	*ft_strrchr(const char *s, int c)
 {
 	size_t	i;
+	char	ch;
 
+	ch = (char)c;
 	i = ft_strlen(s);
 	while (s + i >= s)
 	{
-		if (s[i] == c)
+		if (s[i] == ch)
 			return ((char *)(s + i));
 		i--;
 	}
