@@ -6,7 +6,7 @@
 /*   By: gyepark <gyepark@student.42seoul.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/17 21:17:57 by gyepark           #+#    #+#             */
-/*   Updated: 2021/11/26 16:40:22 by gyepark          ###   ########.fr       */
+/*   Updated: 2021/11/26 16:48:47 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ int	ft_atoi(const char *str)
 		str++;
 	sign = 1;
 	if (*str == '-' || *str == '+')
-	{ 
+	{
 		if (*str == '-')
 			sign = -1;
 		str++;
@@ -31,12 +31,11 @@ int	ft_atoi(const char *str)
 	while (ft_isdigit(*str))
 	{
 		result = 10 * result + sign * (*str - 48);
-		checker = 10 * checker + (*str - 48);
+		checker = 10 * checker + (*(str++) - 48);
 		if (sign == -1 && checker >= 9223372036854775808ULL)
 			return (0);
 		if (sign == 1 && checker >= 9223372036854775807ULL)
 			return (-1);
-		str++;
 	}
 	return (result);
 }
