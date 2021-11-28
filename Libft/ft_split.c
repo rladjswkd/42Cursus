@@ -6,7 +6,7 @@
 /*   By: gyepark <gyepark@student.42seoul.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/22 16:31:55 by gyepark           #+#    #+#             */
-/*   Updated: 2021/11/23 23:30:51 by gyepark          ###   ########.fr       */
+/*   Updated: 2021/11/28 14:22:59 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,7 @@ static char	**free_assigned(char **output, int to)
 
 	i = 0;
 	while (i < to)
-		free(output[i]);
+		free(output[i++]);
 	free(output);
 	return (0);
 }
