@@ -6,7 +6,7 @@
 /*   By: gyepark <gyepark@student.42seoul.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/25 01:33:57 by gyepark           #+#    #+#             */
-/*   Updated: 2021/11/25 01:33:59 by gyepark          ###   ########.fr       */
+/*   Updated: 2021/11/29 15:09:12 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,8 @@
 # define LIBFT_H
 # include <unistd.h>
 # include <stdlib.h>
+# define LL_MAX_ABS 9223372036854775808ULL
+# define LL_MIN_ABS 9223372036854775807ULL 
 typedef struct s_list
 {
 	void			*content;
