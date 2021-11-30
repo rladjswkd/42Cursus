@@ -6,11 +6,10 @@
 /*   By: gyepark <gyepark@student.42seoul.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/17 21:32:52 by gyepark           #+#    #+#             */
-/*   Updated: 2021/11/17 21:32:53 by gyepark          ###   ########.fr       */
+/*   Updated: 2021/11/30 15:22:27 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <stdlib.h>
 #include "libft.h"
 void	*ft_calloc(size_t count, size_t size)
 {

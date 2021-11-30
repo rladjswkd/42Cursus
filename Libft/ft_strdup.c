@@ -6,11 +6,10 @@
 /*   By: gyepark <gyepark@student.42seoul.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/17 21:43:39 by gyepark           #+#    #+#             */
-/*   Updated: 2021/11/17 21:43:40 by gyepark          ###   ########.fr       */
+/*   Updated: 2021/11/30 15:23:58 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <stdlib.h>
 #include "libft.h"
 char	*ft_strdup(const char *s1)
 {
