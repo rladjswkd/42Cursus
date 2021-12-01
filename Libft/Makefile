@@ -6,7 +6,7 @@
 #    By: gyepark <gyepark@student.42seoul.fr>       +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/11/25 01:34:11 by gyepark           #+#    #+#              #
-#    Updated: 2021/11/25 01:34:12 by gyepark          ###   ########.fr        #
+#    Updated: 2021/12/01 17:13:12 by gyepark          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -24,16 +24,22 @@ OBJS = $(SRCS:.c=.o)
 BONUS_OBJS = $(BONUS_SRCS:.c=.o)
 CFLAGS = -Wall -Wextra -Werror
 
+ifdef ADD_BONUS
+	TARGET_OBJS = $(OBJS) $(BONUS_OBJS)
+else
+	TARGET_OBJS = $(OBJS)
+endif
+
 %.o : %.c
 	gcc $(CFLAGS) -c -o $@ $<
 
 all : $(NAME)
 
-$(NAME) : $(OBJS)
-	ar rc $(NAME) $(OBJS)
+$(NAME) : $(TARGET_OBJS)
+	ar rc $(NAME) $(TARGET_OBJS)
 
-bonus : $(BONUS_OBJS)
-	ar rc $(NAME) $(BONUS_OBJS)
+bonus :
+	@make ADD_BONUS=1 all
 
 clean :
 	rm -f $(OBJS) $(BONUS_OBJS)
