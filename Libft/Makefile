@@ -6,7 +6,7 @@
 #    By: gyepark <gyepark@student.42seoul.fr>       +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/11/25 01:34:11 by gyepark           #+#    #+#              #
-#    Updated: 2021/11/25 01:34:12 by gyepark          ###   ########.fr        #
+#    Updated: 2021/12/03 23:38:58 by gyepark          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -24,16 +24,19 @@ OBJS = $(SRCS:.c=.o)
 BONUS_OBJS = $(BONUS_SRCS:.c=.o)
 CFLAGS = -Wall -Wextra -Werror
 
-%.o : %.c
-	gcc $(CFLAGS) -c -o $@ $<
-
-all : $(NAME)
-
 $(NAME) : $(OBJS)
 	ar rc $(NAME) $(OBJS)
 
-bonus : $(BONUS_OBJS)
+$(OBJS) : $(SRCS)
+	gcc -c $(CFLAGS) $(SRCS)
+
+$(BONUS_OBJS) : $(BONUS_SRCS)
+	gcc -c $(CFLAGS) $^
 	ar rc $(NAME) $(BONUS_OBJS)
+
+all : $(NAME)
+
+bonus : $(BONUS_OBJS)
 
 clean :
 	rm -f $(OBJS) $(BONUS_OBJS)
