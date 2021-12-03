@@ -6,7 +6,7 @@
 #    By: gyepark <gyepark@student.42seoul.fr>       +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/11/25 01:34:11 by gyepark           #+#    #+#              #
-#    Updated: 2021/12/03 23:38:58 by gyepark          ###   ########.fr        #
+#    Updated: 2021/12/03 23:55:17 by gyepark          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -34,7 +34,7 @@ $(BONUS_OBJS) : $(BONUS_SRCS)
 	gcc -c $(CFLAGS) $^
 	ar rc $(NAME) $(BONUS_OBJS)
 
-all : $(NAME)
+all : $(NAME) bonus
 
 bonus : $(BONUS_OBJS)
 
