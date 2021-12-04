@@ -6,7 +6,7 @@
 /*   By: gyepark <gyepark@student.42seoul.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/04 23:49:29 by gyepark           #+#    #+#             */
-/*   Updated: 2021/12/04 23:49:30 by gyepark          ###   ########.fr       */
+/*   Updated: 2021/12/05 00:05:26 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,7 @@ static size_t	ft_strlcpy(char *dst, char *src, size_t dstsize)
 	return (ft_strlen(src));
 }
 
-char	*ft_strjoin(char const *s1, char const *s2)
+char	*ft_strjoin(char *s1, char *s2)
 {
 	int		len_s1;
 	int		len_s2;
@@ -52,7 +52,7 @@ char	*ft_strjoin(char const *s1, char const *s2)
 	return (output);
 }
 
-char	*ft_substr(char const *s, unsigned int start, size_t len)
+char	*ft_substr(char *s, unsigned int start, size_t len)
 {
 	size_t	len_s;
 	size_t	len_output;
