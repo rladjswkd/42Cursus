@@ -6,7 +6,7 @@
 /*   By: gyepark <gyepark@student.42seoul.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/04 23:49:15 by gyepark           #+#    #+#             */
-/*   Updated: 2021/12/04 23:49:16 by gyepark          ###   ########.fr       */
+/*   Updated: 2021/12/05 00:00:49 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,8 +82,9 @@ static char	*make_line(t_builder *builder)
 char	*get_next_line(int fd)
 {
 	static t_builder	builder = {(char *)0, 0, -1};
+
 	/*split if statment into multiple statment -> should print error of BUFFER_SIZE*/
-	if (fd < 0 || BUFFER_SIZE < 1 || !read_file(fd, &buffer))
+	if (fd < 0 || BUFFER_SIZE < 1 || !read_file(fd, &builder))
 		return (0);
 	return (make_line(&line, &builder));
 }
