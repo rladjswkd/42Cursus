@@ -6,7 +6,7 @@
 /*   By: gyepark <gyepark@student.42seoul.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/04 23:49:15 by gyepark           #+#    #+#             */
-/*   Updated: 2021/12/05 00:00:49 by gyepark          ###   ########.fr       */
+/*   Updated: 2021/12/05 00:02:56 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,5 +86,5 @@ char	*get_next_line(int fd)
 	/*split if statment into multiple statment -> should print error of BUFFER_SIZE*/
 	if (fd < 0 || BUFFER_SIZE < 1 || !read_file(fd, &builder))
 		return (0);
-	return (make_line(&line, &builder));
+	return (make_line(&builder));
 }
