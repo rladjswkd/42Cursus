@@ -1,64 +1,58 @@
 #include "get_next_line.h"
-static int	find_new_line(char *buffer, int read_cnt)
+static int	find_new_line(char *buffer, int read_count)
 {
 	int	i;
 
 	i = 0;
-	while (buffer[i] != '\n' && i < read_cnt)
+	while (buffer[i] != '\n' && i < read_count)
 		i++;
-	if (i == read_cnt)
+	if (i == read_count)
 		return (-1);
 	return (i);
 }
 
-static void read_file(int fd, char *buffer, t_builder **remain)
-{
-	int	read_cnt;
-	int	new_line_index;
 
-	new_line_index = -1;
-	while (new_line_index == -1)
+static char	*read_file(int fd, t_builder *builder)
+{
+	int		read_count;
+	int		buffer_new_line_index;
+	char	*buffer;
+
+	buffer = (char *)malloc(sizeof(char) * BUFFER_SIZE);
+	/*should print error of malloc function*/
+	if (!buffer)
+		return (0);
+	while (builder->new_line_index == -1)
 	{
-		read_cnt = read(fd, buffer, BUFFER_SIZE);
-		if (read_cnt == -1)
-			
-		new_line_index = find_new_line(buffer, read_cnt);
-		(*remain)->str = concat_strs((*remain)->str, buffer);
-		(*remain)->len += read_cnt;
-		(*remain)->new_line_index += read_cnt;
+		read_count = read(fd, buffer, BUFFER_SIZE);
+		/*should print error of read function*/
+		if (read_count == -1)
+			return (0);
+		buffer_new_line_index = find_new_line(buffer, read_count);
+		if (buffer_new_line_index == -1)
+			builder->new_line_index += read_count;
+		else
+			builder->new_line_index += buffer_new_line_index;
+		builder->str = concat_strs(builder->str, buffer);
+		builder->len += read_count;
 	}
-	(*remain)->new_line_index += new_line_index + 1 - read_cnt;
 }
 
-static void	make_line(char **line, t_builder *remain)
+static void	make_line(t_builder *builder)
 {
 	int		i;
 	
 	i = -1;
-	while (++i < (*remain)->new_line_index)
-		(*line)[i] = (remain->str)[i];
+	while (++i < builder->new_line_index)
+		(*line)[i] = (builder->str)[i];
 	(*line)[i] = 0;
 }
 
 char	*get_next_line(int fd)
 {
-	char				*buffer;
-	static t_builder	*remain;
-	char				*line;
-
-	(*remain)->len = 0;
-	(*remain)->new_line_index = -1;
-	if (BUFFER_SIZE <= 0)
+	static t_builder	builder = {(char *)0, 0, -1};
+	/*should print error of BUFFER_SIZE*/
+	if (BUFFER_SIZE < 1 || !read_file(fd, &buffer))
 		return (0);
-	buffer = (char *)malloc(sizeof(char) * BUFFER_SIZE);
-	if (buffer == 0)
-		return (0);
-	read_file(fd, buffer, &remain);
-	if (!(remain->str))
-		return (0);
-	line = (char *)malloc(sizeof(char) * (*remain)->new_line_index + 1);
-	if (line == 0)
-		return (0);
-	make_line(&line, remain);
-	return (line);
+	return (make_line(&line, &builder));
 }
