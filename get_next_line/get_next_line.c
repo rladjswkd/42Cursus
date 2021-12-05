@@ -6,85 +6,63 @@
 /*   By: gyepark <gyepark@student.42seoul.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/04 23:49:15 by gyepark           #+#    #+#             */
-/*   Updated: 2021/12/05 00:02:56 by gyepark          ###   ########.fr       */
+/*   Updated: 2021/12/05 22:54:51 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
-static int	find_new_line(char *buffer, int read_count)
-{
-	int	i;
-
-	i = 0;
-	while (buffer[i] != '\n' && i < read_count)
-		i++;
-	if (i == read_count)
-		return (-1);
-	return (i);
-}
-
-static char *concat_strs(char *builder_str, char *buffer)
-{
-	char	*concatenated;
-
-	concatenated = ft_strjoin(builder_str, buffer);
-	free(builder_str);
-	if (!concatenated)
-		return (0);
-	return (concatenated);
-}
-
 static char	*read_file(int fd, t_builder *builder)
 {
-	int		read_count;
-	int		buffer_new_line_index;
-	char	*buffer;
+	int		count;
+	char	buffer[BUFFER_SIZE];
 
-	buffer = (char *)malloc(sizeof(char) * BUFFER_SIZE);
-	/*should print error of malloc function*/
-	if (!buffer)
-		return (0);
-	while (builder->new_line_index == -1)
+	while (builder->index == -1)
 	{
-		read_count = read(fd, buffer, BUFFER_SIZE);
-		/*should print error of read function*/
-		if (read_count == -1)
+		count = read(fd, buffer, BUFFER_SIZE);
+		if (count < 1)
 			return (0);
-		buffer_new_line_index = find_new_line(buffer, read_count);
-		if (buffer_new_line_index == -1)
-			builder->new_line_index += read_count;
-		else
-			builder->new_line_index += buffer_new_line_index;
-		builder->str = concat_strs(builder->str, buffer);
-		/*should print error of ft_strjoin's malloc function*/
-		if (!(builder->str))
+		builder->data = concat_data(builder->data, buffer, builder->len, count);
+		if (!(builder->data))
 			return (0);
-		builder->len += read_count;
+		builder->index = find_new_line(builder->data, builder->len, count);
+		builder->len += count;
 	}
-	return (builder->str);
+	return (builder->data);
 }
 
-static char	*make_line(t_builder *builder)
+static char	*build_line(t_builder *builder)
 {
 	char	*line;
-	char	*temp_builder_str;
+	char	*temp_data;
 
-	temp_builder_str = builder->str;
-	line = ft_substr(builder->str, 0, builder->new_line_index + 1);
-	builder->str = ft_substr(builder->str, builder->new_line_index + 1, builder->len);
-	/*should print error of ft_substr's malloc function*/
-	if (!line || !(builder->str))
+	if (builder->index == -1)
+	{
+		line = (char *)malloc(sizeof(char) * (builder->len + 1));
+		copy_data(line, builder->data, builder->len + 1, 1);
+		free(builder->data);
+		builder->data = 0;
+		return (line);
+	}
+	temp_data = builder->data;
+	line = get_part(builder->data, 0, builder->index + 1, 1);
+	builder->data = get_part(builder->data,
+			builder->index + 1, builder->len - (builder->index + 1), 0);
+	if (!line || !(builder->data))
 		return (0);
-	free(temp_builder_str);
+	builder->len -= (builder->index + 1);
+	builder->index = find_new_line(builder->data, 0, builder->len);
+	if (builder->len == 0)
+		free(builder->data);
+	free(temp_data);
 	return (line);
 }
 
 char	*get_next_line(int fd)
 {
-	static t_builder	builder = {(char *)0, 0, -1};
+	static t_builder	builder = {0, 0, -1};
 
-	/*split if statment into multiple statment -> should print error of BUFFER_SIZE*/
-	if (fd < 0 || BUFFER_SIZE < 1 || !read_file(fd, &builder))
+	if (fd < 0 || BUFFER_SIZE < 1
+		|| (!read_file(fd, &builder) && !(builder.data)))
 		return (0);
-	return (make_line(&builder));
+	return (build_line(&builder));
 }

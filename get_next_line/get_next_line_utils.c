@@ -6,68 +6,60 @@
 /*   By: gyepark <gyepark@student.42seoul.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/04 23:49:29 by gyepark           #+#    #+#             */
-/*   Updated: 2021/12/05 00:05:26 by gyepark          ###   ########.fr       */
+/*   Updated: 2021/12/05 22:00:55 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
-static size_t	ft_strlen(char *s)
+int	find_new_line(char *data, int start, int len)
 {
-	size_t	len;
+	int	i;
 
-	len = 0;
-	while (s[len])
-		len++;
-	return (len);
-}
-
-static size_t	ft_strlcpy(char *dst, char *src, size_t dstsize)
-{
-	size_t	i;
-
-	i = 0;
-	while (i + 1 < dstsize && src[i])
-	{
-		dst[i] = src[i];
+	i = start;
+	while (data[i] != '\n' && i < start + len)
 		i++;
-	}
-	if (dstsize > 0)
-		dst[i] = 0;
-	return (ft_strlen(src));
+	if (i == start + len)
+		return (-1);
+	return (i);
 }
 
-char	*ft_strjoin(char *s1, char *s2)
+char	*concat_data(char *d1, char *d2, int len_d1, int len_d2)
 {
-	int		len_s1;
-	int		len_s2;
-	char	*output;
+	char	*concatenated;
+	int		i_d1;
+	int		i_d2;
 
-	len_s1 = ft_strlen(s1);
-	len_s2 = ft_strlen(s2);
-	output = (char *)malloc(sizeof(char) * (len_s1 + len_s2 + 1));
-	if (!output)
+	concatenated = (char *)malloc(sizeof(char) * (len_d1 + len_d2));
+	if (!concatenated)
 		return (0);
-	ft_strlcpy(output, s1, len_s1 + 1);
-	ft_strlcpy(output + len_s1, s2, len_s2 + 1);
-	return (output);
+	i_d1 = -1;
+	while (++i_d1 < len_d1)
+		concatenated[i_d1] = d1[i_d1];
+	i_d2 = 0;
+	while (i_d2 < len_d2)
+		concatenated[i_d1++] = d2[i_d2++];
+	free(d1);
+	return (concatenated);
 }
 
-char	*ft_substr(char *s, unsigned int start, size_t len)
+void	copy_data(char *dst, char *src, int dstsize, int is_string)
 {
-	size_t	len_s;
-	size_t	len_output;
+	int	i;
+
+	i = -1;
+	while (++i + is_string < dstsize)
+		dst[i] = src[i];
+	if (is_string)
+		dst[i] = '\0';
+}
+
+char	*get_part(char *d, unsigned int start, int len_part, int is_string)
+{
 	char	*output;
 
-	len_s = ft_strlen(s);
-	if (len_s <= start)
-		len_output = 0;
-	else if (len_s - start < len)
-		len_output = len_s - start;
-	else
-		len_output = len;
-	output = (char *)malloc(sizeof(char) * (len_output + 1));
+	output = (char *)malloc(sizeof(char) * (len_part + is_string));
 	if (!output)
 		return (0);
-	ft_strlcpy(output, s + start, len_output + 1);
+	copy_data(output, d + start, len_part + is_string, is_string);
 	return (output);
 }
