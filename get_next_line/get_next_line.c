@@ -6,7 +6,7 @@
 /*   By: gyepark <gyepark@student.42seoul.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/04 23:49:15 by gyepark           #+#    #+#             */
-/*   Updated: 2021/12/07 19:48:06 by gyepark          ###   ########.fr       */
+/*   Updated: 2021/12/07 20:07:07 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,8 +56,8 @@ static char	*build_line(t_builder *builder)
 		return (line);
 	}
 	line = get_part(builder->data, 0, builder->index + 1, 1);
-	temp_data = get_part(builder->data,	
-				builder->index + 1, builder->len - (builder->index + 1), 0);
+	temp_data = get_part(builder->data,
+			builder->index + 1, builder->len - (builder->index + 1), 0);
 	if (!line || !temp_data)
 		return (0);
 	free(builder->data);
