@@ -6,7 +6,7 @@
 /*   By: gyepark <gyepark@student.42seoul.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/04 23:49:15 by gyepark           #+#    #+#             */
-/*   Updated: 2021/12/07 20:07:07 by gyepark          ###   ########.fr       */
+/*   Updated: 2021/12/08 13:40:33 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,31 +39,32 @@ static int	read_file(int fd, t_builder *builder)
 	return (1);
 }
 
-static char	*build_line(t_builder *builder)
+static char	*build_line(t_builder *b)
 {
 	char	*line;
 	char	*temp_data;
 
-	if (builder->index == -1)
+	if (b->index == -1)
 	{
-		if (builder->len == 0)
+		if (b->len == 0)
 			return (0);
-		line = (char *)malloc(sizeof(char) * (builder->len + 1));
+		line = (char *)malloc(sizeof(char) * (b->len + 1));
 		if (!line)
 			return (0);
-		copy_data(line, builder->data, builder->len + 1, 1);
-		builder->len = 0;
+		copy_data(line, b->data, b->len + 1, 1);
+		b->len = 0;
 		return (line);
 	}
-	line = get_part(builder->data, 0, builder->index + 1, 1);
-	temp_data = get_part(builder->data,
-			builder->index + 1, builder->len - (builder->index + 1), 0);
-	if (!line || !temp_data)
+	line = get_part(b->data, 0, b->index + 1, 1);
+	if (!line)
 		return (0);
-	free(builder->data);
-	builder->data = temp_data;
-	builder->len -= (builder->index + 1);
-	builder->index = find_new_line(builder->data, 0, builder->len);
+	temp_data = get_part(b->data, b->index + 1, b->len - (b->index + 1), 0);
+	if (!temp_data)
+		return (0);
+	free(b->data);
+	b->data = temp_data;
+	b->len -= (b->index + 1);
+	b->index = find_new_line(b->data, 0, b->len);
 	return (line);
 }
 
