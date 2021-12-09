@@ -1,16 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   get_next_line_utils.c                              :+:      :+:    :+:   */
+/*   get_next_line_utils_bonus.c                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gyepark <gyepark@student.42seoul.fr>       +#+  +:+       +#+        */
+/*   By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/12/04 23:49:29 by gyepark           #+#    #+#             */
-/*   Updated: 2021/12/09 21:52:41 by gyepark          ###   ########.fr       */
+/*   Created: 2021/12/09 22:58:02 by gyepark           #+#    #+#             */
+/*   Updated: 2021/12/10 00:25:13 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "get_next_line.h"
+#include "get_next_line_bonus.h"
 size_t	ft_strlen(char *s)
 {
 	size_t	len;
@@ -37,7 +37,7 @@ char	*ft_strchr(char *s, int c)
 	return (0);
 }
 
-size_t	ft_strlcpy(char *dst, char *src, size_t dstsize)
+static size_t	ft_strlcpy(char *dst, char *src, size_t dstsize)
 {
 	size_t	i;
 

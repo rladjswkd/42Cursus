@@ -1,23 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   get_next_line.c                                    :+:      :+:    :+:   */
+/*   get_next_line_bonus.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gyepark <gyepark@student.42seoul.fr>       +#+  +:+       +#+        */
+/*   By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/12/04 23:49:15 by gyepark           #+#    #+#             */
-/*   Updated: 2021/12/09 22:46:11 by gyepark          ###   ########.fr       */
+/*   Created: 2021/12/09 22:57:15 by gyepark           #+#    #+#             */
+/*   Updated: 2021/12/10 02:07:04 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "get_next_line.h"
-static char	*free_builder_data(t_builder *builder)
-{
-	free(builder->data);
-	builder->data = 0;
-	return (0);
-}
-
+#include "get_next_line_bonus.h"
 static char	*read_file(t_builder *b)
 {
 	int		count;
@@ -64,25 +57,64 @@ static char	*build_line(t_builder *b, char *new_line)
 	return (line);
 }
 
+static char	*free_builder_data(t_builder *b)
+{
+	free(b->data);
+	b->data = 0;
+	return (0);
+}
+
+static char	*get_next_line_fd(t_builder *b, int fd)
+{
+	char	*new_line;
+	char	*line;
+
+	if (b->fd != fd)
+	{
+		b->next = (t_builder *)malloc(sizeof(t_builder));
+		if (!(b->next))
+			return (0);
+		(b->next)->fd = fd;
+		(b->next)->data = (char *)malloc(sizeof(char));
+		if ((b->next)->data == 0)
+			return (0);
+		(b->next)->data[0] = '\0';
+		b = b->next;
+	}
+	new_line = read_file(b);
+	if (!new_line || new_line < b->data)
+		return (0);
+	line = build_line(b, new_line);
+	if (!line)
+		return (0);
+	return (line);
+}
+
 char	*get_next_line(int fd)
 {
-	static t_builder	builder = {0, 0, 0};
-	char				*new_line;
+	static t_builder	*b = 0;
+	t_builder			*pointer;
 	char				*line;
 
 	if (fd < 0 || BUFFER_SIZE < 1)
 		return (0);
-	builder.fd = fd;
-	if (builder.data == 0)
+	if (!b)
 	{
-		builder.data = (char *)malloc(sizeof(char) * 1);
-		builder.data[0] = 0;
+		b = (t_builder *)malloc(sizeof(t_builder));
+		if (!b)
+			return (0);
+		b->fd = fd;
+		b->data = (char *)malloc(sizeof(char));
+		if (!(b->data))
+			return (free_builder_data(b));
+		b->data[0] = '\0';
+		b->next = 0;
 	}
-	new_line = read_file(&builder);
-	if (!new_line || new_line < builder.data)
-		return (free_builder_data(&builder));
-	line = build_line(&builder, new_line);
-	if (line == 0)
-		return (free_builder_data(&builder));
+	pointer = b;
+	while (pointer && pointer->fd != fd && pointer->next)
+		pointer = pointer->next;
+	line = get_next_line_fd(pointer, fd);
+	if (!line)
+		return (free_builder_data(b));
 	return (line);
 }
