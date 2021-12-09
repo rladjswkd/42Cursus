@@ -6,7 +6,7 @@
 /*   By: gyepark <gyepark@student.42seoul.fr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/04 23:49:34 by gyepark           #+#    #+#             */
-/*   Updated: 2021/12/07 20:07:24 by gyepark          ###   ########.fr       */
+/*   Updated: 2021/12/09 18:53:43 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,9 +16,9 @@
 # include <stdlib.h>
 typedef struct s_builder
 {
-	char	*data;
-	int		len;
-	int		index;
+	char				*data;
+	int					fd;
+	struct s_builder	*next;
 }	t_builder;
 char	*get_next_line(int fd);
 int		find_new_line(char *data, int start, int len);
