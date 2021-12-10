@@ -6,7 +6,7 @@
 /*   By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/09 22:57:15 by gyepark           #+#    #+#             */
-/*   Updated: 2021/12/10 02:07:04 by gyepark          ###   ########.fr       */
+/*   Updated: 2021/12/10 14:39:12 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,16 +59,27 @@ static char	*build_line(t_builder *b, char *new_line)
 
 static char	*free_builder_data(t_builder *b)
 {
-	free(b->data);
-	b->data = 0;
+	t_builder	*next;
+	t_builder	*current;
+
+	current = b->next;
+	while (current)
+	{
+		next = current->next;
+		free(current->data);
+		free(current);
+		current = next;
+	}
+	b->next = 0;
 	return (0);
 }
 
 static char	*get_next_line_fd(t_builder *b, int fd)
 {
-	char	*new_line;
-	char	*line;
+	char		*new_line;
+	t_builder	*origin;
 
+	origin = b;
 	if (b->fd != fd)
 	{
 		b->next = (t_builder *)malloc(sizeof(t_builder));
@@ -82,39 +93,28 @@ static char	*get_next_line_fd(t_builder *b, int fd)
 		b = b->next;
 	}
 	new_line = read_file(b);
-	if (!new_line || new_line < b->data)
+	if (!new_line)
 		return (0);
-	line = build_line(b, new_line);
-	if (!line)
-		return (0);
-	return (line);
+	if (new_line < b->data)
+		return (origin->data);
+	return (build_line(b, new_line));
 }
 
 char	*get_next_line(int fd)
 {
-	static t_builder	*b = 0;
+	static t_builder	b = {"", -1, 0};
 	t_builder			*pointer;
 	char				*line;
 
 	if (fd < 0 || BUFFER_SIZE < 1)
 		return (0);
-	if (!b)
-	{
-		b = (t_builder *)malloc(sizeof(t_builder));
-		if (!b)
-			return (0);
-		b->fd = fd;
-		b->data = (char *)malloc(sizeof(char));
-		if (!(b->data))
-			return (free_builder_data(b));
-		b->data[0] = '\0';
-		b->next = 0;
-	}
-	pointer = b;
+	pointer = &b;
 	while (pointer && pointer->fd != fd && pointer->next)
 		pointer = pointer->next;
 	line = get_next_line_fd(pointer, fd);
 	if (!line)
-		return (free_builder_data(b));
+		return (free_builder_data(&b));
+	if (line == pointer->data)
+		return (0);
 	return (line);
 }
