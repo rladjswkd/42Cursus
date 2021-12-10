@@ -6,7 +6,7 @@
 /*   By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/09 22:57:15 by gyepark           #+#    #+#             */
-/*   Updated: 2021/12/10 14:39:12 by gyepark          ###   ########.fr       */
+/*   Updated: 2021/12/10 16:45:01 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,9 +25,7 @@ static char	*read_file(t_builder *b)
 	while (!new_line)
 	{
 		count = read(b->fd, buffer, BUFFER_SIZE);
-		if (count == -1)
-			return (0);
-		if (count == 0)
+		if (count < 1)
 			return (b->data + ft_strlen(b->data) - 1);
 		buffer[count] = 0;
 		temp_data = concat_strs(b->data, buffer);
@@ -57,20 +55,28 @@ static char	*build_line(t_builder *b, char *new_line)
 	return (line);
 }
 
-static char	*free_builder_data(t_builder *b)
+static char	*free_builder_data(t_builder **b, int fd)
 {
-	t_builder	*next;
+	t_builder	*temp;
 	t_builder	*current;
 
-	current = b->next;
-	while (current)
+	current = (*b)->next;
+	if (fd != -1)
 	{
-		next = current->next;
+		temp = *b;
+		temp->next = current->next;
 		free(current->data);
 		free(current);
-		current = next;
+		return (0);
 	}
-	b->next = 0;
+	while (current)
+	{
+		temp = current->next;
+		free(current->data);
+		free(current);
+		current = temp;
+	}
+	(*b)->next = 0;
 	return (0);
 }
 
@@ -80,7 +86,7 @@ static char	*get_next_line_fd(t_builder *b, int fd)
 	t_builder	*origin;
 
 	origin = b;
-	if (b->fd != fd)
+	if (b->fd != fd && b->next == 0)
 	{
 		b->next = (t_builder *)malloc(sizeof(t_builder));
 		if (!(b->next))
@@ -89,32 +95,35 @@ static char	*get_next_line_fd(t_builder *b, int fd)
 		(b->next)->data = (char *)malloc(sizeof(char));
 		if ((b->next)->data == 0)
 			return (0);
+		(b->next)->next = 0;
 		(b->next)->data[0] = '\0';
-		b = b->next;
 	}
-	new_line = read_file(b);
+	new_line = read_file(b->next);
 	if (!new_line)
 		return (0);
-	if (new_line < b->data)
+	if (new_line < (b->next)->data)
 		return (origin->data);
-	return (build_line(b, new_line));
+	return (build_line(b->next, new_line));
 }
 
 char	*get_next_line(int fd)
 {
-	static t_builder	b = {"", -1, 0};
+	static t_builder	b = {"", -42, 0};
 	t_builder			*pointer;
 	char				*line;
 
 	if (fd < 0 || BUFFER_SIZE < 1)
 		return (0);
 	pointer = &b;
-	while (pointer && pointer->fd != fd && pointer->next)
+	while (pointer && pointer->next && (pointer->next)->fd != fd)
 		pointer = pointer->next;
 	line = get_next_line_fd(pointer, fd);
 	if (!line)
-		return (free_builder_data(&b));
+	{
+		pointer = &b;
+		return (free_builder_data(&pointer, -1));
+	}
 	if (line == pointer->data)
-		return (0);
+		return (free_builder_data(&pointer, fd));
 	return (line);
 }
