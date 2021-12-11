@@ -6,7 +6,7 @@
 /*   By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/09 22:57:15 by gyepark           #+#    #+#             */
-/*   Updated: 2021/12/11 16:43:58 by gyepark          ###   ########.fr       */
+/*   Updated: 2021/12/11 19:44:06 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,7 +58,7 @@ static char	*build_line(t_builder *b, char *new_line)
 static char	*free_builder_data(t_builder **b)
 {
 	t_builder	*temp;
-	
+
 	temp = (*b)->next;
 	(*b)->next = ((*b)->next)->next;
 	free(temp->data);
