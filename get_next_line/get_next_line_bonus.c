@@ -6,7 +6,7 @@
 /*   By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/09 22:57:15 by gyepark           #+#    #+#             */
-/*   Updated: 2021/12/11 13:57:32 by gyepark          ###   ########.fr       */
+/*   Updated: 2021/12/11 16:11:47 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,9 @@ static char	*read_file(t_builder *b)
 	while (!new_line)
 	{
 		count = read(b->fd, buffer, BUFFER_SIZE);
-		if (count < 1)
+		if (count == -1 || (count == 0 && ft_strlen(b->data) == 0))
+			return (0);
+		if (count == 0)
 			return (b->data + ft_strlen(b->data) - 1);
 		buffer[count] = 0;
 		b->data = concat_strs(b->data, buffer);
@@ -53,28 +55,15 @@ static char	*build_line(t_builder *b, char *new_line)
 	return (line);
 }
 
-static char	*free_builder_data(t_builder **b, int fd)
+static char	*free_builder_data(t_builder **b)
 {
 	t_builder	*temp;
-	t_builder	*current;
-
-	current = (*b)->next;
-	if (fd != -1)
-	{
-		temp = *b;
-		temp->next = current->next;
-		free(current->data);
-		free(current);
-		return (0);
-	}
-	while (current)
-	{
-		temp = current->next;
-		free(current->data);
-		free(current);
-		current = temp;
-	}
-	(*b)->next = 0;
+	
+	temp = (*b)->next;
+	(*b)->next = ((*b)->next)->next;
+	free(temp->data);
+	free(temp);
+	temp = 0;
 	return (0);
 }
 
@@ -99,8 +88,6 @@ static char	*get_next_line_fd(t_builder *b, int fd)
 	new_line = read_file(b->next);
 	if (!new_line)
 		return (0);
-	if (new_line < (b->next)->data)
-		return (origin->data);
 	return (build_line(b->next, new_line));
 }
 
@@ -117,11 +104,6 @@ char	*get_next_line(int fd)
 		pointer = pointer->next;
 	line = get_next_line_fd(pointer, fd);
 	if (!line)
-	{
-		pointer = &b;
-		return (free_builder_data(&pointer, -1));
-	}
-	if (line == pointer->data)
-		return (free_builder_data(&pointer, fd));
+		return (free_builder_data(&pointer));
 	return (line);
 }
