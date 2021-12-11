@@ -6,7 +6,7 @@
 /*   By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/09 22:57:15 by gyepark           #+#    #+#             */
-/*   Updated: 2021/12/11 16:11:47 by gyepark          ###   ########.fr       */
+/*   Updated: 2021/12/11 16:43:58 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,10 +70,8 @@ static char	*free_builder_data(t_builder **b)
 static char	*get_next_line_fd(t_builder *b, int fd)
 {
 	char		*new_line;
-	t_builder	*origin;
 
-	origin = b;
-	if (b->fd != fd && b->next == 0)
+	if (b->next == 0)
 	{
 		b->next = (t_builder *)malloc(sizeof(t_builder));
 		if (!(b->next))
@@ -93,13 +91,13 @@ static char	*get_next_line_fd(t_builder *b, int fd)
 
 char	*get_next_line(int fd)
 {
-	static t_builder	b = {"", -42, 0};
+	static t_builder	before_head = {"", -1, 0};
 	t_builder			*pointer;
 	char				*line;
 
 	if (fd < 0 || BUFFER_SIZE < 1)
 		return (0);
-	pointer = &b;
+	pointer = &before_head;
 	while (pointer && pointer->next && (pointer->next)->fd != fd)
 		pointer = pointer->next;
 	line = get_next_line_fd(pointer, fd);
