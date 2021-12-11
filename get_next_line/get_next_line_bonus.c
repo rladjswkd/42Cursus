@@ -6,7 +6,7 @@
 /*   By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/09 22:57:15 by gyepark           #+#    #+#             */
-/*   Updated: 2021/12/11 13:50:10 by gyepark          ###   ########.fr       */
+/*   Updated: 2021/12/11 13:57:32 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,9 +14,11 @@
 static char	*read_file(t_builder *b)
 {
 	int		count;
+	int		start;
 	char	buffer[BUFFER_SIZE + 1];
 	char	*new_line;
 
+	start = 0;
 	new_line = ft_strchr(b->data, '\n');
 	while (!new_line)
 	{
@@ -27,7 +29,8 @@ static char	*read_file(t_builder *b)
 		b->data = concat_strs(b->data, buffer);
 		if (!(b->data))
 			return (0);
-		new_line = ft_strchr(b->data, '\n');
+		new_line = ft_strchr(b->data + start, '\n');
+		start += count;
 	}
 	return (new_line);
 }
