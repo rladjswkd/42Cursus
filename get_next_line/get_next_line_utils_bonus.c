@@ -6,7 +6,7 @@
 /*   By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/09 22:58:02 by gyepark           #+#    #+#             */
-/*   Updated: 2021/12/10 15:22:18 by gyepark          ###   ########.fr       */
+/*   Updated: 2021/12/11 13:26:01 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,8 +56,6 @@ char	*concat_strs(char *dst, char *src)
 {
 	size_t	len_dst;
 	size_t	len_src;
-	size_t	i_dst;
-	size_t	i_src;
 	char	*concatenated;
 
 	len_dst = ft_strlen(dst);
@@ -65,13 +63,8 @@ char	*concat_strs(char *dst, char *src)
 	concatenated = (char *)malloc(sizeof(char) * (len_dst + len_src + 1));
 	if (!concatenated)
 		return (0);
-	i_dst = -1;
-	while (++i_dst < len_dst)
-		concatenated[i_dst] = dst[i_dst];
-	i_src = 0;
-	while (i_src < len_src)
-		concatenated[i_dst++] = src[i_src++];
-	concatenated[i_dst] = 0;
+	ft_strlcpy(concatenated, dst, len_dst + 1);
+	ft_strlcpy(concatenated + len_dst, src, len_src + 1);
 	free(dst);
 	return (concatenated);
 }
