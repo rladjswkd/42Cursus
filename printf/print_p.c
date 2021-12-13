@@ -1,18 +1,18 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   print_c.c                                          :+:      :+:    :+:   */
+/*   print_p.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/12/13 20:55:36 by gyepark           #+#    #+#             */
-/*   Updated: 2021/12/13 20:55:37 by gyepark          ###   ########.fr       */
+/*   Created: 2021/12/13 20:55:42 by gyepark           #+#    #+#             */
+/*   Updated: 2021/12/13 20:55:56 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_printf.h"
-int	print_c(va_list *ap)
+int	print_p(va_list *ap)
 {
-	ft_putchar_fd((char)va_arg(*ap, int), 1);
-	return (1);
+
+	return (0);
 }
