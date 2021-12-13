@@ -27,4 +27,20 @@ int	main(void)
 	printf("%d %d %d\n", 1, 2); // last %d prints some garbage value.
 	printf("%d %d %d\n", 1, 2, 3, 4); // 4 is ignored.
 	// with -Werror option, lines above can't be compiled because warnings become errors.
-	return (0); }
+	
+	/*
+	 * %x testx
+	 */
+	printf("%x\n", 2147483647);
+	printf("%x\n", -2147483648);
+	printf("%x\n", 2147483649);
+	printf("%x\n", -2147483649);
+	// just print hexa-decimal value for every 2 bytes.
+	
+	/* 
+	 * %d, %i tests
+	 */
+	printf("%d\n", 017);
+	printf("%i\n", 017);
+	return (0); 
+}
