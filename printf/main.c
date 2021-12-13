@@ -18,6 +18,7 @@ int	main(void)
 	printf("%i\n", printf("%d\n", 0));
 */
 	// %c
+	/*
 	printf("%d\n", ft_printf("%c\n", 'a'));
 	printf("%d\n", printf("%c\n", 'a'));
 	printf("%d\n", ft_printf("%c\n", ' '));
@@ -30,6 +31,13 @@ int	main(void)
 	printf("%d\n", printf("%c\n", 300));
 	printf("%d\n", ft_printf("%c\n", '\n'));
 	printf("%d\n", printf("%c\n", '\n'));
-
+*/
+	// %s
+	printf("%d\n", ft_printf("%s\n", "hello, world!"));
+	printf("%d\n", printf("%s\n", "hello, world!"));
+	printf("%d\n", ft_printf("%s\n", "    "));
+	printf("%d\n", printf("%s\n", "    "));
+	printf("%d\n", ft_printf("%s\n", ""));
+	printf("%d\n", printf("%s\n", ""));
 	return (0);
 }
