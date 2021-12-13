@@ -1,20 +1,21 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_printf.h                                        :+:      :+:    :+:   */
+/*   print_di.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/12/12 22:32:28 by gyepark           #+#    #+#             */
-/*   Updated: 2021/12/13 19:42:11 by gyepark          ###   ########.fr       */
+/*   Created: 2021/12/13 19:40:40 by gyepark           #+#    #+#             */
+/*   Updated: 2021/12/13 19:43:08 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef FT_PRINTF_H
-# define FT_PRINTF_H
-# include <stdarg.h>
-# include "libft/libft.h"
-typedef int	(*t_func)(va_list *);
-int	ft_printf(const char *format, ...);
-int	print_di(va_list *ap);
-#endif
+#include "ft_printf.h"
+int	print_di(va_list *ap)
+{
+	char	*n_str;
+
+	n_str = ft_itoa(va_arg(*ap, int));
+	ft_putstr_fd(n_str, 1);
+	return (ft_strlen(n_str));
+}
