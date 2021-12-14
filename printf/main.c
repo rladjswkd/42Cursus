@@ -33,11 +33,23 @@ int	main(void)
 	printf("%d\n", printf("%c\n", '\n'));
 */
 	// %s
+	/*
 	printf("%d\n", ft_printf("%s\n", "hello, world!"));
 	printf("%d\n", printf("%s\n", "hello, world!"));
 	printf("%d\n", ft_printf("%s\n", "    "));
 	printf("%d\n", printf("%s\n", "    "));
 	printf("%d\n", ft_printf("%s\n", ""));
 	printf("%d\n", printf("%s\n", ""));
+*/
+	// %p
+	void	*p;
+
+	printf("%d\n", ft_printf("%p\n", (void *)0));
+	printf("%d\n", printf("%p\n", (void *)0));
+	printf("%d\n", ft_printf("%p\n", 0xffffffffffffffff));
+	printf("%d\n", printf("%p\n", 0xffffffffffffffff));
+	printf("%d\n", ft_printf("%p\n", p));
+	printf("%d\n", printf("%p\n", p));
+
 	return (0);
 }
