@@ -6,7 +6,7 @@
 /*   By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/13 20:55:42 by gyepark           #+#    #+#             */
-/*   Updated: 2021/12/14 22:51:47 by gyepark          ###   ########.fr       */
+/*   Updated: 2021/12/15 12:48:31 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,11 +16,8 @@ static unsigned long long	get_divisior(unsigned long long value)
 	unsigned long long	divisor;
 	
 	divisor = 1;
-	while (value > 15)
-	{
+	while (value / divisor > 15)
 		divisor *= 16;
-		value /= 16;
-	}
 	return (divisor);
 }
 

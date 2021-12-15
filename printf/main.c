@@ -1,5 +1,6 @@
 #include "ft_printf.h"
 #include <stdio.h>
+#include <limits.h>
 int	main(void)
 {
 	// %d, %i
@@ -42,6 +43,7 @@ int	main(void)
 	printf("%d\n", printf("%s\n", ""));
 */
 	// %p
+	/*
 	void	*p;
 
 	printf("%d\n", ft_printf("%p\n", (void *)0));
@@ -50,6 +52,17 @@ int	main(void)
 	printf("%d\n", printf("%p\n", 0xffffffffffffffff));
 	printf("%d\n", ft_printf("%p\n", p));
 	printf("%d\n", printf("%p\n", p));
+*/
+	// %u
+
+	printf("%d\n", ft_printf("%u\n", 0));
+	printf("%d\n", printf("%u\n", 0));
+	printf("%d\n", ft_printf("%u\n", -2147483648));
+	printf("%d\n", printf("%u\n", -2147483648));
+	printf("%d\n", ft_printf("%u\n", 4294967295));
+	printf("%d\n", printf("%u\n", 4294967295));
+	printf("%d\n", ft_printf("%u\n", 4294967296));
+	printf("%d\n", printf("%u\n", 4294967296));
 
 	return (0);
 }

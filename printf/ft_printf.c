@@ -6,7 +6,7 @@
 /*   By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/12 22:32:35 by gyepark           #+#    #+#             */
-/*   Updated: 2021/12/13 20:41:23 by gyepark          ###   ########.fr       */
+/*   Updated: 2021/12/15 13:03:46 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,12 +39,12 @@ static int	process_percent(va_list *ap, const char **format)
 		print_u, print_x, print_X, print_percent};
 
 	(*format)++;
-	return (fp[get_index((*format)++)](ap));
+	return (fp[get_index(*((*format)++))](ap));
 }
 
 int	ft_printf(const char *format, ...)
 {
-	int		(*fp[2])(va_list *, const char *);
+	int		(*fp[2])(va_list *, const char **);
 	va_list	ap;
 	int		res;
 
