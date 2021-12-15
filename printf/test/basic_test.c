@@ -64,9 +64,14 @@ int	main(void)
 	printf("-9223372036854775809: %u\n", -9223372036854775809);
 	*/
 
-	// invalid flag test
+	// invalid flag tests
+	/*
 	printf("%y");
 	printf("%y", 10);
+	*/
+
+	// %s tests
+	printf("%s\n", 0);
 	return (0);
 }
 
