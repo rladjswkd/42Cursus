@@ -70,6 +70,7 @@ int	main(void)
 	*/
 
 	// %x, %X
+	/*
 	printf("%d\n", ft_printf("%x\n", 0));
 	printf("%d\n", printf("%x\n", 0));
 	printf("%d\n", ft_printf("%x\n", -2147483648));
@@ -92,5 +93,36 @@ int	main(void)
 	printf("%d\n", printf("%X\n", 4294967296));
 	printf("%d\n", ft_printf("%X\n", 32));
 	printf("%d\n", printf("%X\n", 32));
+	*/
+
+	// %%
+	/*
+	printf("%d\n", ft_printf("%%\n", 32));
+	printf("%d\n", printf("%%\n", 32));
+
+	printf("%d\n", printf("%%\n", 32)); // segfault occurs.
+	*/
+
+	// combined tests
+	printf("%d\n", ft_printf("%%. %d is %x %s\n", 125, 125, "in hexadecimal"));
+	printf("%d\n", printf("%%. %d is %x %s\n", 125, 125, "in hexadecimal"));
+	printf("%d\n", ft_printf("%x and %X is different.\n", 125, 125));
+	printf("%d\n", printf("%x and %X is different.\n", 125, 125));
+	printf("%d\n", ft_printf("%i is %u in %%u.\n", -125, -125));
+	printf("%d\n", printf("%i is %u in %%u.\n", -125, -125));
+	printf("%d\n", ft_printf("%d is printed, but one argument is left.\n", 125, 125));
+	printf("%d\n", printf("%d is printed, but one argument is left.\n", 125, 125));
+
+	// invalid flags	
+	printf("%d\n", ft_printf("%y\n", 125, 125));
+	printf("%d\n", printf("%y\n", 125, 125));
+	printf("%d\n", ft_printf("%yvk\n", 125, 125));
+	printf("%d\n", printf("%yvk\n", 125, 125));
+
+	// empty format
+	
+	printf("%d\n", ft_printf("", 125, 125));
+	printf("%d\n", printf("", 125, 125));
+
 	return (0);
 }

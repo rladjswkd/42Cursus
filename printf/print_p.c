@@ -6,7 +6,7 @@
 /*   By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/13 20:55:42 by gyepark           #+#    #+#             */
-/*   Updated: 2021/12/15 13:38:44 by gyepark          ###   ########.fr       */
+/*   Updated: 2021/12/15 14:29:29 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ static unsigned long long	get_divisior(unsigned long long value)
 	return (divisor);
 }
 
-int	print_p(va_list *ap)
+int	print_p(va_list *ap, const char **format)
 {
 	unsigned long long	value;
 	unsigned long long	divisor;
@@ -40,5 +40,6 @@ int	print_p(va_list *ap)
 		value %= divisor;
 		divisor /= 16;
 	}
+	(*format)++;
 	return (res);
 }

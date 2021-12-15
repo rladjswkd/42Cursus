@@ -6,7 +6,7 @@
 /*   By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/12 22:32:35 by gyepark           #+#    #+#             */
-/*   Updated: 2021/12/15 13:03:46 by gyepark          ###   ########.fr       */
+/*   Updated: 2021/12/15 14:31:31 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,8 +15,7 @@
 // if c is '%', va_arg shouldn't be called.
 static int	get_index(char c)
 {
-	return (-1
-		+ (c == 'c')
+	return ((c == 'c')
 		+ ((c == 's') * 2)
 		+ ((c == 'p') * 3)
 		+ ((c == 'd' || c == 'i') * 4)
@@ -35,11 +34,11 @@ static int	process_normal(va_list *ap, const char **format)
 
 static int	process_percent(va_list *ap, const char **format)
 {
-	static t_func	fp[8] = {print_c, print_s, print_p, print_di,
-		print_u, print_x, print_X, print_percent};
+	static t_func	fp[9] = {print_flag, print_c, print_s, print_p, print_di,
+		print_u, print_x, print_X, print_flag};
 
 	(*format)++;
-	return (fp[get_index(*((*format)++))](ap));
+	return (fp[get_index(**format)](ap, format));
 }
 
 int	ft_printf(const char *format, ...)
