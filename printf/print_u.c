@@ -6,7 +6,7 @@
 /*   By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/15 12:55:51 by gyepark           #+#    #+#             */
-/*   Updated: 2021/12/15 13:00:07 by gyepark          ###   ########.fr       */
+/*   Updated: 2021/12/15 13:38:22 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,5 +37,5 @@ int	print_u(va_list *ap)
 		value %= divisor;
 		divisor /= 10;
 	}
-	return (res);	
+	return (res);
 }

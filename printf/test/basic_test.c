@@ -28,7 +28,7 @@ int	main(void)
 	printf("%x\n", -2147483648);
 	printf("%x\n", 2147483649);
 	printf("%x\n", -2147483649);
-	// just print hexa-decimal value for every 2 bytes.
+	// just print hexa-decimal value as unsigned for every 2 bytes.
 */	
 	// %d, %i tests
 /*	printf("%d\n", 017);
@@ -42,7 +42,7 @@ int	main(void)
 	*/
 
 	// unsigned int tests
-	printf("-2147483648: %u\n", -2147483648);
+/*	printf("-2147483648: %u\n", -2147483648);
 	printf("2147483647: %u\n", 2147483647);
 	printf("-2147483649: %u\n", -2147483649);
 	printf("2147483548: %u\n", 2147483648);
@@ -50,7 +50,7 @@ int	main(void)
 	printf("-9223372036854775808: %u\n", -9223372036854775808);
 	printf("9223372036854775808: %u\n", 9223372036854775808);
 	printf("-9223372036854775809: %u\n", -9223372036854775809);
-
+*/
 	return (0);
 }
 

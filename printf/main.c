@@ -17,7 +17,8 @@ int	main(void)
 	printf("%i\n", printf("%d\n", -2147483649));
 	printf("%i\n", ft_printf("%d\n", 0));
 	printf("%i\n", printf("%d\n", 0));
-*/
+	*/
+
 	// %c
 	/*
 	printf("%d\n", ft_printf("%c\n", 'a'));
@@ -32,7 +33,8 @@ int	main(void)
 	printf("%d\n", printf("%c\n", 300));
 	printf("%d\n", ft_printf("%c\n", '\n'));
 	printf("%d\n", printf("%c\n", '\n'));
-*/
+	*/
+
 	// %s
 	/*
 	printf("%d\n", ft_printf("%s\n", "hello, world!"));
@@ -41,7 +43,8 @@ int	main(void)
 	printf("%d\n", printf("%s\n", "    "));
 	printf("%d\n", ft_printf("%s\n", ""));
 	printf("%d\n", printf("%s\n", ""));
-*/
+	*/
+
 	// %p
 	/*
 	void	*p;
@@ -52,9 +55,10 @@ int	main(void)
 	printf("%d\n", printf("%p\n", 0xffffffffffffffff));
 	printf("%d\n", ft_printf("%p\n", p));
 	printf("%d\n", printf("%p\n", p));
-*/
+	*/
+	
 	// %u
-
+	/*
 	printf("%d\n", ft_printf("%u\n", 0));
 	printf("%d\n", printf("%u\n", 0));
 	printf("%d\n", ft_printf("%u\n", -2147483648));
@@ -63,6 +67,30 @@ int	main(void)
 	printf("%d\n", printf("%u\n", 4294967295));
 	printf("%d\n", ft_printf("%u\n", 4294967296));
 	printf("%d\n", printf("%u\n", 4294967296));
+	*/
 
+	// %x, %X
+	printf("%d\n", ft_printf("%x\n", 0));
+	printf("%d\n", printf("%x\n", 0));
+	printf("%d\n", ft_printf("%x\n", -2147483648));
+	printf("%d\n", printf("%x\n", -2147483648));
+	printf("%d\n", ft_printf("%x\n", 4294967295));
+	printf("%d\n", printf("%x\n", 4294967295));
+	printf("%d\n", ft_printf("%x\n", 4294967296));
+	printf("%d\n", printf("%x\n", 4294967296));
+	printf("%d\n", ft_printf("%x\n", 32));
+	printf("%d\n", printf("%x\n", 32));
+
+
+	printf("%d\n", ft_printf("%X\n", 0));
+	printf("%d\n", printf("%X\n", 0));
+	printf("%d\n", ft_printf("%X\n", -2147483648));
+	printf("%d\n", printf("%X\n", -2147483648));
+	printf("%d\n", ft_printf("%X\n", 4294967295));
+	printf("%d\n", printf("%X\n", 4294967295));
+	printf("%d\n", ft_printf("%X\n", 4294967296));
+	printf("%d\n", printf("%X\n", 4294967296));
+	printf("%d\n", ft_printf("%X\n", 32));
+	printf("%d\n", printf("%X\n", 32));
 	return (0);
 }
