@@ -112,6 +112,8 @@ int	main(void)
 	printf("%d\n", printf("%i is %u in %%u.\n", -125, -125));
 	printf("%d\n", ft_printf("%d is printed, but one argument is left.\n", 125, 125));
 	printf("%d\n", printf("%d is printed, but one argument is left.\n", 125, 125));
+	printf("%d\n", ft_printf("%s\n", 0));
+	printf("%d\n", printf("%s\n", 0));
 
 	// invalid flags	
 	printf("%d\n", ft_printf("%y\n", 125, 125));
@@ -123,6 +125,6 @@ int	main(void)
 	
 	printf("%d\n", ft_printf("", 125, 125));
 	printf("%d\n", printf("", 125, 125));
-
+	
 	return (0);
 }

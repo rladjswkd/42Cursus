@@ -6,7 +6,7 @@
 /*   By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/15 13:57:15 by gyepark           #+#    #+#             */
-/*   Updated: 2021/12/15 18:14:00 by gyepark          ###   ########.fr       */
+/*   Updated: 2021/12/15 14:29:16 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,18 +42,18 @@ static int	print_hex(va_list *ap, const char *hexadecimal)
 
 int	print_x(va_list *ap, const char **format)
 {
-	static const char	hexarr[16] = {48, 49, 50, 51, 52, 53, 54, 55, 56, 57,
+	static const char	hexadecimal[16] = {48, 49, 50, 51, 52, 53, 54, 55, 56, 57,
 			97, 98, 99, 100, 101, 102};
 
 	(*format)++;
-	return (print_hex(ap, hexarr));
+	return (print_hex(ap, hexadecimal));
 }
 
 int	print_X(va_list *ap, const char **format)
 {
-	static const char	hexarr[16] = {48, 49, 50, 51, 52, 53, 54, 55, 56, 57,
+	static const char	hexadecimal[16] = {48, 49, 50, 51, 52, 53, 54, 55, 56, 57,
 			65, 66, 67, 68, 69, 70};
 
 	(*format)++;
-	return (print_hex(ap, hexarr));
+	return (print_hex(ap, hexadecimal));
 }

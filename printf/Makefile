@@ -6,7 +6,7 @@
 #    By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/12/15 15:05:52 by gyepark           #+#    #+#              #
-#    Updated: 2021/12/15 17:11:11 by gyepark          ###   ########.fr        #
+#    Updated: 2021/12/15 18:04:05 by gyepark          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -24,7 +24,9 @@ RM = rm -f
 
 $(NAME) : $(OBJS)
 	$(MAKE) -C $(LIBFTDIR) all
-	$(AR) $(ARFLAGS) $(NAME) $(OBJS) $(LIBFTDIR)/*.o
+	mv $(LIBFTDIR)/$(LIBFTARC) .
+	$(AR) $(ARFLAGS) $(LIBFTARC) $(OBJS)
+	mv $(LIBFTARC) $(NAME)
 
 $(OBJS) : $(SRCS)
 	$(CC) -c $(CFLAGS) $(SRCS)
@@ -36,7 +38,6 @@ clean :
 	$(RM) $(OBJS)
 
 fclean : clean
-	$(RM) $(LIBFTARC)
 	$(RM) $(NAME)
 
 re : fclean all
