@@ -6,7 +6,7 @@
 /*   By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/17 15:40:52 by gyepark           #+#    #+#             */
-/*   Updated: 2021/12/17 15:42:17 by gyepark          ###   ########.fr       */
+/*   Updated: 2021/12/17 19:30:44 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,13 +32,14 @@ static int	print(va_list *ap, const char *arr, unsigned int base)
 	res = 0;
 	while (divisor > 0)
 	{
-		ft_putchar_fd(arr[value / divisor], 1);
+		put_char(arr[value / divisor]);
 		res++;
 		value %= divisor;
 		divisor /= base;
 	}
 	return (res);
 }
+
 int	print_hex(va_list *ap, const char **format)
 {
 	static const char	hexadecimal[2][16] = {
@@ -56,5 +57,3 @@ int	print_u(va_list *ap, const char **format)
 	(*format)++;
 	return (print(ap, decimal, 10));
 }
-
-

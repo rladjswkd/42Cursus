@@ -1,16 +1,28 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_isalpha.c                                       :+:      :+:    :+:   */
+/*   utils.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/11/13 22:29:37 by gyepark           #+#    #+#             */
-/*   Updated: 2021/11/13 22:29:39 by gyepark          ###   ########.fr       */
+/*   Created: 2021/12/17 17:09:33 by gyepark           #+#    #+#             */
+/*   Updated: 2021/12/17 19:35:02 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-int	ft_isalpha(int c)
+#include "ft_printf.h"
+int	put_char(char c)
 {
-	return ((64 < c && c < 91) || (96 < c && c < 123));
+	write(1, &c, 1);
+	return (1);
+}
+
+int	put_str(char *str)
+{
+	int	res;
+
+	res = 0;
+	while (*str)
+		res += put_char(*(str++));
+	return (res);
 }
