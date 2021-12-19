@@ -6,7 +6,7 @@
 /*   By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/12 22:32:35 by gyepark           #+#    #+#             */
-/*   Updated: 2021/12/17 19:36:52 by gyepark          ###   ########.fr       */
+/*   Updated: 2021/12/19 21:26:51 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,13 +22,6 @@ static int	get_index(char c)
 		+ ((c == '%') * 7));
 }
 
-static int	process_normal(va_list *ap, const char **format)
-{
-	ap = NULL;
-	put_char(*((*format)++));
-	return (1);
-}
-
 static int	process_percent(va_list *ap, const char **format)
 {
 	static t_func	fp[8] = {print_format, print_c, print_s, print_p, print_di,
@@ -40,7 +33,7 @@ static int	process_percent(va_list *ap, const char **format)
 
 int	ft_printf(const char *format, ...)
 {
-	static t_func	fp[2] = {process_normal, process_percent};
+	static t_func	fp[2] = {print_format, process_percent};
 	va_list			ap;
 	int				res;
 
