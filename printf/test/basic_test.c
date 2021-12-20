@@ -4,6 +4,9 @@
 static void	foo(int n, ...);
 int	main(void)
 {
+	// null format
+	//printf(0); // segfault occurs
+
 	// return value tests
 	/*
 	int c = printf("", "hello");
