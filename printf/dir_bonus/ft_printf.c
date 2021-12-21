@@ -6,7 +6,7 @@
 /*   By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/12 22:32:35 by gyepark           #+#    #+#             */
-/*   Updated: 2021/12/21 21:19:57 by gyepark          ###   ########.fr       */
+/*   Updated: 2021/12/22 00:13:26 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,31 +36,31 @@ static int	get_conv_spec_index(char c)
 static void	process_alignment(t_conv *conv, const char **format)
 {
 	format = 0;
-	conv->flag |= ALIGNMENT;
+	conv->spec |= ALIGNMENT;
 }
 
 static void	process_padding(t_conv *conv, const char **format)
 {
 	format = 0;
-	conv->flag |= PADDING;
+	conv->spec |= PADDING;
 }
 
 static void	process_sharp(t_conv *conv, const char **format)
 {
 	format = 0;
-	conv->flag |= SHARP;
+	conv->spec |= SHARP;
 }
 
 static void	process_space(t_conv *conv, const char **format)
 {
 	format = 0;
-	conv->flag |= SPACE;
+	conv->spec |= SPACE;
 }
 
 static void	process_plus(t_conv *conv, const char **format)
 {
 	format = 0;
-	conv->flag |= PLUS;
+	conv->spec |= PLUS;
 }
 
 static void	process_num(const char **format, unsigned int *val)
@@ -72,12 +72,14 @@ static void	process_num(const char **format, unsigned int *val)
 
 static void	process_field(t_conv *conv, const char **format)
 {
+	conv->spec |= FIELD;
 	process_num(format, &(conv->field));
 }
 
 static void	process_precision(t_conv *conv, const char **format)
 {
 	(*format)++;
+	conv->spec |= PRECISION;
 	process_num(format, &(conv->precision));
 }
 
@@ -89,8 +91,8 @@ static void	process_conv(t_conv *conv, const char **format)
 	int					index;
 
 	conv->field = 0;
-	conv->precision = 1;
-	conv->flag = 0;
+	conv->precision = 0;
+	conv->spec = 0;
 	index = get_conv_spec_index(*(++(*format)));
 	while (index > 0)
 	{

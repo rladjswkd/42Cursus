@@ -6,26 +6,58 @@
 /*   By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/13 20:55:36 by gyepark           #+#    #+#             */
-/*   Updated: 2021/12/21 21:36:13 by gyepark          ###   ########.fr       */
+/*   Updated: 2021/12/22 00:10:52 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_printf.h"
-static int	print_null(char *str, t_conv conv)
+static int	print_left_aligned(char *str, int len, int len_padding, t_conv conv)
 {
-	str = "(null)";
-}
-static int	print_str(char *str, t_conv conv)
-{
+	int		is_zero;
+	char	padding;
+	int		res;
 
+	is_zero = (conv.spec & PADDING) >> PADDING_SHIFT && !(conv.spec & ALIGNMENT);
+	padding = is_zero * 48 + !is_zero * 32;
+	res = put_str(str, len);
+	while (len_padding-- > 0)
+		res += put_char(padding);
+	return (res);
+}
+
+static int	print_right_aligned(char *str, int len, int len_padding, t_conv conv)
+{
+	int		is_zero;
+	char	padding;
+	int		res;
+
+	is_zero = (conv.spec & PADDING) >> PADDING_SHIFT && !(conv.spec & ALIGNMENT);
+	padding = is_zero * 48 + !is_zero * 32;
+	res = 0;
+	while (len_padding-- > 0)
+		res += put_char(padding);
+	res += put_str(str, len);
+	return (res);
 }
 
 int	print_s(va_list *ap, const char **format, t_conv conv)
 {
+	char					*strs[2];
 	char					*str;
-	static t_func_string	fp[2] = {print_null, print_str};
+	static t_func_string	fp[2] = {print_right_aligned, print_left_aligned};
+	int						flag;
+	int						len;
 
-	str = va_arg(*ap, char *);
+	strs[0] = va_arg(*ap, char *);
+	strs[1] = "(null)";
+	str = strs[strs[0] == 0];
+	flag = conv.spec & PRECISION && get_len(str) > conv.precision;
+	len = flag * conv.precision + !flag * get_len(str);
+	flag = conv.field >= len;
 	(*format)++;
-	return ((*fp[str != 0])(str, conv));
+	return ((*fp[(conv.spec & ALIGNMENT) > 0])(
+		str,
+		len,
+		flag * (conv.field - len),
+		conv));
 }

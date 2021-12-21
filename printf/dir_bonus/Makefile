@@ -6,14 +6,14 @@
 #    By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/12/15 15:05:52 by gyepark           #+#    #+#              #
-#    Updated: 2021/12/21 21:20:38 by gyepark          ###   ########.fr        #
+#    Updated: 2021/12/22 00:05:44 by gyepark          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME = libftprintf.a
 SRCS = ft_printf.c\
-	   print_signed_int.c print_unsigned_int.c print_unsigned_long_long.c print_string.c print_c.c\
-	   ft_printf_utils.c
+	   print_signed_int.c print_unsigned_int.c print_unsigned_long_long.c print_string.c print_char.c\
+	   ft_printf_utils.c print_string_utils.c
 OBJS = $(SRCS:.c=.o)
 CC = gcc
 CFLAGS = -Wall -Wextra -Werror 

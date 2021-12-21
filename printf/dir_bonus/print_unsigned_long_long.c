@@ -6,7 +6,7 @@
 /*   By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/15 13:57:15 by gyepark           #+#    #+#             */
-/*   Updated: 2021/12/17 19:34:25 by gyepark          ###   ########.fr       */
+/*   Updated: 2021/12/21 23:48:36 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,7 @@ int	print_p(va_list *ap, const char **format)
 		48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 97, 98, 99, 100, 101, 102
 	};
 
-	put_str("0x");
+	put_str("0x", 2);
 	(*format)++;
 	return (2 + print(ap, hexadecimal, 16));
 }
