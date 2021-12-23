@@ -3,50 +3,83 @@
 int	main(void)
 {
 	//%c
-	/*	
-	printf("%-5c<end>\n", 'a');
-	ft_printf("%-5c<end>\n", 'a');
-	printf("% c<end>\n", 'a');
-	ft_printf("% c<end>\n", 'a');
-	printf("%05c<end>\n", 'a');
-	ft_printf("%05c<end>\n", 'a');
-	printf("%.5c<end>\n", 'a');
-	ft_printf("%.5c<end>\n", 'a');
-	printf("%+c<end>\n", 'a');
-	ft_printf("%+c<end>\n", 'a');
-	printf("%#c<end>\n", 'a');
-	ft_printf("%#c<end>\n", 'a');
-	printf("%-05c<end>\n", 'a');
-	ft_printf("%-05c<end>\n", 'a');
+	/*		
+	printf("%d\n", printf("%-5c<end>\n", 'a'));
+	printf("%d\n", ft_printf("%-5c<end>\n", 'a'));
+	printf("%d\n", printf("% c<end>\n", 'a'));
+	printf("%d\n", ft_printf("% c<end>\n", 'a'));
+	printf("%d\n", printf("%05c<end>\n", 'a'));
+	printf("%d\n", ft_printf("%05c<end>\n", 'a'));
+	printf("%d\n", printf("%.5c<end>\n", 'a'));
+	printf("%d\n", ft_printf("%.5c<end>\n", 'a'));
+	printf("%d\n", printf("%+c<end>\n", 'a'));
+	printf("%d\n", ft_printf("%+c<end>\n", 'a'));
+	printf("%d\n", printf("%#c<end>\n", 'a'));
+	printf("%d\n", ft_printf("%#c<end>\n", 'a'));
+	printf("%d\n", printf("%-05c<end>\n", 'a'));
+	printf("%d\n", ft_printf("%-05c<end>\n", 'a'));
 	printf("\n");
 	*/
 
 	//%s
+	/*	
+	printf("%d\n", printf("%010s<end>\n", (void *)0));
+	printf("%d\n", ft_printf("%010s<end>\n", (void *)0));
+	printf("%d\n", printf("%.4s<end>\n", (void *)0));
+	printf("%d\n", ft_printf("%.4s<end>\n", (void *)0));
+	printf("%d\n", printf("%.10s<end>\n", (void *)0));
+	printf("%d\n", ft_printf("%.10s<end>\n", (void *)0));
+	printf("%d\n", printf("%-5s<end>\n", "abc"));
+	printf("%d\n", ft_printf("%-5s<end>\n", "abc"));
+	printf("%d\n", printf("%5s<end>\n", "abc"));
+	printf("%d\n", ft_printf("%5s<end>\n", "abc"));
+	printf("%d\n", printf("% s\n", "abc"));
+	printf("%d\n", ft_printf("% s\n", "abc"));
+	printf("%d\n", printf("%05s\n", "abc"));
+	printf("%d\n", ft_printf("%05s\n", "abc"));
+	printf("%d\n", printf("%.5s\n", "abc"));
+	printf("%d\n", ft_printf("%.5s\n", "abc"));
+	printf("%d\n", printf("%.2s\n", "abc"));
+	printf("%d\n", ft_printf("%.2s\n", "abc"));
+	printf("%d\n", printf("%6.2s<end>\n", "abc"));
+	printf("%d\n", ft_printf("%6.2s<end>\n", "abc"));
+	printf("%d\n", printf("%+s\n", "abc"));
+	printf("%d\n", ft_printf("%+s\n", "abc"));
+	printf("%d\n", printf("%#s\n", "abc"));
+	printf("%d\n", ft_printf("%#s\n", "abc"));
+	printf("\n");
+	*/
 
-	printf("%010s<end>\n", (void *)0);
-	ft_printf("%010s<end>\n\n", (void *)0);
-	printf("%.4s<end>\n", (void *)0);
-	ft_printf("%.4s<end>\n\n", (void *)0);
-	printf("%.10s<end>\n", (void *)0);
-	ft_printf("%.10s<end>\n\n", (void *)0);
-	printf("%-5s<end>\n", "abc");
-	ft_printf("%-5s<end>\n\n", "abc");
-	printf("%5s<end>\n", "abc");
-	ft_printf("%5s<end>\n\n", "abc");
-	printf("% s\n", "abc");
-	ft_printf("% s\n\n", "abc");
-	printf("%05s\n", "abc");
-	ft_printf("%05s\n\n", "abc");
-	printf("%.5s\n", "abc");
-	ft_printf("%.5s\n\n", "abc");
-	printf("%.2s\n", "abc");
-	ft_printf("%.2s\n\n", "abc");
-	printf("%6.2s<end>\n", "abc");
-	ft_printf("%6.2s<end>\n\n", "abc");
-	printf("%+s\n", "abc");
-	ft_printf("%+s\n\n", "abc");
-	printf("%#s\n", "abc");
-	ft_printf("%#s\n\n", "abc");
+	//%p
+	
+	void	*p;
+	printf("%d\n", printf("%p<end>\n", p));
+	printf("%d\n", ft_printf("%p<end>\n", p));
+	printf("%d\n", printf("%p<end>\n", p));
+	printf("%d\n", ft_printf("%p<end>\n", p));
+	printf("%d\n", printf("%.2p<end>\n", p));
+	printf("%d\n", ft_printf("%.2p<end>\n", p));
+	printf("%d\n", printf("%20p<end>\n", (void *)0));
+	printf("%d\n", ft_printf("%20p<end>\n", (void *)0));
+	printf("%d\n", printf("%020p<end>\n", p));
+	printf("%d\n", ft_printf("%020p<end>\n", p));
+	printf("%d\n", printf("%-20p<end>\n", p));
+	printf("%d\n", ft_printf("%-20p<end>\n", p));
+	printf("%d\n", printf("%20.30p<end>\n", p));
+	printf("%d\n", ft_printf("%20.30p<end>\n", p));
+	printf("%d\n", printf("%-40.30p<end>\n", p));
+	printf("%d\n", ft_printf("%-40.30p<end>\n", p));
+	printf("%d\n", printf("%40.30p<end>\n", p));
+	printf("%d\n", ft_printf("%40.30p<end>\n", p));
+	printf("%d\n", printf("%040.30p<end>\n", p));
+	printf("%d\n", ft_printf("%040.30p<end>\n", p));
+	printf("%d\n", printf("% p<end>\n", p));
+	printf("%d\n", ft_printf("% p<end>\n", p));
+	printf("%d\n", printf("%+p<end>\n", p));
+	printf("%d\n", ft_printf("%+p<end>\n", p));
+	printf("%d\n", printf("%#p<end>\n", p));
+	printf("%d\n", ft_printf("%#p<end>\n", p));
+	printf("\n");
 
 	return (0);
 }

@@ -6,7 +6,7 @@
 /*   By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/17 17:09:33 by gyepark           #+#    #+#             */
-/*   Updated: 2021/12/21 23:47:40 by gyepark          ###   ########.fr       */
+/*   Updated: 2021/12/23 15:07:58 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,4 +27,14 @@ int	put_str(char *str, int len)
 	while (str[i] && i < len)
 		res += put_char(str[i++]);
 	return (res);
+}
+
+int	get_len(char *str)
+{
+	int	len;
+
+	len = 0;
+	while (str[len])
+		len++;
+	return (len);
 }

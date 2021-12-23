@@ -6,47 +6,82 @@
 /*   By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/15 13:57:15 by gyepark           #+#    #+#             */
-/*   Updated: 2021/12/21 23:48:36 by gyepark          ###   ########.fr       */
+/*   Updated: 2021/12/23 16:30:41 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_printf.h"
-static unsigned long long	get_divisor(unsigned long long v, unsigned int b)
+static int	print_left_aligned(char *str, int len, int len_pad, t_conv conv)
 {
-	unsigned long long	divisor;
+	int	res;
+	int	len_str;
 
-	divisor = 1;
-	while (v / divisor > b - 1)
-		divisor *= b;
-	return (divisor);
-}
-
-static int	print(va_list *ap, const char *arr, unsigned int base)
-{
-	unsigned long long	value;
-	unsigned long long	divisor;
-	int					res;
-
-	value = va_arg(*ap, unsigned long long);
-	divisor = get_divisor(value, base);
-	res = 0;
-	while (divisor > 0)
-	{
-		put_char(arr[value / divisor]);
-		res++;
-		value %= divisor;
-		divisor /= base;
-	}
+	len_str = get_len(str);
+	res += put_str("0x", 2);
+	while (len-- > len_str)
+		res += put_char(48);
+	res += put_str(str, len);
+	while (len_pad-- > 0)
+		res += put_char(32);
 	return (res);
 }
 
-int	print_p(va_list *ap, const char **format)
+static int	print_zero_padding(char *str, int len, int len_pad, t_conv conv)
 {
-	static const char	hexadecimal[16] = {
-		48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 97, 98, 99, 100, 101, 102
-	};
+	int	res;
+	int	len_str;
 
-	put_str("0x", 2);
+	res = 0;
+	len_str = get_len(str);
+	res += put_str("0x", 2);
+	while (len_pad-- > 0)
+		res += put_char(32);
+	while (len-- > len_str)
+		res += put_char(48);
+	res += put_str(str, len_str);
+	return (res);
+}
+
+static int	print_space_padding(char *str, int len, int len_pad, t_conv conv)
+{
+	int res;
+	int	len_str;
+
+	res = 0;
+	len_str = get_len(str);
+	while (len_pad-- > 0)
+		res += put_char(32);
+	res += put_str("0x", 2);
+	while (len-- > len_str)
+		res += put_char(48);
+	res += put_str(str, len_str);
+	return (res);
+}
+
+static int	print_right_aligned(char *str, int len, int len_pad, t_conv conv)
+{
+	static t_func_string	fp[2] = {print_zero_padding, print_space_padding};
+	
+	return (fp[(conv.flag | PADDING) > 0](str, len, len_pad, conv));
+}
+
+int	print_p(va_list *ap, const char **format, t_conv conv)
+{
+	char					str[17];
+	int						flag;
+	int						len;
+	static t_func_string	fp[2] = {print_right_aligned, print_left_aligned};
+	static const char		hexadecimal[16] = {
+		48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 97, 98, 99, 100, 101, 102};
+
+	get_string(ap, str, hexadecimal, 16);
+	flag = conv.spec & PRECISION && get_len(str) < conv.precision;
+	len = flag * conv.precision + !flag * get_len(str);
+	flag = conv.field >= len;
 	(*format)++;
-	return (2 + print(ap, hexadecimal, 16));
+	return ((*fp[(conv.spec & ALIGNMENT) > 0])(
+		str,
+		len,
+		flag * (conv.field - 2 - len),
+		conv));
 }

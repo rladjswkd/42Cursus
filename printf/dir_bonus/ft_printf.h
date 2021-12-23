@@ -6,7 +6,7 @@
 /*   By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/12 22:32:28 by gyepark           #+#    #+#             */
-/*   Updated: 2021/12/22 00:04:42 by gyepark          ###   ########.fr       */
+/*   Updated: 2021/12/23 16:21:24 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,7 @@ int	ft_printf(const char *format, ...);
 int	print_di(va_list *ap, const char **format);
 int	print_c(va_list *ap, const char **format, t_conv);
 int	print_s(va_list *ap, const char **format, t_conv);
-int	print_p(va_list *ap, const char **format);
+int	print_p(va_list *ap, const char **format, t_conv);
 int	print_u(va_list *ap, const char **format);
 int	print_hex(va_list *ap, const char **format);
 int	print_format(va_list *ap, const char **format);
@@ -52,4 +52,8 @@ int	print_format(va_list *ap, const char **format);
 int	put_char(char c);
 int	put_str(char *str, int len);
 int	get_len(char *str);
+
+unsigned long long	get_divisor(unsigned long long v, unsigned int b);
+void	get_string(va_list *ap, char *str, const char *arr, unsigned int base);
+
 #endif
