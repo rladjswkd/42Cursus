@@ -6,17 +6,16 @@
 /*   By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/13 20:55:36 by gyepark           #+#    #+#             */
-/*   Updated: 2021/12/24 16:59:48 by gyepark          ###   ########.fr       */
+/*   Updated: 2021/12/24 18:03:59 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_printf.h"
 static int	print_left_aligned(char *str, int len, int len_pad, t_conv conv)
 {
-	int		is_zero;
-	char	padding;
 	int		res;
 
+	conv.spec = 0;
 	res = put_str(str, len);
 	while (len_pad-- > 0)
 		res += put_char(32);
@@ -29,6 +28,7 @@ static int	print_right_aligned(char *str, int len, int len_pad, t_conv conv)
 	char	padding;
 	int		res;
 
+	conv.spec = 0;
 	is_zero = (conv.spec & PADDING) >> PADDING_SHIFT
 		&& !(conv.spec & ALIGNMENT);
 	padding = is_zero * 48 + !is_zero * 32;

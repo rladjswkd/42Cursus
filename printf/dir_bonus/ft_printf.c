@@ -6,7 +6,7 @@
 /*   By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/12 22:32:35 by gyepark           #+#    #+#             */
-/*   Updated: 2021/12/22 00:13:26 by gyepark          ###   ########.fr       */
+/*   Updated: 2021/12/24 17:58:20 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,7 +63,7 @@ static void	process_plus(t_conv *conv, const char **format)
 	conv->spec |= PLUS;
 }
 
-static void	process_num(const char **format, unsigned int *val)
+static void	process_num(const char **format, int *val)
 {
 	while (47 < **format && **format < 58)
 		*val = *val * 10 + (*((*format)++) - 48);
@@ -101,6 +101,12 @@ static void	process_conv(t_conv *conv, const char **format)
 	}
 }
 
+static int	print_normal(va_list *ap, const char **format)
+{
+	ap = 0;
+	return (put_char(*((*format)++)));
+}
+
 static int	process_percent(va_list *ap, const char **format)
 {
 	static t_func_print	fp[8] = {print_format, print_c, print_s, print_p,
@@ -111,15 +117,9 @@ static int	process_percent(va_list *ap, const char **format)
 	return (fp[get_specifier_index(**format)](ap, format, conv));
 }
 
-int	print_format(va_list *ap, const char **format)
-{
-	ap = 0;
-	return (put_char(*((*format)++)));
-}
-
 int	ft_printf(const char *format, ...)
 {
-	static t_func_format	fp[2] = {print_format, process_percent};
+	static t_func_format	fp[2] = {print_normal, process_percent};
 	va_list					ap;
 	int						res;
 

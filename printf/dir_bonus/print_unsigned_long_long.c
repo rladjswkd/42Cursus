@@ -6,7 +6,7 @@
 /*   By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/15 13:57:15 by gyepark           #+#    #+#             */
-/*   Updated: 2021/12/24 17:23:39 by gyepark          ###   ########.fr       */
+/*   Updated: 2021/12/24 17:54:02 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@ static int	print_left_aligned(char *str, int len, int len_pad, t_conv conv)
 	int	res;
 	int	len_str;
 
+	conv.spec = 0;
 	len_str = get_len(str);
 	res = put_str("0x", 2);
 	while (len-- > len_str)
@@ -31,6 +32,7 @@ static int	print_zero_padding(char *str, int len, int len_pad, t_conv conv)
 	int	res;
 	int	len_str;
 
+	conv.spec = 0;
 	len_str = get_len(str);
 	res = put_str("0x", 2);
 	while (len_pad-- > 0)
@@ -46,6 +48,7 @@ static int	print_space_padding(char *str, int len, int len_pad, t_conv conv)
 	int	res;
 	int	len_str;
 
+	conv.spec = 0;
 	res = 0;
 	len_str = get_len(str);
 	while (len_pad-- > 0)
