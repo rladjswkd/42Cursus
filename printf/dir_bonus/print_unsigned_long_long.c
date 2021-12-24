@@ -6,7 +6,7 @@
 /*   By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/15 13:57:15 by gyepark           #+#    #+#             */
-/*   Updated: 2021/12/23 16:30:41 by gyepark          ###   ########.fr       */
+/*   Updated: 2021/12/24 17:23:39 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,10 +17,10 @@ static int	print_left_aligned(char *str, int len, int len_pad, t_conv conv)
 	int	len_str;
 
 	len_str = get_len(str);
-	res += put_str("0x", 2);
+	res = put_str("0x", 2);
 	while (len-- > len_str)
 		res += put_char(48);
-	res += put_str(str, len);
+	res += put_str(str, len_str);
 	while (len_pad-- > 0)
 		res += put_char(32);
 	return (res);
@@ -31,11 +31,10 @@ static int	print_zero_padding(char *str, int len, int len_pad, t_conv conv)
 	int	res;
 	int	len_str;
 
-	res = 0;
 	len_str = get_len(str);
-	res += put_str("0x", 2);
+	res = put_str("0x", 2);
 	while (len_pad-- > 0)
-		res += put_char(32);
+		res += put_char(48);
 	while (len-- > len_str)
 		res += put_char(48);
 	res += put_str(str, len_str);
@@ -44,7 +43,7 @@ static int	print_zero_padding(char *str, int len, int len_pad, t_conv conv)
 
 static int	print_space_padding(char *str, int len, int len_pad, t_conv conv)
 {
-	int res;
+	int	res;
 	int	len_str;
 
 	res = 0;
@@ -60,9 +59,10 @@ static int	print_space_padding(char *str, int len, int len_pad, t_conv conv)
 
 static int	print_right_aligned(char *str, int len, int len_pad, t_conv conv)
 {
-	static t_func_string	fp[2] = {print_zero_padding, print_space_padding};
-	
-	return (fp[(conv.flag | PADDING) > 0](str, len, len_pad, conv));
+	static t_func_string	fp[2] = {print_space_padding, print_zero_padding};
+
+	return (fp[(conv.spec & PRECISION) == 0 && (conv.spec & PADDING) > 0]
+		(str, len, len_pad, conv));
 }
 
 int	print_p(va_list *ap, const char **format, t_conv conv)

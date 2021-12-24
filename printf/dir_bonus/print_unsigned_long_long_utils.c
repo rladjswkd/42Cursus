@@ -6,12 +6,12 @@
 /*   By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/23 16:19:40 by gyepark           #+#    #+#             */
-/*   Updated: 2021/12/23 16:20:26 by gyepark          ###   ########.fr       */
+/*   Updated: 2021/12/24 15:54:37 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_printf.h"
-unsigned long long	get_divisor(unsigned long long v, unsigned int b)
+static unsigned long long	get_divisor(unsigned long long v, unsigned int b)
 {
 	unsigned long long	divisor;
 

@@ -6,7 +6,7 @@
 /*   By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/21 19:38:50 by gyepark           #+#    #+#             */
-/*   Updated: 2021/12/22 00:10:45 by gyepark          ###   ########.fr       */
+/*   Updated: 2021/12/24 16:59:04 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,8 @@ int	print_c(va_list *ap, const char **format, t_conv conv)
 	char				is_zero;
 
 	(*format)++;
-	is_zero = (conv.spec & PADDING) >> PADDING_SHIFT && !(conv.spec & ALIGNMENT);
+	is_zero = (conv.spec & PADDING) >> PADDING_SHIFT
+		&& !(conv.spec & ALIGNMENT);
 	return (fp[(conv.spec & ALIGNMENT) > 0](
 		(char)va_arg(*ap, int),
 		is_zero * 48 + !is_zero * 32,

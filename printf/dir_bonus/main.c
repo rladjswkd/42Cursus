@@ -51,10 +51,10 @@ int	main(void)
 	*/
 
 	//%p
-	
+	/*	
 	void	*p;
-	printf("%d\n", printf("%p<end>\n", p));
-	printf("%d\n", ft_printf("%p<end>\n", p));
+	printf("%d\n", printf("%-20.30p<end>\n", p));
+	printf("%d\n", ft_printf("%-20.30p<end>\n", p));
 	printf("%d\n", printf("%p<end>\n", p));
 	printf("%d\n", ft_printf("%p<end>\n", p));
 	printf("%d\n", printf("%.2p<end>\n", p));
@@ -66,6 +66,8 @@ int	main(void)
 	printf("%d\n", printf("%-20p<end>\n", p));
 	printf("%d\n", ft_printf("%-20p<end>\n", p));
 	printf("%d\n", printf("%20.30p<end>\n", p));
+	printf("%d\n", printf("%-20.30p<end>\n", p));
+	printf("%d\n", ft_printf("%-20.30p<end>\n", p));
 	printf("%d\n", ft_printf("%20.30p<end>\n", p));
 	printf("%d\n", printf("%-40.30p<end>\n", p));
 	printf("%d\n", ft_printf("%-40.30p<end>\n", p));
@@ -80,6 +82,8 @@ int	main(void)
 	printf("%d\n", printf("%#p<end>\n", p));
 	printf("%d\n", ft_printf("%#p<end>\n", p));
 	printf("\n");
+	*/
 
+	//%x, X
 	return (0);
 }
