@@ -6,7 +6,7 @@
 /*   By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/17 15:40:52 by gyepark           #+#    #+#             */
-/*   Updated: 2021/12/24 19:24:49 by gyepark          ###   ########.fr       */
+/*   Updated: 2021/12/25 00:38:29 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,8 @@ static int	print_right_aligned(char *str, int len, int len_pad, t_conv conv)
 
 	len_str = get_len(str);
 	res = 0;
-	is_zero = (conv.precision & PRECISION) >> PRECISION_SHIFT;
+	is_zero = (conv.spec & PADDING) >> PADDING_SHIFT
+		&& !((conv.spec & PRECISION) >> PRECISION_SHIFT);
 	padding = is_zero * 48 + !is_zero * 32;
 	while (len_pad-- > 0)
 		res += put_char(padding);
@@ -48,19 +49,19 @@ static int	print_right_aligned(char *str, int len, int len_pad, t_conv conv)
 
 int	print_u(va_list *ap, const char **format, t_conv conv)
 {
-	char					str[17];
+	char					str[11];
 	int						flag;
 	int						len;
 	static t_func_string	fp[2] = {print_right_aligned, print_left_aligned};
 	static const char		decimal[10] = {
 		48, 49, 50, 51, 52, 53, 54, 55, 56, 57};
 	
-	get_str_ui(ap, str, decimal, 16);
+	get_str_ui(ap, str, decimal, 10);
 	flag = conv.spec & PRECISION && get_len(str) < conv.precision;
 	len = flag * conv.precision + !flag * get_len(str);
 	flag = conv.field >= len;
 	(*format)++;
-	return ((*fp[(conv.spec & ALIGNMENT) > 0])(
+	return ((*fp[conv.spec & ALIGNMENT])(
 		str,
 		len,
 		flag * (conv.field - len),

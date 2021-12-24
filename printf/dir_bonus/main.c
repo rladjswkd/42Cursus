@@ -186,8 +186,8 @@ int	main(void)
 	printf("%d\n", printf("%20.10u<end>\n", 123));
 	printf("%d\n", ft_printf("%20.10u<end>\n", 123));
 	ft_printf("\n");
-	printf("%d\n", ft_printf("%020.10u<end>\n", 123));
 	printf("%d\n", printf("%020.10u<end>\n", 123));
+	printf("%d\n", ft_printf("%020.10u<end>\n", 123));
 	ft_printf("\n");
 	ft_printf("\n");
 	return (0);
