@@ -1,17 +1,17 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   print_unsigned_long_long_utils.c                   :+:      :+:    :+:   */
+/*   print_unsigned_int_utils.c                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/12/23 16:19:40 by gyepark           #+#    #+#             */
-/*   Updated: 2021/12/24 18:36:51 by gyepark          ###   ########.fr       */
+/*   Created: 2021/12/24 18:34:20 by gyepark           #+#    #+#             */
+/*   Updated: 2021/12/24 18:38:53 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_printf.h"
-static unsigned long long	get_divisor(unsigned long long v, unsigned int b)
+static unsigned int	get_divisor(unsigned int v, unsigned int b)
 {
 	unsigned long long	divisor;
 
@@ -21,13 +21,13 @@ static unsigned long long	get_divisor(unsigned long long v, unsigned int b)
 	return (divisor);
 }
 
-void	get_str_ull(va_list *ap, char *str, const char *arr, unsigned int base)
+void	get_str_ui(va_list *ap, char *str, const char *arr, unsigned int base)
 {
-	unsigned long long	value;
-	unsigned long long	divisor;
-	int					i;
+	unsigned int	value;
+	unsigned int	divisor;
+	int				i;
 
-	value = va_arg(*ap, unsigned long long);
+	value = va_arg(*ap, unsigned int);
 	divisor = get_divisor(value, base);
 	i = 0;
 	while (divisor > 0)
