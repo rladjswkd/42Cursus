@@ -6,7 +6,7 @@
 /*   By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/15 13:57:15 by gyepark           #+#    #+#             */
-/*   Updated: 2021/12/24 18:43:38 by gyepark          ###   ########.fr       */
+/*   Updated: 2021/12/25 02:38:04 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,7 +64,8 @@ static int	print_right_aligned(char *str, int len, int len_pad, t_conv conv)
 {
 	static t_func_string	fp[2] = {print_space_padding, print_zero_padding};
 
-	return (fp[(conv.spec & PRECISION) == 0 && (conv.spec & PADDING) > 0]
+	return (fp[!((conv.spec & 1 << PRECISION) >> PRECISION)
+			&& (conv.spec & 1 << PADDING) >> PADDING]
 		(str, len, len_pad, conv));
 }
 
@@ -78,13 +79,12 @@ int	print_p(va_list *ap, const char **format, t_conv conv)
 		48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 97, 98, 99, 100, 101, 102};
 
 	get_str_ull(ap, str, hexadecimal, 16);
-	flag = conv.spec & PRECISION && get_len(str) < conv.precision;
+	flag = conv.spec & 1 << PRECISION && get_len(str) < conv.precision;
 	len = flag * conv.precision + !flag * get_len(str);
-	flag = conv.field >= len;
 	(*format)++;
-	return ((*fp[(conv.spec & ALIGNMENT) > 0])(
+	return ((*fp[(conv.spec & 1 << ALIGNMENT) >> ALIGNMENT])(
 		str,
 		len,
-		flag * (conv.field - 2 - len),
+		conv.field - 2 - len,
 		conv));
 }

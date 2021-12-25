@@ -3,7 +3,7 @@
 int	main(void)
 {
 	//%c
-	/*
+	/*		
 	printf("%d\n", printf("%-5c<end>\n", 'a'));
 	printf("%d\n", ft_printf("%-5c<end>\n", 'a'));
 	ft_printf("\n");
@@ -117,7 +117,6 @@ int	main(void)
 	printf("%d\n", ft_printf("%#p<end>\n", p));
 	ft_printf("\n");
 	printf("\n");
-	*/
 
 	//%u
 	printf("%d\n", printf("%-u<end>\n", 123));
@@ -190,5 +189,116 @@ int	main(void)
 	printf("%d\n", ft_printf("%020.10u<end>\n", 123));
 	ft_printf("\n");
 	ft_printf("\n");
+
+	// %x %X
+	printf("%-x\n", 26);
+	printf("%0x\n", 26);
+	printf("% x\n", 26);
+	printf("%+x\n", 26);
+	printf("%#x\n", 26);
+	printf("%10x\n", 26);
+	printf("%.10x\n", 26);
+	printf("%d\n", printf("%#10x\n", 26));
+	printf("%d\n", printf("%#.10x\n", 26));
+
+	printf("%-X\n", 26);
+	printf("%0X\n", 26);
+	printf("% X\n", 26);
+	printf("%+X\n", 26);
+	printf("%#X\n", 26);
+	printf("%10X\n", 26);
+	printf("%.10X\n", 26);
+	printf("%d\n", printf("%#10X\n", 26));
+	printf("%d\n", printf("%#.10X\n", 26));
+	*/
+
+	printf("%d\n", printf("%-#10.20X<end>\n", 26));
+	printf("%d\n", ft_printf("%-#10.20X<end>\n", 26));
+	ft_printf("\n");
+
+	printf("%d\n", printf("%-#20.10X<end>\n", 26));
+	printf("%d\n", ft_printf("%-#20.10X<end>\n", 26));
+	ft_printf("\n");
+
+	printf("%d\n", printf("%0#10.20X<end>\n", 26));
+	printf("%d\n", ft_printf("%0#10.20X<end>\n", 26));
+	ft_printf("\n");
+
+	printf("%d\n", printf("%0#20.10X<end>\n", 26));
+	printf("%d\n", ft_printf("%0#20.10X<end>\n", 26));
+	ft_printf("\n");
+
+	printf("%d\n", printf("%0-10.20X<end>\n", 26));
+	printf("%d\n", ft_printf("%0-10.20X<end>\n", 26));
+	ft_printf("\n");
+
+	printf("%d\n", printf("%0-20.10X<end>\n", 26));
+	printf("%d\n", ft_printf("%0-20.10X<end>\n", 26));
+	ft_printf("\n");
+
+	printf("%d\n", printf("%0-#.10X<end>\n", 26));
+	printf("%d\n", ft_printf("%0-#.10X<end>\n", 26));
+	ft_printf("\n");
+
+	printf("%d\n", printf("%0-#.X<end>\n", 26));
+	printf("%d\n", ft_printf("%0-#.X<end>\n", 26));
+	ft_printf("\n");
+
+	printf("%d\n", printf("%0-#10X<end>\n", 26));
+	printf("%d\n", ft_printf("%0-#10X<end>\n", 26));
+	ft_printf("\n");
+
+	printf("%d\n", printf("%0-#0X<end>\n", 26));
+	printf("%d\n", ft_printf("%0-#0X<end>\n", 26));
+	ft_printf("\n");
+
+	printf("%d\n", printf("%0-#20.19X<end>\n", 26));
+	printf("%d\n", ft_printf("%0-#20.19X<end>\n", 26));
+	ft_printf("\n");
+
+	printf("%d\n", printf("%-#10.20x<end>\n", 26));
+	printf("%d\n", ft_printf("%-#10.20x<end>\n", 26));
+	ft_printf("\n");
+
+	printf("%d\n", printf("%-#20.10x<end>\n", 26));
+	printf("%d\n", ft_printf("%-#20.10x<end>\n", 26));
+	ft_printf("\n");
+
+	printf("%d\n", printf("%0#10.20x<end>\n", 26));
+	printf("%d\n", ft_printf("%0#10.20x<end>\n", 26));
+	ft_printf("\n");
+
+	printf("%d\n", printf("%0#20.10x<end>\n", 26));
+	printf("%d\n", ft_printf("%0#20.10x<end>\n", 26));
+	ft_printf("\n");
+
+	printf("%d\n", printf("%0-10.20x<end>\n", 26));
+	printf("%d\n", ft_printf("%0-10.20x<end>\n", 26));
+	ft_printf("\n");
+
+	printf("%d\n", printf("%0-20.10x<end>\n", 26));
+	printf("%d\n", ft_printf("%0-20.10x<end>\n", 26));
+	ft_printf("\n");
+
+	printf("%d\n", printf("%0-#.10x<end>\n", 26));
+	printf("%d\n", ft_printf("%0-#.10x<end>\n", 26));
+	ft_printf("\n");
+
+	printf("%d\n", printf("%0-#.x<end>\n", 26));
+	printf("%d\n", ft_printf("%0-#.x<end>\n", 26));
+	ft_printf("\n");
+
+	printf("%d\n", printf("%0-#10x<end>\n", 26));
+	printf("%d\n", ft_printf("%0-#10x<end>\n", 26));
+	ft_printf("\n");
+
+	printf("%d\n", printf("%0-#0x<end>\n", 26));
+	printf("%d\n", ft_printf("%0-#0x<end>\n", 26));
+	ft_printf("\n");
+
+	printf("%d\n", printf("%0-#20.19x<end>\n", 26));
+	printf("%d\n", ft_printf("%0-#20.19x<end>\n", 26));
+	ft_printf("\n");
+
 	return (0);
 }
