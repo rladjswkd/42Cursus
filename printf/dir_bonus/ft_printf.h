@@ -6,7 +6,7 @@
 /*   By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/12 22:32:28 by gyepark           #+#    #+#             */
-/*   Updated: 2021/12/25 02:20:50 by gyepark          ###   ########.fr       */
+/*   Updated: 2021/12/25 22:57:56 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ typedef int		(*t_func_char)(char, char, int);
 typedef int		(*t_func_string)(char *, int, int, t_conv);
 typedef int		(*t_func_int)(int);
 typedef void	(*t_func_conv)(t_conv *, const char **);
-/*functions to print each conversion specifier.*/
+/*functions for each conversion specifier.*/
 int		ft_printf(const char *format, ...);
 int		print_di(va_list *ap, const char **format);
 int		print_c(va_list *ap, const char **format, t_conv conv);
@@ -43,11 +43,18 @@ int		print_p(va_list *ap, const char **format, t_conv conv);
 int		print_u(va_list *ap, const char **format, t_conv conv);
 int		print_hex(va_list *ap, const char **format, t_conv conv);
 int		print_format(va_list *ap, const char **format, t_conv conv);
-/*utility functions for all print_* functions.*/
+/*utility functions*/
 int		put_char(char c);
 int		put_str(char *str, int len);
 int		get_len(char *str);
-/*utility functions for print_string.c*/
 void	get_str_ull(va_list *ap, char *str, const char *arr, unsigned int base);
 void	get_str_ui(va_list *ap, char *str, const char *arr, unsigned int base);
+/*print functions*/
+int		print_left_hex(char *str, int len, int len_pad, t_conv conv);
+int		print_left_prefix_hex(char *str, int len, int len_pad, t_conv conv);
+int		print_right_zero_hex(char *str, int len, int len_pad, t_conv conv);
+int		print_right_space_hex(char *str, int len, int len_pad, t_conv conv);
+int		print_right_zero_prefix_hex(char *str, int len, int len_pad, t_conv conv);
+int		print_right_space_prefix_hex(char *str, int len, int len_pad, t_conv conv);
+
 #endif

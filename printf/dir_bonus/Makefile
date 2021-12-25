@@ -6,14 +6,15 @@
 #    By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/12/15 15:05:52 by gyepark           #+#    #+#              #
-#    Updated: 2021/12/25 01:49:53 by gyepark          ###   ########.fr        #
+#    Updated: 2021/12/25 23:03:03 by gyepark          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME = libftprintf.a
 SRCS = ft_printf.c\
 	   print_signed_int.c\
-	   print_unsigned_int_dec.c print_usigned_int_hex.c\
+	   print_unsigned_int_dec.c print_unsigned_int_hex.c\
+	   print_unsigned_int_hex_left_aligned.c print_unsigned_int_hex_right_aligned.c\
 	   print_unsigned_long_long.c print_string.c print_char.c\
 	   ft_printf_utils.c print_unsigned_long_long_utils.c print_unsigned_int_utils.c
 OBJS = $(SRCS:.c=.o)
