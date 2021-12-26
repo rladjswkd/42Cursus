@@ -1,7 +1,15 @@
 #include "ft_printf.h"
 #include <stdio.h>
+#include <limits.h>
 int	main(void)
 {
+	printf(" %#x \n", 0);
+	ft_printf(" %#x \n", 0);
+	printf(" %#x \n", LONG_MIN); 
+	ft_printf(" %#x \n", LONG_MIN); 
+	printf(" %#X %#X %#X %#X %#X %#X %#X\n", INT_MAX, INT_MIN, LONG_MAX, LONG_MIN, ULONG_MAX, 0, -42);
+	ft_printf(" %#X %#X %#X %#X %#X %#X %#X\n", INT_MAX, INT_MIN, LONG_MAX, LONG_MIN, ULONG_MAX, 0, -42);
+
 	//%c
 	/*		
 	printf("%d\n", printf("%-5c<end>\n", 'a'));
@@ -315,7 +323,7 @@ int	main(void)
 	printf("%d\n", ft_printf("%0.10x<end>\n", 31));
 	ft_printf("\n");
 	ft_printf("\n");
-	*/
+	
 	// %d, %i
 	printf("%0d\n", 42);
 	ft_printf("%0d\n", 42);
@@ -376,6 +384,6 @@ int	main(void)
 	ft_printf("%10i\n", -42);
 	printf("%.10i\n", -42);
 	ft_printf("%.10i\n", -42);
-
+	*/
 	return (0);
 }

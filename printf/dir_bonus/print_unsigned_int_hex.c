@@ -6,7 +6,7 @@
 /*   By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/25 01:22:46 by gyepark           #+#    #+#             */
-/*   Updated: 2021/12/26 20:34:24 by gyepark          ###   ########.fr       */
+/*   Updated: 2021/12/26 21:54:06 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,6 +56,7 @@ int	print_hex(va_list *ap, const char **format, t_conv conv)
 	get_str_ui(ap, str, hexadecimal[**format == 'X'], 16);
 	flag = conv.spec & 1 << PRECISION && get_len(str) < conv.precision;
 	len = flag * conv.precision + !flag * get_len(str);
+	conv.spec &= !(str[0] == 48) << SHARP;
 	conv.spec |= ((*((*format)++) == 'X')
 			&& (conv.spec & 1 << SHARP) >> SHARP) << HEX_LARGE;
 	return ((*fp[(conv.spec & 1 << ALIGNMENT) >> ALIGNMENT])(
