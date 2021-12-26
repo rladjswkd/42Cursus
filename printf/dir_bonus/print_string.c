@@ -6,12 +6,12 @@
 /*   By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/13 20:55:36 by gyepark           #+#    #+#             */
-/*   Updated: 2021/12/25 02:24:13 by gyepark          ###   ########.fr       */
+/*   Updated: 2021/12/26 20:32:21 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_printf.h"
-static int	print_left_aligned(char *str, int len, int len_pad, t_conv conv)
+static int	print_left(char *str, int len, int len_pad, t_conv conv)
 {
 	int		res;
 
@@ -22,7 +22,7 @@ static int	print_left_aligned(char *str, int len, int len_pad, t_conv conv)
 	return (res);
 }
 
-static int	print_right_aligned(char *str, int len, int len_pad, t_conv conv)
+static int	print_right(char *str, int len, int len_pad, t_conv conv)
 {
 	int		is_zero;
 	char	padding;
@@ -41,7 +41,7 @@ int	print_s(va_list *ap, const char **format, t_conv conv)
 {
 	char					*strs[2];
 	char					*str;
-	static t_func_string	fp[2] = {print_right_aligned, print_left_aligned};
+	static t_func_printer	fp[2] = {print_right, print_left};
 	int						flag;
 	int						len;
 

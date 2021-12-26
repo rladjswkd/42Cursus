@@ -6,12 +6,12 @@
 /*   By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/17 15:40:52 by gyepark           #+#    #+#             */
-/*   Updated: 2021/12/26 19:53:31 by gyepark          ###   ########.fr       */
+/*   Updated: 2021/12/26 20:31:50 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_printf.h"
-static int	print_left_aligned(char *str, int len, int len_pad, t_conv conv)
+static int	print_left(char *str, int len, int len_pad, t_conv conv)
 {
 	int	res;
 	int	len_str;
@@ -27,7 +27,7 @@ static int	print_left_aligned(char *str, int len, int len_pad, t_conv conv)
 	return (res);
 }
 
-static int	print_right_aligned(char *str, int len, int len_pad, t_conv conv)
+static int	print_right(char *str, int len, int len_pad, t_conv conv)
 {
 	int		res;
 	int		len_str;
@@ -52,7 +52,7 @@ int	print_u(va_list *ap, const char **format, t_conv conv)
 	char					str[11];
 	int						flag;
 	int						len;
-	static t_func_string	fp[2] = {print_right_aligned, print_left_aligned};
+	static t_func_printer	fp[2] = {print_right, print_left};
 	static const char		decimal[10] = {
 		48, 49, 50, 51, 52, 53, 54, 55, 56, 57};
 

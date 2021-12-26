@@ -6,7 +6,7 @@
 /*   By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/12 22:32:28 by gyepark           #+#    #+#             */
-/*   Updated: 2021/12/26 19:13:11 by gyepark          ###   ########.fr       */
+/*   Updated: 2021/12/26 20:47:24 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,9 +30,9 @@ typedef struct s_conv_spec
 	int	precision;
 }	t_conv;
 typedef int		(*t_func_format)(va_list *, const char **);
-typedef int		(*t_func_print)(va_list *, const char **, t_conv);
+typedef int		(*t_func_specifier)(va_list *, const char **, t_conv);
 typedef int		(*t_func_char)(char, char, int);
-typedef int		(*t_func_string)(char *, int, int, t_conv);
+typedef int		(*t_func_printer)(char *, int, int, t_conv);
 typedef int		(*t_func_int)(int);
 typedef void	(*t_func_conv)(t_conv *, const char **);
 /*functions for each conversion specifier.*/
@@ -44,26 +44,33 @@ int		print_p(va_list *ap, const char **format, t_conv conv);
 int		print_u(va_list *ap, const char **format, t_conv conv);
 int		print_hex(va_list *ap, const char **format, t_conv conv);
 int		print_format(va_list *ap, const char **format, t_conv conv);
+/*functions for conversion specification*/
+void	process_conv(t_conv *conv, const char **format);
+void	add_alignment(t_conv *conv, const char **format);
+void	add_padding(t_conv *conv, const char **format);
+void	add_sharp(t_conv *conv, const char **format);
+void	add_space(t_conv *conv, const char **format);
+void	add_plus(t_conv *conv, const char **format);
 /*utility functions*/
 int		put_char(char c);
 int		put_str(char *str, int len);
 int		get_len(char *str);
-void	get_str_ull(va_list *ap, char *str, const char *arr, unsigned int base);
-void	get_str_ui(va_list *ap, char *str, const char *arr, unsigned int base);
+void	get_str_ull(va_list *ap, char *str, const char *arr, int base);
+void	get_str_ui(va_list *ap, char *str, const char *arr, int base);
 void	get_str(va_list *ap, char *str, t_conv *conv);
 void	process_minus(t_conv *conv, const char **format);
 void	process_others(t_conv *conv, const char **format);
 /*print functions*/
-int		print_left_hex(char *str, int len, int len_pad, t_conv conv);
-int		print_left_prefix_hex(char *str, int len, int len_pad, t_conv conv);
-int		print_right_zero_hex(char *str, int len, int len_pad, t_conv conv);
-int		print_right_space_hex(char *str, int len, int len_pad, t_conv conv);
-int		print_right_zero_prefix_hex(char *str, int len, int len_pad, t_conv conv);
-int		print_right_space_prefix_hex(char *str, int len, int len_pad, t_conv conv);
-int		print_left_prefix(char *str, int len, int len_pad, t_conv conv);
-int		print_left_no_prefix(char *str, int len, int len_pad, t_conv conv);
-int		print_right_zero(char *str, int len, int len_pad, t_conv conv);
-int		print_right_space(char *str, int len, int len_pad, t_conv conv);
-int		print_right_zero_prefix(char *str, int len, int len_pad, t_conv conv);
-int		print_right_space_prefix(char *str, int len, int len_pad, t_conv conv);
+int		print_l_hex(char *str, int len, int len_pad, t_conv conv);
+int		print_l_prefix_hex(char *str, int len, int len_pad, t_conv conv);
+int		print_r_zero_hex(char *str, int len, int len_pad, t_conv conv);
+int		print_r_space_hex(char *str, int len, int len_pad, t_conv conv);
+int		print_r_zero_prefix_hex(char *str, int len, int len_pad, t_conv conv);
+int		print_r_space_prefix_hex(char *str, int len, int len_pad, t_conv conv);
+int		print_l_prefix(char *str, int len, int len_pad, t_conv conv);
+int		print_l_no_prefix(char *str, int len, int len_pad, t_conv conv);
+int		print_r_zero(char *str, int len, int len_pad, t_conv conv);
+int		print_r_space(char *str, int len, int len_pad, t_conv conv);
+int		print_r_zero_prefix(char *str, int len, int len_pad, t_conv conv);
+int		print_r_space_prefix(char *str, int len, int len_pad, t_conv conv);
 #endif

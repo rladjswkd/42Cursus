@@ -1,17 +1,17 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   print_unsigned_int_hex_right_aligned.c             :+:      :+:    :+:   */
+/*   print_unsigned_int_hex_right.c                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/25 21:49:40 by gyepark           #+#    #+#             */
-/*   Updated: 2021/12/26 19:52:49 by gyepark          ###   ########.fr       */
+/*   Updated: 2021/12/26 20:29:50 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_printf.h"
-int	print_right_zero_hex(char *str, int len, int len_pad, t_conv conv)
+int	print_r_zero_hex(char *str, int len, int len_pad, t_conv conv)
 {
 	int		res;
 
@@ -23,7 +23,7 @@ int	print_right_zero_hex(char *str, int len, int len_pad, t_conv conv)
 	return (res);
 }
 
-int	print_right_space_hex(char *str, int len, int len_pad, t_conv conv)
+int	print_r_space_hex(char *str, int len, int len_pad, t_conv conv)
 {
 	int		res;
 	int		len_str;
@@ -39,7 +39,7 @@ int	print_right_space_hex(char *str, int len, int len_pad, t_conv conv)
 	return (res);
 }
 
-int	print_right_zero_prefix_hex(char *str, int len, int len_pad, t_conv conv)
+int	print_r_zero_prefix_hex(char *str, int len, int len_pad, t_conv conv)
 {
 	int			res;
 	static char	prefix[2] = {'x', 'X'};
@@ -52,7 +52,7 @@ int	print_right_zero_prefix_hex(char *str, int len, int len_pad, t_conv conv)
 	return (res);
 }
 
-int	print_right_space_prefix_hex(char *str, int len, int len_pad, t_conv conv)
+int	print_r_space_prefix_hex(char *str, int len, int len_pad, t_conv conv)
 {
 	int			res;
 	int			len_str;

@@ -6,12 +6,12 @@
 /*   By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/26 16:25:57 by gyepark           #+#    #+#             */
-/*   Updated: 2021/12/26 20:13:26 by gyepark          ###   ########.fr       */
+/*   Updated: 2021/12/26 20:28:19 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_printf.h"
-int	print_left_prefix(char *str, int len, int len_pad, t_conv conv)
+int	print_l_prefix(char *str, int len, int len_pad, t_conv conv)
 {
 	int			res;
 	int			len_str;
@@ -29,7 +29,7 @@ int	print_left_prefix(char *str, int len, int len_pad, t_conv conv)
 	return (res);
 }
 
-int	print_left_no_prefix(char *str, int len, int len_pad, t_conv conv)
+int	print_l_no_prefix(char *str, int len, int len_pad, t_conv conv)
 {
 	int	res;
 	int	len_str;

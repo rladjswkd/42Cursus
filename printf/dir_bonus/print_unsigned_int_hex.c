@@ -6,37 +6,38 @@
 /*   By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/25 01:22:46 by gyepark           #+#    #+#             */
-/*   Updated: 2021/12/26 20:02:42 by gyepark          ###   ########.fr       */
+/*   Updated: 2021/12/26 20:34:24 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_printf.h"
-static int	print_left_aligned(char *str, int len, int len_pad, t_conv conv)
+static int	print_left(char *str, int len, int len_pad, t_conv conv)
 {
-	static t_func_string	fp[2] = {print_left_hex, print_left_prefix_hex};
+	static t_func_printer	fp[2] = {print_l_hex, print_l_prefix_hex};
 
 	return ((*fp[(conv.spec & 1 << SHARP) >> SHARP])(str, len, len_pad, conv));
 }
 
-static int	print_right_no_sharp(char *str, int len, int len_pad, t_conv conv)
+static int	print_r_no_sharp(char *str, int len, int len_pad, t_conv conv)
 {
-	static t_func_string	fp[2] = {print_right_zero_hex, print_right_space_hex};
+	static t_func_printer	fp[2] = {print_r_zero_hex, print_r_space_hex};
 
 	return ((*fp[(conv.spec & 1 << PRECISION) >> PRECISION])
 		(str, len, len_pad, conv));
 }
 
-static int	print_right_sharp(char *str, int len, int len_pad, t_conv conv)
+static int	print_r_sharp(char *str, int len, int len_pad, t_conv conv)
 {
-	static t_func_string	fp[2] = {print_right_zero_prefix_hex, print_right_space_prefix_hex};
+	static t_func_printer	fp[2] = {print_r_zero_prefix_hex,
+		print_r_space_prefix_hex};
 
 	return ((*fp[(conv.spec & 1 << PRECISION) >> PRECISION])
 		(str, len, len_pad, conv));
 }
 
-static int	print_right_aligned(char *str, int len, int len_pad, t_conv conv)
+static int	print_right(char *str, int len, int len_pad, t_conv conv)
 {
-	static t_func_string	fp[2] = {print_right_no_sharp, print_right_sharp};
+	static t_func_printer	fp[2] = {print_r_no_sharp, print_r_sharp};
 
 	return ((*fp[(conv.spec & 1 << SHARP) >> SHARP])(str, len, len_pad, conv));
 }
@@ -46,7 +47,7 @@ int	print_hex(va_list *ap, const char **format, t_conv conv)
 	char					str[9];
 	int						flag;
 	int						len;
-	static t_func_string	fp[2] = {print_right_aligned, print_left_aligned};
+	static t_func_printer	fp[2] = {print_right, print_left};
 	static const char		hexadecimal[2][16] = {
 		{48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 97, 98, 99, 100, 101, 102},
 		{48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 65, 66, 67, 68, 69, 70}

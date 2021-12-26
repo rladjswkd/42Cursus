@@ -6,7 +6,7 @@
 /*   By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/23 16:19:40 by gyepark           #+#    #+#             */
-/*   Updated: 2021/12/24 18:36:51 by gyepark          ###   ########.fr       */
+/*   Updated: 2021/12/26 20:19:33 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ static unsigned long long	get_divisor(unsigned long long v, unsigned int b)
 	return (divisor);
 }
 
-void	get_str_ull(va_list *ap, char *str, const char *arr, unsigned int base)
+void	get_str_ull(va_list *ap, char *str, const char *arr, int base)
 {
 	unsigned long long	value;
 	unsigned long long	divisor;

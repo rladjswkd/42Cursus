@@ -1,17 +1,17 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   print_unsigned_int_hex_left_aligned.c              :+:      :+:    :+:   */
+/*   print_unsigned_int_hex_left.c                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/25 21:44:23 by gyepark           #+#    #+#             */
-/*   Updated: 2021/12/25 23:00:21 by gyepark          ###   ########.fr       */
+/*   Updated: 2021/12/26 20:28:30 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_printf.h"
-int	print_left_hex(char *str, int len, int len_pad, t_conv conv)
+int	print_l_hex(char *str, int len, int len_pad, t_conv conv)
 {
 	int	res;
 	int	len_str;
@@ -27,7 +27,7 @@ int	print_left_hex(char *str, int len, int len_pad, t_conv conv)
 	return (res);
 }
 
-int	print_left_prefix_hex(char *str, int len, int len_pad, t_conv conv)
+int	print_l_prefix_hex(char *str, int len, int len_pad, t_conv conv)
 {
 	int			res;
 	int			len_str;

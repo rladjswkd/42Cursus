@@ -6,12 +6,12 @@
 /*   By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/26 18:56:16 by gyepark           #+#    #+#             */
-/*   Updated: 2021/12/26 19:57:35 by gyepark          ###   ########.fr       */
+/*   Updated: 2021/12/26 20:29:25 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_printf.h"
-int	print_right_zero(char *str, int len, int len_pad, t_conv conv)
+int	print_r_zero(char *str, int len, int len_pad, t_conv conv)
 {
 	int		res;
 
@@ -23,7 +23,7 @@ int	print_right_zero(char *str, int len, int len_pad, t_conv conv)
 	return (res);
 }
 
-int	print_right_space(char *str, int len, int len_pad, t_conv conv)
+int	print_r_space(char *str, int len, int len_pad, t_conv conv)
 {
 	int		res;
 	int		len_str;
@@ -39,7 +39,7 @@ int	print_right_space(char *str, int len, int len_pad, t_conv conv)
 	return (res);
 }
 
-int	print_right_zero_prefix(char *str, int len, int len_pad, t_conv conv)
+int	print_r_zero_prefix(char *str, int len, int len_pad, t_conv conv)
 {
 	int			res;
 	static char	prefix[3] = {' ', '+', '-'};
@@ -53,7 +53,7 @@ int	print_right_zero_prefix(char *str, int len, int len_pad, t_conv conv)
 	return (res);
 }
 
-int	print_right_space_prefix(char *str, int len, int len_pad, t_conv conv)
+int	print_r_space_prefix(char *str, int len, int len_pad, t_conv conv)
 {
 	int			res;
 	int			len_str;
