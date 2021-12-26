@@ -6,7 +6,7 @@
 /*   By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/17 15:40:52 by gyepark           #+#    #+#             */
-/*   Updated: 2021/12/25 02:28:22 by gyepark          ###   ########.fr       */
+/*   Updated: 2021/12/26 19:53:31 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ static int	print_right_aligned(char *str, int len, int len_pad, t_conv conv)
 {
 	int		res;
 	int		len_str;
-	int 	is_zero;
+	int		is_zero;
 	char	padding;
 
 	len_str = get_len(str);
@@ -55,7 +55,7 @@ int	print_u(va_list *ap, const char **format, t_conv conv)
 	static t_func_string	fp[2] = {print_right_aligned, print_left_aligned};
 	static const char		decimal[10] = {
 		48, 49, 50, 51, 52, 53, 54, 55, 56, 57};
-	
+
 	get_str_ui(ap, str, decimal, 10);
 	flag = conv.spec & 1 << PRECISION && get_len(str) < conv.precision;
 	len = flag * conv.precision + !flag * get_len(str);

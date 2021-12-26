@@ -6,7 +6,7 @@
 /*   By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/25 21:49:40 by gyepark           #+#    #+#             */
-/*   Updated: 2021/12/25 23:07:19 by gyepark          ###   ########.fr       */
+/*   Updated: 2021/12/26 19:52:49 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,7 +56,7 @@ int	print_right_space_prefix_hex(char *str, int len, int len_pad, t_conv conv)
 {
 	int			res;
 	int			len_str;
-	static char prefix[2] = {'x', 'X'};
+	static char	prefix[2] = {'x', 'X'};
 
 	len_str = get_len(str);
 	res = 0;
