@@ -6,7 +6,7 @@
 /*   By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/25 01:22:46 by gyepark           #+#    #+#             */
-/*   Updated: 2021/12/26 21:54:06 by gyepark          ###   ########.fr       */
+/*   Updated: 2021/12/26 22:43:35 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,18 +20,20 @@ static int	print_left(char *str, int len, int len_pad, t_conv conv)
 
 static int	print_r_no_sharp(char *str, int len, int len_pad, t_conv conv)
 {
-	static t_func_printer	fp[2] = {print_r_zero_hex, print_r_space_hex};
+	static t_func_printer	fp[2] = {print_r_space_hex, print_r_zero_hex};
 
-	return ((*fp[(conv.spec & 1 << PRECISION) >> PRECISION])
+	return ((*fp[(!(conv.spec & 1 << PRECISION) >> PRECISION)
+				+ ((conv.spec & 1 << PADDING) >> PADDING)])
 		(str, len, len_pad, conv));
 }
 
 static int	print_r_sharp(char *str, int len, int len_pad, t_conv conv)
 {
-	static t_func_printer	fp[2] = {print_r_zero_prefix_hex,
-		print_r_space_prefix_hex};
+	static t_func_printer	fp[2] = {print_r_space_prefix_hex,
+		print_r_zero_prefix_hex};
 
-	return ((*fp[(conv.spec & 1 << PRECISION) >> PRECISION])
+	return ((*fp[(!(conv.spec & 1 << PRECISION) >> PRECISION)
+				+ ((conv.spec & 1 << PADDING) >> PADDING)])
 		(str, len, len_pad, conv));
 }
 
@@ -56,7 +58,7 @@ int	print_hex(va_list *ap, const char **format, t_conv conv)
 	get_str_ui(ap, str, hexadecimal[**format == 'X'], 16);
 	flag = conv.spec & 1 << PRECISION && get_len(str) < conv.precision;
 	len = flag * conv.precision + !flag * get_len(str);
-	conv.spec &= !(str[0] == 48) << SHARP;
+	conv.spec &= ~((str[0] == 48) << SHARP);
 	conv.spec |= ((*((*format)++) == 'X')
 			&& (conv.spec & 1 << SHARP) >> SHARP) << HEX_LARGE;
 	return ((*fp[(conv.spec & 1 << ALIGNMENT) >> ALIGNMENT])(

@@ -3,13 +3,16 @@
 #include <limits.h>
 int	main(void)
 {
+	/*
 	printf(" %#x \n", 0);
 	ft_printf(" %#x \n", 0);
 	printf(" %#x \n", LONG_MIN); 
 	ft_printf(" %#x \n", LONG_MIN); 
 	printf(" %#X %#X %#X %#X %#X %#X %#X\n", INT_MAX, INT_MIN, LONG_MAX, LONG_MIN, ULONG_MAX, 0, -42);
 	ft_printf(" %#X %#X %#X %#X %#X %#X %#X\n", INT_MAX, INT_MIN, LONG_MAX, LONG_MIN, ULONG_MAX, 0, -42);
-
+	*/
+	printf("%2x\n", 1);
+	ft_printf("%2x\n", 1);
 	//%c
 	/*		
 	printf("%d\n", printf("%-5c<end>\n", 'a'));
