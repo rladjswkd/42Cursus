@@ -6,7 +6,7 @@
 /*   By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/25 01:22:46 by gyepark           #+#    #+#             */
-/*   Updated: 2021/12/26 23:18:42 by gyepark          ###   ########.fr       */
+/*   Updated: 2021/12/26 23:27:45 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,8 +22,8 @@ static int	print_r_no_sharp(char *str, int len, int len_pad, t_conv conv)
 {
 	static t_func_printer	fp[2] = {print_r_space_hex, print_r_zero_hex};
 
-	return ((*fp[(!(conv.spec & 1 << PRECISION) >> PRECISION)
-				&& ((conv.spec & 1 << PADDING) >> PADDING)])
+	return ((*fp[!((conv.spec & 1 << PRECISION) >> PRECISION)
+				&& (conv.spec & 1 << PADDING) >> PADDING])
 		(str, len, len_pad, conv));
 }
 
@@ -32,8 +32,8 @@ static int	print_r_sharp(char *str, int len, int len_pad, t_conv conv)
 	static t_func_printer	fp[2] = {print_r_space_prefix_hex,
 		print_r_zero_prefix_hex};
 
-	return ((*fp[(!(conv.spec & 1 << PRECISION) >> PRECISION)
-				&& ((conv.spec & 1 << PADDING) >> PADDING)])
+	return ((*fp[!((conv.spec & 1 << PRECISION) >> PRECISION)
+				&& (conv.spec & 1 << PADDING) >> PADDING])
 		(str, len, len_pad, conv));
 }
 
