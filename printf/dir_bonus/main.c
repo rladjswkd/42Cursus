@@ -210,7 +210,7 @@ int	main(void)
 	printf("%.10X\n", 26);
 	printf("%d\n", printf("%#10X\n", 26));
 	printf("%d\n", printf("%#.10X\n", 26));
-	*/
+	
 	printf("%d\n", printf("%-#10.20X<end>\n", 26));
 	printf("%d\n", ft_printf("%-#10.20X<end>\n", 26));
 	ft_printf("\n");
@@ -314,9 +314,68 @@ int	main(void)
 	printf("%d\n", printf("%0.10x<end>\n", 31));
 	printf("%d\n", ft_printf("%0.10x<end>\n", 31));
 	ft_printf("\n");
-
 	ft_printf("\n");
-	
+	*/
 	// %d, %i
+	printf("%0d\n", 42);
+	ft_printf("%0d\n", 42);
+	printf("%-d\n", 42);
+	ft_printf("%-d\n", 42);
+	printf("%+d\n", 42);
+	ft_printf("%+d\n", 42);
+	printf("% d\n", 42);
+	ft_printf("% d\n", 42);
+	printf("%#d\n", 42);
+	ft_printf("%#d\n", 42);
+	printf("%10d\n", 42);
+	ft_printf("%10d\n", 42);
+	printf("%.10d\n", 42);
+	ft_printf("%.10d\n", 42);
+
+	printf("%0i\n", 42);
+	ft_printf("%0i\n", 42);
+	printf("%-i\n", 42);
+	ft_printf("%-i\n", 42);
+	printf("%+i\n", 42);
+	ft_printf("%+i\n", 42);
+	printf("% i\n", 42);
+	ft_printf("% i\n", 42);
+	printf("%#i\n", 42);
+	ft_printf("%#i\n", 42);
+	printf("%10i\n", 42);
+	ft_printf("%10i\n", 42);
+	printf("%.10i\n", 42);
+	ft_printf("%.10i\n", 42);
+
+	printf("%0d\n", -42);
+	ft_printf("%0d\n", -42);
+	printf("%-d\n", -42);
+	ft_printf("%-d\n", -42);
+	printf("%+d\n", -42);
+	ft_printf("%+d\n", -42);
+	printf("% d\n", -42);
+	ft_printf("% d\n", -42);
+	printf("%#d\n", -42);
+	ft_printf("%#d\n", -42);
+	printf("%10d\n", -42);
+	ft_printf("%10d\n", -42);
+	printf("%.10d\n", -42);
+	ft_printf("%.10d\n", -42);
+
+	printf("%0i\n", -42);
+	ft_printf("%0i\n", -42);
+	printf("%-i\n", -42);
+	ft_printf("%-i\n", -42);
+	printf("%+i\n", -42);
+	ft_printf("%+i\n", -42);
+	printf("% i\n", -42);
+	ft_printf("% i\n", -42);
+	printf("%#i\n", -42);
+	ft_printf("%#i\n", -42);
+	printf("%10i\n", -42);
+	ft_printf("%10i\n", -42);
+	printf("%.10i\n", -42);
+	ft_printf("%.10i\n", -42);
+
 	return (0);
 }
