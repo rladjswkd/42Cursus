@@ -10,9 +10,70 @@ int	main(void)
 	ft_printf(" %#x \n", LONG_MIN); 
 	printf(" %#X %#X %#X %#X %#X %#X %#X\n", INT_MAX, INT_MIN, LONG_MAX, LONG_MIN, ULONG_MAX, 0, -42);
 	ft_printf(" %#X %#X %#X %#X %#X %#X %#X\n", INT_MAX, INT_MIN, LONG_MAX, LONG_MIN, ULONG_MAX, 0, -42);
-	*/
+	
 	printf("%2x\n", 1);
 	ft_printf("%2x\n", 1);
+
+	printf("%10.d<end>\n", 0);
+	ft_printf("%10.d<end>\n", 0);
+	printf("%10.0d<end>\n", 1);
+	ft_printf("%10.0d<end>\n", 1);
+	printf("%.d<end>\n", 0);
+	ft_printf("%.d<end>\n", 0);
+	printf("%.0d<end>\n", 0);
+	ft_printf("%.0d<end>\n", 0);
+	printf("%.d<end>\n", 1);
+	ft_printf("%.d<end>\n", 1);
+	printf("%.0d<end>\n", 1);
+	ft_printf("%.0d<end>\n", 1);
+
+	printf("%.u<end>\n", 0);
+	ft_printf("%.u<end>\n", 0);
+	printf("%.0u<end>\n", 0);
+	ft_printf("%.0u<end>\n", 0);
+	printf("%.u<end>\n", 1);
+	ft_printf("%.u<end>\n", 1);
+	printf("%.0u<end>\n", 1);
+	ft_printf("%.0u<end>\n", 1);
+	
+	printf("%.x<end>\n", 0);
+	ft_printf("%.x<end>\n", 0);
+	printf("%.0x<end>\n", 0);
+	ft_printf("%.0x<end>\n", 0);
+	printf("%.x<end>\n", 1);
+	ft_printf("%.x<end>\n", 1);
+	printf("%.0x<end>\n", 1);
+	ft_printf("%.0x<end>\n", 1);
+	printf("%.X<end>\n", 0);
+	ft_printf("%.X<end>\n", 0);
+	printf("%.0X<end>\n", 0);
+	ft_printf("%.0X<end>\n", 0);
+	printf("%.X<end>\n", 1);
+	ft_printf("%.X<end>\n", 1);
+	printf("%.0X<end>\n", 1);
+	ft_printf("%.0X<end>\n", 1);
+	
+	void	*p;
+	void	*np = 0;
+	printf("%.p<end>\n", np);
+	ft_printf("%.p<end>\n", np);
+	printf("%.0p<end>\n", np);
+	ft_printf("%.0p<end>\n", np);
+	printf("%.p<end>\n", p);
+	ft_printf("%.p<end>\n", p);
+	printf("%.0p<end>\n", p);
+	ft_printf("%.0p<end>\n", p);
+	*/
+
+	printf("%01.x<end>\n", 0);
+	ft_printf("%01.x<end>\n", 0);
+	printf("%01.d<end>\n", 0);
+	ft_printf("%01.d<end>\n", 0);
+	printf("%01.i<end>\n", 0);
+	ft_printf("%01.i<end>\n", 0);
+	printf("%01.u<end>\n", 0);
+	ft_printf("%01.u<end>\n", 0);
+
 	//%c
 	/*		
 	printf("%d\n", printf("%-5c<end>\n", 'a'));

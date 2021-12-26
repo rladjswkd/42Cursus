@@ -6,7 +6,7 @@
 /*   By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/15 13:57:15 by gyepark           #+#    #+#             */
-/*   Updated: 2021/12/26 20:33:01 by gyepark          ###   ########.fr       */
+/*   Updated: 2021/12/26 23:09:22 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,6 +79,8 @@ int	print_p(va_list *ap, const char **format, t_conv conv)
 		48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 97, 98, 99, 100, 101, 102};
 
 	get_str_ull(ap, str, hexadecimal, 16);
+	str[0] -= str[0] * ((conv.spec & 1 << PRECISION) >> PRECISION
+			&& !(conv.precision) && str[0] == 48);
 	flag = conv.spec & 1 << PRECISION && get_len(str) < conv.precision;
 	len = flag * conv.precision + !flag * get_len(str);
 	(*format)++;

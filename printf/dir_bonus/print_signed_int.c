@@ -6,7 +6,7 @@
 /*   By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/13 19:40:40 by gyepark           #+#    #+#             */
-/*   Updated: 2021/12/26 20:35:02 by gyepark          ###   ########.fr       */
+/*   Updated: 2021/12/26 22:56:26 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,6 +59,8 @@ int	print_di(va_list *ap, const char **format, t_conv conv)
 	static t_func_conv		fp_conv[2] = {process_others, process_minus};
 
 	get_str(ap, str, &conv);
+	str[0] -= str[0] * ((conv.spec & 1 << PRECISION) >> PRECISION
+			&& !(conv.precision) && str[0] == 48);
 	(*fp_conv[(conv.spec & 1 << MINUS) >> MINUS])(&conv, format);
 	flag = conv.spec & 1 << PRECISION && get_len(str) < conv.precision;
 	len = flag * conv.precision + !flag * get_len(str);
