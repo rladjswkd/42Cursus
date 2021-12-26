@@ -1,16 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   conversion_specification_processor.c               :+:      :+:    :+:   */
+/*   conv_processor.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/26 20:40:24 by gyepark           #+#    #+#             */
-/*   Updated: 2021/12/26 20:48:24 by gyepark          ###   ########.fr       */
+/*   Updated: 2021/12/26 21:14:22 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "ft_printf.c"
+#include "ft_printf.h"
 static int	get_conv_spec_index(char c)
 {
 	return ((c == '-')
@@ -44,9 +44,8 @@ static void	process_precision(t_conv *conv, const char **format)
 
 void	process_conv(t_conv *conv, const char **format)
 {
-	static t_func_conv	fp[7] = {add_alignment, add_padding,
-		add_sharp, add_space, add_plus, process_field,
-		process_precision};
+	static t_func_conv	fp[7] = {add_alignment, add_padding, add_sharp,
+		add_space, add_plus, process_field,	process_precision};
 	int					index;
 
 	conv->field = 0;
