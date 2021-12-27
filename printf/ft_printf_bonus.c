@@ -6,7 +6,7 @@
 /*   By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/12 22:32:35 by gyepark           #+#    #+#             */
-/*   Updated: 2021/12/27 16:35:20 by gyepark          ###   ########.fr       */
+/*   Updated: 2021/12/27 23:26:18 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ static int	process_percent(va_list *ap, const char **format)
 {
 	static t_func_specifier	fp[8] = {print_format, print_c, print_s, print_p,
 		print_di, print_u, print_hex, print_format};
-	t_conv				conv;
+	t_conv					conv;
 
 	process_conv(&conv, format);
 	return (fp[get_specifier_index(**format)](ap, format, conv));
