@@ -1,8 +1,36 @@
-#include "ft_printf.h"
+#include "ft_printf_bonus.h"
 #include <stdio.h>
 #include <limits.h>
 int	main(void)
 {
+	/*
+	printf("%-3.3%\n", 0);
+	ft_printf("%-3.3%\n\n", 0);
+	printf("%030d\n", 12);
+	ft_printf("%030d\n\n", 12);
+	printf("%3-3d\n", 12);
+	ft_printf("%3-3d\n\n", 12);
+	printf("%dd\n", 12);
+	ft_printf("%dd\n\n", 12);
+	printf("%0+03d\n", 12);
+	ft_printf("%0+03d\n\n", 12);
+	*/
+
+	printf("%d\n", printf("%030.40%<end>\n", 12)); // precision is ignored.
+	printf("%d\n", ft_printf("%030.40%<end>\n", 12));
+
+	printf("%d\n", printf("%030%<end>\n", 12)); // 0 flag is not ignored.
+	printf("%d\n", ft_printf("%030%<end>\n", 12));
+
+	printf("%d\n", printf("%-030%<end>\n", 12)); // - flag is not ignored.
+	printf("%d\n", ft_printf("%-030%<end>\n", 12));
+
+	printf("%d\n", printf("%-030.40%<end>\n", 12));
+	printf("%d\n", ft_printf("%-030.40%<end>\n", 12));
+
+	printf("%d\n", printf("%30%<end>\n", 12));
+	printf("%d\n", ft_printf("%30%<end>\n", 12));
+
 	/*
 	printf(" %#x \n", 0);
 	ft_printf(" %#x \n", 0);
@@ -64,7 +92,7 @@ int	main(void)
 	printf("%.0p<end>\n", p);
 	ft_printf("%.0p<end>\n", p);
 	*/
-
+	/*
 	printf("%01.x<end>\n", 0);
 	ft_printf("%01.x<end>\n", 0);
 	printf("%01.d<end>\n", 0);
@@ -73,7 +101,7 @@ int	main(void)
 	ft_printf("%01.i<end>\n", 0);
 	printf("%01.u<end>\n", 0);
 	ft_printf("%01.u<end>\n", 0);
-
+	*/
 	//%c
 	/*		
 	printf("%d\n", printf("%-5c<end>\n", 'a'));

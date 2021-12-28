@@ -6,7 +6,7 @@
 #    By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/12/15 15:05:52 by gyepark           #+#    #+#              #
-#    Updated: 2021/12/27 17:15:38 by gyepark          ###   ########.fr        #
+#    Updated: 2021/12/29 00:14:46 by gyepark          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -16,6 +16,7 @@ SRCS = conv_processor.c\
 	   ft_printf.c\
 	   ft_printf_utils.c\
 	   print_char.c\
+	   print_format.c\
 	   print_signed_int.c\
 	   print_signed_int_conv_utils.c\
 	   print_signed_int_left.c\
@@ -34,6 +35,7 @@ B_SRCS = conv_processor_bonus.c\
 		 ft_printf_bonus.c\
 		 ft_printf_utils_bonus.c\
 		 print_char_bonus.c\
+		 print_format_bonus.c\
 		 print_signed_int_bonus.c\
 		 print_signed_int_conv_utils_bonus.c\
 		 print_signed_int_left_bonus.c\

@@ -6,7 +6,7 @@
 /*   By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/21 19:38:50 by gyepark           #+#    #+#             */
-/*   Updated: 2021/12/25 02:23:25 by gyepark          ###   ########.fr       */
+/*   Updated: 2021/12/28 23:55:49 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,11 +44,4 @@ int	print_c(va_list *ap, const char **format, t_conv conv)
 		(char)va_arg(*ap, int),
 		is_zero * 48 + !is_zero * 32,
 		conv.field - 1));
-}
-
-int	print_format(va_list *ap, const char **format, t_conv conv)
-{
-	ap = 0;
-	conv.spec = 0;
-	return (put_char(*((*format)++)));
 }
