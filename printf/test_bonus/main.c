@@ -3,6 +3,10 @@
 #include <limits.h>
 int	main(void)
 {
+	printf("%d\n", printf("%dabcd%2147483647.2d\n", 12, 1));
+	//printf("%d\n", ft_printf("%2147483647d\n", 12));
+	printf("%d\n", printf("abcd%2.2147483647d %d\n", 12, 1));
+	//printf("%d\n", ft_printf("%.2147483647d\n", 12));
 	/*
 	printf("%-3.3%\n", 0);
 	ft_printf("%-3.3%\n\n", 0);
@@ -14,7 +18,6 @@ int	main(void)
 	ft_printf("%dd\n\n", 12);
 	printf("%0+03d\n", 12);
 	ft_printf("%0+03d\n\n", 12);
-	*/
 
 	printf("%d\n", printf("%030.40%<end>\n", 12)); // precision is ignored.
 	printf("%d\n", ft_printf("%030.40%<end>\n", 12));
@@ -31,7 +34,6 @@ int	main(void)
 	printf("%d\n", printf("%30%<end>\n", 12));
 	printf("%d\n", ft_printf("%30%<end>\n", 12));
 
-	/*
 	printf(" %#x \n", 0);
 	ft_printf(" %#x \n", 0);
 	printf(" %#x \n", LONG_MIN); 
