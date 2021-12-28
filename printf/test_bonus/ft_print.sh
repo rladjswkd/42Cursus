@@ -15,4 +15,4 @@ cd ..
 make fclean
 rm -rf printfTester
 rm -rf ft_printf_tester
-rm -rf printf_tester
+rm -rf printf-tester
