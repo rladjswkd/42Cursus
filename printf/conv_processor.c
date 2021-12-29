@@ -6,7 +6,7 @@
 /*   By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/26 20:40:24 by gyepark           #+#    #+#             */
-/*   Updated: 2021/12/26 21:14:22 by gyepark          ###   ########.fr       */
+/*   Updated: 2021/12/29 12:11:40 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,8 +24,17 @@ static int	get_conv_spec_index(char c)
 
 static void	process_num(const char **format, int *val)
 {
+	unsigned long long	checker;
+	int					flag;
+
+	checker = 0;
 	while (47 < **format && **format < 58)
-		*val = *val * 10 + (*((*format)++) - 48);
+	{
+		*val = *val * 10 + (**format - 48);
+		checker = checker * 10 + (*((*format)++) - 48);
+	}
+	flag = checker > 2147483646ULL;
+	val = flag * -1 + !flag * *val;
 	(*format)--;
 }
 

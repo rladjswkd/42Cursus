@@ -6,7 +6,7 @@
 /*   By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/12 22:32:28 by gyepark           #+#    #+#             */
-/*   Updated: 2021/12/26 20:47:24 by gyepark          ###   ########.fr       */
+/*   Updated: 2021/12/29 12:21:15 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,6 +55,7 @@ void	add_plus(t_conv *conv, const char **format);
 int		put_char(char c);
 int		put_str(char *str, int len);
 int		get_len(char *str);
+int		print_normal(va_list *ap, const char **format);
 void	get_str_ull(va_list *ap, char *str, const char *arr, int base);
 void	get_str_ui(va_list *ap, char *str, const char *arr, int base);
 void	get_str(va_list *ap, char *str, t_conv *conv);

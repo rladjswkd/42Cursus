@@ -6,7 +6,7 @@
 /*   By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/17 17:09:33 by gyepark           #+#    #+#             */
-/*   Updated: 2021/12/24 18:04:30 by gyepark          ###   ########.fr       */
+/*   Updated: 2021/12/29 12:22:34 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,4 +37,10 @@ int	get_len(char *str)
 	while (str[len])
 		len++;
 	return (len);
+}
+
+int	print_normal(va_list *ap, const char **format)
+{
+	ap = 0;
+	return (put_char(*((*format)++)));
 }
