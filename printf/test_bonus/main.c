@@ -7,12 +7,13 @@ int	main(void)
 
 
 	printf("%d\n", printf("%dabcd%2147483647.2d\n", 12, 1));
-	printf("%d\n", ft_printf("%2147483647d\n", 12));
-	//printf("%d\n", printf("abcd%2.2147483647d %d\n", 12, 1));
-	//printf("%d\n", ft_printf("%.2147483647d\n", 12));
+	printf("%d\n", ft_printf("%dabcd%2147483647.2d\n", 12, 1));
 
+	printf("%d\n", printf("abcd%2.2147483647d %d\n", 12, 1));
+	printf("%d\n", ft_printf("abcd%2.2147483647d %d\n", 12, 1));
 
-	/*
+	printf("%-10{7.8d\n", 12);
+	ft_printf("%-10{7.8d\n", 12);
 	printf("%d\n", printf("%2147483647d\n", 12, 1));
 	printf("%d\n", ft_printf("%2147483647d\n", 12, 1));
 	printf("%d\n", printf("%.2147483647d\n", 12, 1));
@@ -490,6 +491,5 @@ int	main(void)
 	ft_printf("%10i\n", -42);
 	printf("%.10i\n", -42);
 	ft_printf("%.10i\n", -42);
-	*/
 	return (0);
 }

@@ -6,7 +6,7 @@
 /*   By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/12 22:32:35 by gyepark           #+#    #+#             */
-/*   Updated: 2021/12/29 13:55:27 by gyepark          ###   ########.fr       */
+/*   Updated: 2021/12/29 22:07:44 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,30 +22,36 @@ static int	get_specifier_index(char c)
 		+ (c == '%') * 7);
 }
 
-static int	return_invalid(va_list *ap, const char **format, t_conv conv)
+static int	exit_invalid(va_list *ap, const char **f, const char **t, t_conv c)
 {
 	ap = 0;
-	conv.spec = 0;
-	*format = (const char *)0;
+	c.spec = 0;
+	*t = (char *)0;
+	*f = (const char *)0;
 	return (-1);
 }
 
-static int	process_specifier(va_list *ap, const char **format, t_conv conv)
+static int	process_spec(va_list *ap, const char **f, const char **t, t_conv c)
 {
 	static t_func_specifier	fp[8] = {print_format, print_c, print_s, print_p,
 		print_di, print_u, print_hex, print_format};
+	int						res;
 
-	return (fp[get_specifier_index(**format)](ap, format, conv));
+	res = put_str((char *)(*f), find_percent(*f) - (char *)(*f));
+	*f = *t;
+	return (res + fp[get_specifier_index(**f)](ap, f, c));
 }
-
 
 static int	process_percent(va_list *ap, const char **format)
 {
-	t_conv					conv;
-	static t_func_specifier	fp[2] = {process_specifier, return_invalid};
+	t_conv				conv;
+	const char			*percent;
+	static t_checker	fp[2] = {process_spec, exit_invalid};
 
-	process_conv(&conv, format);
-	return (fp[conv.field == -1 || conv.precision == -1](ap, format, conv));
+	percent = (const char *)(find_percent(*format));
+	process_conv(&conv, &percent);
+	return (fp[conv.field == -1 || conv.precision == -1]
+		(ap, format, &percent, conv));
 }
 
 int	ft_printf(const char *format, ...)
@@ -58,9 +64,9 @@ int	ft_printf(const char *format, ...)
 	res = 0;
 	cur = 0;
 	va_start(ap, format);
-	while (*format)
+	while (format && *format)
 	{
-		cur = (fp[*format == '%'])(&ap, &format);
+		cur = (fp[*(find_percent(format)) == '%'])(&ap, &format);
 		res = (res + cur) * (cur != -1) + -1 * (cur == -1);
 	}
 	va_end(ap);

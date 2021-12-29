@@ -6,7 +6,7 @@
 /*   By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/17 17:09:33 by gyepark           #+#    #+#             */
-/*   Updated: 2021/12/29 12:22:34 by gyepark          ###   ########.fr       */
+/*   Updated: 2021/12/29 21:49:51 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,13 @@ int	get_len(char *str)
 	while (str[len])
 		len++;
 	return (len);
+}
+
+char	*find_percent(const char *format)
+{
+	while (*format && *format != '%')
+		format++;
+	return ((char *)format);
 }
 
 int	print_normal(va_list *ap, const char **format)
