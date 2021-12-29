@@ -6,7 +6,7 @@
 /*   By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/26 20:40:24 by gyepark           #+#    #+#             */
-/*   Updated: 2021/12/29 12:11:40 by gyepark          ###   ########.fr       */
+/*   Updated: 2021/12/29 13:56:19 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ static void	process_num(const char **format, int *val)
 		checker = checker * 10 + (*((*format)++) - 48);
 	}
 	flag = checker > 2147483646ULL;
-	val = flag * -1 + !flag * *val;
+	*val = flag * -1 + !flag * *val;
 	(*format)--;
 }
 

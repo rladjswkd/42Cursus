@@ -6,7 +6,7 @@
 /*   By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/12 22:32:35 by gyepark           #+#    #+#             */
-/*   Updated: 2021/12/29 12:41:52 by gyepark          ###   ########.fr       */
+/*   Updated: 2021/12/29 13:55:27 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ static int	return_invalid(va_list *ap, const char **format, t_conv conv)
 {
 	ap = 0;
 	conv.spec = 0;
-	*format += get_len(*format);
+	*format = (const char *)0;
 	return (-1);
 }
 
