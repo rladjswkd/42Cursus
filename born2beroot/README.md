@@ -489,6 +489,8 @@ sudo 명령과 관련된 모든 설정은 configuration file인 /etc/sudoers에 
 
 [sudoers(5) - sudo - Debian buster - Debian Manpages](https://manpages.debian.org/buster/sudo/sudoers.5.en.html)
 
+["Linux에서 'sudo'설정을위한 10 가지 유용한 Sudoers 구성"](https://ko.linux-console.net/?p=1985)
+
 **1. 유효하지 않은 비밀번호 입력 횟수 3회로 제한하기**
 
 기본 설정 값이 3회이므로 변경할 것이 없다.
@@ -502,6 +504,8 @@ sudo 명령과 관련된 모든 설정은 configuration file인 /etc/sudoers에 
 ![Untitled](born2beroot%20991e755a6ccf4ca58516019422404b62/Untitled%20107.png)
 
 **3. sudo와 관련된 input, ouput 모두 /var/log/sudo/ 폴더에 저장하기**
+
+`mkdir /var/log/sudo`
 
 **Boolean Flags**
 
@@ -736,9 +740,47 @@ UFW는 기본적으로 incoming connections는 모두 막고 outgoing connection
     
     total : `df -h  --total | grep total | awk '{print $1}' | tr -d 'G'`
     
+- [CPU load](https://manpages.debian.org/unstable/procps/top.1.en.html)
+    
+    100.0 - value of “id” field
+    
+    `top -b -n1 | grep '^%Cpu(s)' | sed s/%Cpu\(s\)://g | cut -f 4 -d ',' | tr -d ' id' | xargs | awk '{printf("%.1f\n%%"), 100.0 - $1}'`
+    
+- [Last reboot](https://manpages.debian.org/unstable/coreutils/who.1.en.html)
+    
+    [How to View Linux System Reboot Date and Time](https://www.thegeekstuff.com/2011/10/linux-reboot-date-and-time/)
+    
+    `who -b | xargs | awk '{print $3 " " $4}'`
+    
+- [LVM use](https://manpages.debian.org/stretch/util-linux/lsblk.8.en.html)
+    
+    [Bash에서 if...else 문을 사용하는 방법](https://www.delftstack.com/ko/howto/linux/how-to-use-if-else-statement-in-bash/)
+    
+    nlvm : `lsblk | grep lvm | wc -l` → `nlvm=$(lsblk | grep lvm | wc -l)`
+    
+    `if [ $nLVM -eq 0]; then echo 'no'; else echo 'yes'; fi`
+    
+- [Connections TCP](https://manpages.debian.org/stretch/iproute2/ss.8.en.html)
+    
+    `ss -t state established | wc -l | awk '{print $1 - 1}'`
+    
+- [User log](https://www.computerhope.com/issues/ch001649.htm)
+    
+    `who | wc -l`
+    
+- Network
+    
+    [IPv4](https://linuxtect.com/how-to-find-ip-address-in-linux-ubuntu-debian-mint-centos/) : `hostname -I`
+    
+    [MAC](https://ecs.rutgers.edu/how-find-your-physical-mac-address) : `ip addr | grep 'link/ether' | xargs | awk '{print $2}'`
+    
 - 
 
 ## dhclient (udp) 제거하기
+
+## 외부에서 SSH 연결하기
+
+- 연결 후, tcp connection 수가 1인지 확인하기
 
 ## virtual machine 백업하기 - snapshot
 
@@ -913,6 +955,8 @@ physical processor virtual processor
 
 [4.2. Installing, Step by Step](https://debian-handbook.info/browse/stable/sect.installation-steps.html)
 
+[lsblk(8) - util-linux - Debian stretch - Debian Manpages](https://manpages.debian.org/stretch/util-linux/lsblk.8.en.html)
+
 [](https://linuxize.com/post/how-to-list-installed-packages-on-debian/)
 
 [](https://linuxize.com/post/how-to-list-users-in-linux/)
@@ -932,6 +976,8 @@ physical processor virtual processor
 [Debian superuser rights (sudo, visudo) | Serverspace](https://serverspace.io/support/help/debian-superuser-rights-sudo-visudo/)
 
 [sudoers(5) - sudo - Debian buster - Debian Manpages](https://manpages.debian.org/buster/sudo/sudoers.5.en.html)
+
+["Linux에서 'sudo'설정을위한 10 가지 유용한 Sudoers 구성"](https://ko.linux-console.net/?p=1985)
 
 [](https://linuxize.com/post/how-to-create-groups-in-linux/)
 
@@ -968,3 +1014,17 @@ physical processor virtual processor
 [df invocation (GNU Coreutils 9.0)](https://www.gnu.org/software/coreutils/manual/html_node/df-invocation.html#df-invocation)
 
 [df (Unix) - Wikipedia](https://en.wikipedia.org/wiki/Df_(Unix))
+
+[top(1) - procps - Debian unstable - Debian Manpages](https://manpages.debian.org/unstable/procps/top.1.en.html)
+
+[How to View Linux System Reboot Date and Time](https://www.thegeekstuff.com/2011/10/linux-reboot-date-and-time/)
+
+[who(1) - coreutils - Debian unstable - Debian Manpages](https://manpages.debian.org/unstable/coreutils/who.1.en.html)
+
+[LVM](https://wiki.debian.org/LVM)
+
+[Bash에서 if...else 문을 사용하는 방법](https://www.delftstack.com/ko/howto/linux/how-to-use-if-else-statement-in-bash/)
+
+[ss(8) - iproute2 - Debian stretch - Debian Manpages](https://manpages.debian.org/stretch/iproute2/ss.8.en.html)
+
+[How to view and count users on a Linux system](https://www.computerhope.com/issues/ch001649.htm)
