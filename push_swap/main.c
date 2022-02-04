@@ -6,7 +6,7 @@
 /*   By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/27 18:23:50 by gyepark           #+#    #+#             */
-/*   Updated: 2022/01/29 14:58:26 by gyepark          ###   ########.fr       */
+/*   Updated: 2022/02/04 18:13:19 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,30 +15,40 @@
 
 #include "push_swap.h"
 
-static void	init_a(t_stack *a, int argc, char **argv)
+static void	init_both(t_stack *a, t_stack *b, int argc, char **argv)
 {
+	a = (t_stack *)malloc(sizeof(t_stack));
+	b = (t_stack *)malloc(sizeof(t_stack));
 	a->arr = get_ints(argc, argv);
 	a->size = argc - 1;
 	a->len = a->size;
-}
-
-static void	init_b(t_stack *b, t_stack *a)
-{
+	a->max = 0;
+	a->min = 0;
+	a->name = 'a';
 	b->arr = (int *)malloc(sizeof(int) * a->size);
 	b->size = a->size;
 	/* last, bottom index */
 	b->len = 0;
+	b->max = 0;
+	b->min = 0;
+	b->name = 'b';
+}
+
+static void	free_both(t_stack *a, t_stack *b)
+{
+	free(a->arr);
+	free(b->arr);
+	free(a);
+	free(b);
 }
 
 int	main(int argc, char **argv)
 {
-	t_stack	a;
-	t_stack b;
+	t_stack *a;
+	t_stack *b;
 	/* do todo 1. here and update argc, argv to represent newly created int list */
-	init_a(&a, argc, argv);
-	init_b(&b, &a);
+	init_both(a, b, argc, argv);
 	/* sort */
-	free(a.arr);
-	free(b.arr);
+	free_both(a, b);
 	return (0);
 }
