@@ -6,17 +6,26 @@
 /*   By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/04 18:11:09 by gyepark           #+#    #+#             */
-/*   Updated: 2022/02/04 18:54:53 by gyepark          ###   ########.fr       */
+/*   Updated: 2022/02/06 15:26:21 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "push_swap.h"
 
+void	repeat_rotate(t_stack *s, int count, int is_forward)
+{
+	int	i;
+
+	i = -1;
+	while (++i < count)
+		print_rotate(s, is_forward);
+}
+
 uint	get_top_index(t_stack *s)
 {
 	return (((unsigned int)s->size - (unsigned int)s->len));
 }
-
+/*
 int	find_max(t_stack *s)
 {
 	int	i;
@@ -42,5 +51,4 @@ int	find_min(t_stack *s)
 			min = (s->arr)[i];
 	return (min);
 }
-
-
+*/
