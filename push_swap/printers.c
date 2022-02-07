@@ -6,7 +6,7 @@
 /*   By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/04 15:15:17 by gyepark           #+#    #+#             */
-/*   Updated: 2022/02/04 15:38:48 by gyepark          ###   ########.fr       */
+/*   Updated: 2022/02/07 19:54:28 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,4 +40,14 @@ void	print_rotate(t_stack *s, int is_forward)
 	else
 		write(1, "rr", 2);
 	print_name(s);
+}
+
+void	print_rotate_both(t_stack *a, t_stack *b, int is_forward)
+{
+	rotate(a, is_forward);
+	rotate(b, is_forward);
+	if (is_forward)
+		write(1, "rr\n", 3);
+	else
+		write(1, "rrr\n", 4);
 }
