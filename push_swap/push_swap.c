@@ -6,7 +6,7 @@
 /*   By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/27 18:23:50 by gyepark           #+#    #+#             */
-/*   Updated: 2022/02/10 18:10:24 by gyepark          ###   ########.fr       */
+/*   Updated: 2022/02/10 20:54:21 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,7 +67,7 @@ int	main(int argc, char **argv)
 	if (!init_both(&a, &b, argc, argv) || is_sorted(a))
 		return (0);
 	/* sort */
-	if (a->size > 3)
+	if (a->size > 4)
 		sort_greedy(a, b);
 	else
 		sort_direct(a, b);
