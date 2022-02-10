@@ -6,7 +6,7 @@
 /*   By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/10 15:23:32 by gyepark           #+#    #+#             */
-/*   Updated: 2022/02/10 18:30:08 by gyepark          ###   ########.fr       */
+/*   Updated: 2022/02/10 20:35:32 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,11 +42,19 @@ static void	sort_three(t_stack *s)
 
 static void	sort_four(t_stack *a, t_stack *b)
 {
-	int	min;
-	t_ops	ops;
+	unsigned	ra;
+	unsigned	rra;
+	unsigned	ops;
 
-	min = get_min_index(a);
-	
+	ra = get_min_index(a) - get_top_index(a);
+	rra = (a->len - ra) % a->len;
+	if (ra < rra)
+		repeat_rotate(a, ra, 1);
+	else
+		repeat_rotate(a, rra, 0);
+	print_push(a, b);
+	sort_three(a);
+	print_push(b, a);
 }
 
 void	sort_direct(t_stack *a, t_stack *b)
