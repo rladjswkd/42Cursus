@@ -6,14 +6,14 @@
 /*   By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/04 18:11:09 by gyepark           #+#    #+#             */
-/*   Updated: 2022/02/07 15:54:39 by gyepark          ###   ########.fr       */
+/*   Updated: 2022/02/10 16:23:09 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "push_swap.h"
-unsigned	get_max_idx(t_stack *s)
+unsigned	get_max_index(t_stack *s)
 {
-	int		i;
+	unsigned	i;
 	unsigned	idx;
 	
 	i = get_top_index(s);
@@ -24,9 +24,9 @@ unsigned	get_max_idx(t_stack *s)
 	return (idx);
 }
 
-unsigned	get_min_idx(t_stack *s)
+unsigned	get_min_index(t_stack *s)
 {
-	int		i;
+	unsigned	i;
 	unsigned	idx;
 	
 	i = get_top_index(s);
@@ -39,12 +39,15 @@ unsigned	get_min_idx(t_stack *s)
 
 int	is_sorted(t_stack *s)
 {
-	int	i;
+	unsigned	i;
 
-	i = get_top_index(s) - 1;
-	while (++i < s->size - 1)
+	i = get_top_index(s);
+	while (i + 1 < s->size)
+	{
 		if ((s->arr)[i] > (s->arr)[i + 1])
 			return (0);
+		i++;
+	}
 	return (1);
 }
 

@@ -6,7 +6,7 @@
 /*   By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/29 13:12:05 by gyepark           #+#    #+#             */
-/*   Updated: 2022/02/04 18:13:54 by gyepark          ###   ########.fr       */
+/*   Updated: 2022/02/10 15:04:10 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ void	swap(t_stack *s)
 
 	if (s->len < 2)
 		return ;
-	top = s->size - s->len;
+	top = get_top_index(s);
 	temp = (s->arr)[top];
 	(s->arr)[top] = (s->arr)[top + 1];
 	(s->arr)[top + 1] = temp;
@@ -35,8 +35,8 @@ void	push(t_stack *from, t_stack *to)
 
 void	rotate(t_stack *s, int is_forward)
 {
-	int	i;
-	int	temp;
+	unsigned	i;
+	int		temp;
 
 	if (is_forward)
 	{
@@ -48,10 +48,10 @@ void	rotate(t_stack *s, int is_forward)
 	}
 	else
 	{
-		i = s->size - 1;
-		temp = (s->arr)[i];
-		while (--i >= s->size - s->len)
-			(s->arr)[i + 1] = (s->arr)[i];
-		(s->arr)[s->size - s->len] = temp;
+		i = s->size;
+		temp = (s->arr)[i - 1];
+		while (--i > get_top_index(s))
+			(s->arr)[i] = (s->arr)[i - 1];
+		(s->arr)[get_top_index(s)] = temp;
 	}
 }

@@ -41,25 +41,27 @@ int	main(void)
 	b.size = 5;
 	a.len = 5;
 	b.len = 0;
-	for (int i = 0; i < a.size; i++)
+	for (unsigned i = 0; i < a.size; i++)
 		(a.arr)[i] = i + 1;
-	for (int i = 0; i < b.size; i++)
+	for (unsigned i = 0; i < b.size; i++)
 		(b.arr)[i] = 0;
-	
+	/*
 	test_swap(a);
 	test_swap(b);
 	test_push(a, b);
 	test_push(b, a);
-	for (int i = 0; i < a.size + 1; i++)
+	*/
+	for (unsigned i = 0; i < a.size + 1; i++)
 		test_rotate(a, 1);
-	for (int i = 0; i < a.size + 1; i++)
+	for (unsigned i = 0; i < a.size + 1; i++)
 		test_rotate(a, 0);
+	/*
 	push(&a, &b);
 	test_rotate(b, 1);
 	test_rotate(b, 0);
 	push(&a, &b);
 	test_rotate(b, 1);
 	test_rotate(b, 0);
-	
+	*/
 	return (0);
 }

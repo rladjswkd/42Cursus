@@ -6,7 +6,7 @@
 /*   By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/28 23:51:26 by gyepark           #+#    #+#             */
-/*   Updated: 2022/02/07 19:28:50 by gyepark          ###   ########.fr       */
+/*   Updated: 2022/02/10 15:58:38 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,19 +19,19 @@
 
 typedef struct s_stack
 {
-	int	*arr;
-	int	size;
-	int	len;
-	char	name;
+	int		*arr;
+	unsigned	size;
+	unsigned	len;
+	char		name;
 }	t_stack;
 
 typedef struct s_ops
 {
-	int	ra;
-	int	rra;
-	int	rb;
-	int	rrb;
-	int	op_type;
+	unsigned	ra;
+	unsigned	rra;
+	unsigned	rb;
+	unsigned	rrb;
+	unsigned	op_type;
 }	t_ops;
 
 int		*get_ints(int argc, char **argv);
@@ -49,11 +49,13 @@ void		print_rotate_both(t_stack *a, t_stack *b, int is_forward);
 unsigned	get_top_index(t_stack *s);
 void		repeat_rotate(t_stack *s, int count, int is_forward);
 int		is_sorted(t_stack *s);
-unsigned	get_max_idx(t_stack *s);
-unsigned	get_min_idx(t_stack *s);
+unsigned	get_max_index(t_stack *s);
+unsigned	get_min_index(t_stack *s);
 
-int		get_min(int x, int y);
-int		get_max(int x, int y);
+unsigned	get_min(unsigned x, unsigned y);
+unsigned	get_max(unsigned x, unsigned y);
+
 void		sort_greedy(t_stack *a, t_stack *b);
+void		sort_direct(t_stack *a, t_stack *b);
 
 #endif

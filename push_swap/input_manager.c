@@ -6,7 +6,7 @@
 /*   By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/28 23:50:02 by gyepark           #+#    #+#             */
-/*   Updated: 2022/01/29 13:25:14 by gyepark          ###   ########.fr       */
+/*   Updated: 2022/02/10 16:14:27 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,6 +65,8 @@ int	*get_ints(int argc, char **argv)
 	i_argv = 0;
 	i_arr = -1;
 	arr = (int *)malloc(sizeof(int) * (argc - 1));
+	if (!arr)
+		return (0);
 	while (++i_argv < argc)
 		if (!(check_type_range(argv[i_argv], &(arr[++i_arr]))
 				&& check_duplication(arr, i_arr)))

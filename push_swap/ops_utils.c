@@ -6,13 +6,13 @@
 /*   By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/07 17:34:38 by gyepark           #+#    #+#             */
-/*   Updated: 2022/02/07 17:35:56 by gyepark          ###   ########.fr       */
+/*   Updated: 2022/02/10 14:33:59 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "push_swap.h"
 
-int	get_min(int x, int y)
+unsigned	get_min(unsigned x, unsigned y)
 {
 	if (x > y)
 		return (y);
@@ -20,7 +20,7 @@ int	get_min(int x, int y)
 		return (x);
 }
 
-int	get_max(int x, int y)
+unsigned	get_max(unsigned x, unsigned y)
 {
 	if (x > y)
 		return (x);
