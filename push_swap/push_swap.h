@@ -6,7 +6,7 @@
 /*   By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/28 23:51:26 by gyepark           #+#    #+#             */
-/*   Updated: 2022/02/10 18:49:42 by gyepark          ###   ########.fr       */
+/*   Updated: 2022/02/10 23:34:33 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,4 +67,5 @@ unsigned	get_max(unsigned x, unsigned y);
 void		sort_greedy(t_stack *a, t_stack *b);
 void		sort_direct(t_stack *a, t_stack *b);
 
+void		move_smallest(t_stack *a, t_stack *b);
 #endif
