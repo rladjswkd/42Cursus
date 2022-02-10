@@ -6,7 +6,7 @@
 #    By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/02/10 20:46:08 by gyepark           #+#    #+#              #
-#    Updated: 2022/02/10 20:57:19 by gyepark          ###   ########.fr        #
+#    Updated: 2022/02/10 23:39:54 by gyepark          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -19,6 +19,7 @@ SRCS = basic_operations.c\
 	printers.c\
 	push_swap.c\
 	sort_direct.c\
+	sort_direct_utils.c\
 	sort_greedy.c\
 	stack_utils.c
 OBJS = $(SRCS:.c=.o)
