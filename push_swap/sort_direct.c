@@ -6,7 +6,7 @@
 /*   By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/10 15:23:32 by gyepark           #+#    #+#             */
-/*   Updated: 2022/02/10 15:57:36 by gyepark          ###   ########.fr       */
+/*   Updated: 2022/02/10 18:30:08 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,6 +38,15 @@ static void	sort_three(t_stack *s)
 		else
 			print_rotate(s, 0);
 	}
+}
+
+static void	sort_four(t_stack *a, t_stack *b)
+{
+	int	min;
+	t_ops	ops;
+
+	min = get_min_index(a);
+	
 }
 
 void	sort_direct(t_stack *a, t_stack *b)

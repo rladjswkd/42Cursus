@@ -6,7 +6,7 @@
 /*   By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/28 23:51:26 by gyepark           #+#    #+#             */
-/*   Updated: 2022/02/10 15:58:38 by gyepark          ###   ########.fr       */
+/*   Updated: 2022/02/10 18:49:42 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,6 +40,10 @@ void		swap(t_stack *s);
 void		push(t_stack *from, t_stack *to);
 void		rotate(t_stack *s, int is_forward);
 
+void		operate_rr(t_stack *a, t_stack *b, t_ops ops);
+void		operate_rrr(t_stack *a, t_stack *b, t_ops ops);
+void		operate_cross(t_stack *a, t_stack *b, t_ops ops);
+
 void		print_name(t_stack *s);
 void		print_swap(t_stack *s);
 void		print_push(t_stack *from, t_stack *to);
@@ -51,6 +55,11 @@ void		repeat_rotate(t_stack *s, int count, int is_forward);
 int		is_sorted(t_stack *s);
 unsigned	get_max_index(t_stack *s);
 unsigned	get_min_index(t_stack *s);
+
+unsigned	count_rb(int val, t_stack *b);
+t_ops		get_current_ops(t_stack *a, t_stack *b, unsigned a_idx);
+unsigned	get_op_count(t_ops *ops);
+t_ops		get_optimal_ops(t_stack *a, t_stack *b);
 
 unsigned	get_min(unsigned x, unsigned y);
 unsigned	get_max(unsigned x, unsigned y);
