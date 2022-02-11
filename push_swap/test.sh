@@ -9,5 +9,5 @@ echo $ARG
 ./push_swap $ARG > result
 cat result | wc -l
 ./checker_linux $ARG < result
-make fclean
+make fclean >> result
 rm -rf result

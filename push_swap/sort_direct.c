@@ -6,7 +6,7 @@
 /*   By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/10 15:23:32 by gyepark           #+#    #+#             */
-/*   Updated: 2022/02/10 23:36:26 by gyepark          ###   ########.fr       */
+/*   Updated: 2022/02/11 13:03:26 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,4 +66,6 @@ void	sort_direct(t_stack *a, t_stack *b)
 		sort_four(a, b);
 	else if (a->size == 5)
 		sort_five(a, b);
+	else
+		return ;
 }

@@ -6,7 +6,7 @@
 /*   By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/28 23:51:26 by gyepark           #+#    #+#             */
-/*   Updated: 2022/02/10 23:34:33 by gyepark          ###   ########.fr       */
+/*   Updated: 2022/02/11 14:31:29 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,7 @@ typedef struct s_ops
 	unsigned	rra;
 	unsigned	rb;
 	unsigned	rrb;
+	unsigned	count;
 	unsigned	op_type;
 }	t_ops;
 
@@ -56,9 +57,6 @@ int		is_sorted(t_stack *s);
 unsigned	get_max_index(t_stack *s);
 unsigned	get_min_index(t_stack *s);
 
-unsigned	count_rb(int val, t_stack *b);
-t_ops		get_current_ops(t_stack *a, t_stack *b, unsigned a_idx);
-unsigned	get_op_count(t_ops *ops);
 t_ops		get_optimal_ops(t_stack *a, t_stack *b);
 
 unsigned	get_min(unsigned x, unsigned y);
