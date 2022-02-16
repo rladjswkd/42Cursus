@@ -1,32 +1,32 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   push_swap.c                                        :+:      :+:    :+:   */
+/*   program_manager.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/01/27 18:23:50 by gyepark           #+#    #+#             */
-/*   Updated: 2022/02/16 15:04:25 by gyepark          ###   ########.fr       */
+/*   Created: 2022/02/14 23:21:38 by gyepark           #+#    #+#             */
+/*   Updated: 2022/02/14 23:21:52 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "push_swap.h"
 
-int	main(int argc, char **argv)
+void	free_all(t_stack *a, t_stack *b)
 {
-	t_stack *a;
-	t_stack *b;
-
-	init_both(&a, &b, argc, argv);
-	if (is_sorted(a))
-	{
-		free_all(a, b);
-		return (0);
-	}
-	if (a->size > 5)
-		sort_greedy(a, b);
-	else
-		sort_direct(a, b);
-	free_all(a, b);
-	return (0);
+	if (a)
+		free(a->arr);
+	free(a);
+	if (b)
+		free(b->arr);
+	free(b);
 }
+
+void	exit_on_error(t_stack *a, t_stack *b)
+{
+	write(2, "Error\n", 6);
+	free_all(a, b);
+	exit(EXIT_FAILURE);
+}
+
+

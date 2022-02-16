@@ -6,18 +6,11 @@
 /*   By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/28 23:50:02 by gyepark           #+#    #+#             */
-/*   Updated: 2022/02/10 16:14:27 by gyepark          ###   ########.fr       */
+/*   Updated: 2022/02/14 22:03:44 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "push_swap.h"
-
-static void	exit_on_error(int *arr)
-{
-	free(arr);
-	write(2, "Error\n", 6);
-	exit(0);
-}
 
 static int	check_type_range(char *str, int *current)
 {
@@ -68,8 +61,10 @@ int	*get_ints(int argc, char **argv)
 	if (!arr)
 		return (0);
 	while (++i_argv < argc)
+	{
 		if (!(check_type_range(argv[i_argv], &(arr[++i_arr]))
 				&& check_duplication(arr, i_arr)))
-			exit_on_error(arr);
+			return ((int *)0);
+	}
 	return (arr);
 }

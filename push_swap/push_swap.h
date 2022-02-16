@@ -6,7 +6,7 @@
 /*   By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/28 23:51:26 by gyepark           #+#    #+#             */
-/*   Updated: 2022/02/11 14:31:29 by gyepark          ###   ########.fr       */
+/*   Updated: 2022/02/16 14:55:16 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@
 # include <stdlib.h>
 # define INT_MAX 2147483647
 # define INT_MIN -2147483648
-
+# define BUFFER_SIZE 1024
 typedef struct s_stack
 {
 	int		*arr;
@@ -35,6 +35,8 @@ typedef struct s_ops
 	unsigned	op_type;
 }	t_ops;
 
+void		free_all(t_stack *a, t_stack *b);
+void		exit_on_error(t_stack *a, t_stack *b);
 int		*get_ints(int argc, char **argv);
 
 void		swap(t_stack *s);
@@ -57,6 +59,8 @@ int		is_sorted(t_stack *s);
 unsigned	get_max_index(t_stack *s);
 unsigned	get_min_index(t_stack *s);
 
+int		init_both(t_stack **a, t_stack **b, int argc, char **argv);
+
 t_ops		get_optimal_ops(t_stack *a, t_stack *b);
 
 unsigned	get_min(unsigned x, unsigned y);
@@ -66,4 +70,11 @@ void		sort_greedy(t_stack *a, t_stack *b);
 void		sort_direct(t_stack *a, t_stack *b);
 
 void		move_smallest(t_stack *a, t_stack *b);
+
+int 		ft_strlen(char *s);
+char    	*ft_strjoin(char *s1, char *s2);
+char    	*ft_substr(char *s, int start, int len);
+int		are_same_strings(char *s1, char *s2);
+
+char		*get_next_line();
 #endif
