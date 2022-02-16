@@ -6,17 +6,17 @@
 /*   By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/07 17:34:38 by gyepark           #+#    #+#             */
-/*   Updated: 2022/02/11 14:34:12 by gyepark          ###   ########.fr       */
+/*   Updated: 2022/02/16 16:15:37 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "push_swap.h"
 
-static unsigned	count_rb(int val, t_stack *b)
+static unsigned int	count_rb(int val, t_stack *b)
 {
-	unsigned	max_idx;
-	unsigned	top_idx;
-	unsigned	rb_cnt;
+	unsigned int	max_idx;
+	unsigned int	top_idx;
+	unsigned int	rb_cnt;
 
 	top_idx = get_top_index(b);
 	max_idx = get_max_index(b);
@@ -32,12 +32,12 @@ static unsigned	count_rb(int val, t_stack *b)
 	return (0);
 }
 
-static t_ops	get_current_ops(t_stack *a, t_stack *b, unsigned a_idx)
+static t_ops	get_current_ops(t_stack *a, t_stack *b, unsigned int a_idx)
 {
-	t_ops		ops;
-	unsigned	rr_op;
-	unsigned	rrr_op;
-	unsigned	cross_op; // (ra, rrb) or (rra, rb)
+	t_ops			ops;
+	unsigned int	rr_op;
+	unsigned int	rrr_op;
+	unsigned int	cross_op;
 
 	ops.ra = a_idx - get_top_index(a);
 	ops.rra = (a->len - ops.ra) % a->len;
@@ -58,9 +58,9 @@ static t_ops	get_current_ops(t_stack *a, t_stack *b, unsigned a_idx)
 
 t_ops	get_optimal_ops(t_stack *a, t_stack *b)
 {
-	unsigned	a_idx;
-	t_ops		current;
-	t_ops		optimal;
+	unsigned int	a_idx;
+	t_ops			current;
+	t_ops			optimal;
 
 	a_idx = get_top_index(a);
 	optimal = get_current_ops(a, b, a_idx);

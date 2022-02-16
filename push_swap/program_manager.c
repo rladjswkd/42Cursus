@@ -6,7 +6,7 @@
 /*   By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/14 23:21:38 by gyepark           #+#    #+#             */
-/*   Updated: 2022/02/14 23:21:52 by gyepark          ###   ########.fr       */
+/*   Updated: 2022/02/16 16:16:09 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,5 +28,3 @@ void	exit_on_error(t_stack *a, t_stack *b)
 	free_all(a, b);
 	exit(EXIT_FAILURE);
 }
-
-

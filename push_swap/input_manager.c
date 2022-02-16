@@ -6,7 +6,7 @@
 /*   By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/28 23:50:02 by gyepark           #+#    #+#             */
-/*   Updated: 2022/02/14 22:03:44 by gyepark          ###   ########.fr       */
+/*   Updated: 2022/02/16 16:14:13 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 static int	check_type_range(char *str, int *current)
 {
-	int		sign;
+	int			sign;
 	long long	value;
 
 	if (*str == 0)

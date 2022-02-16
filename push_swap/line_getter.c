@@ -6,7 +6,7 @@
 /*   By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/14 16:10:31 by gyepark           #+#    #+#             */
-/*   Updated: 2022/02/14 19:58:17 by gyepark          ###   ########.fr       */
+/*   Updated: 2022/02/16 16:15:03 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ static int	find_nl(char *str)
 static int	read_stdin(char **builder)
 {
 	char	buffer[BUFFER_SIZE + 1];
-	int	count;
+	int		count;
 	char	*temp;
 
 	while (find_nl(*builder) < 0)
@@ -48,9 +48,9 @@ static char	*build_line(char **builder)
 {
 	char	*ret;
 	char	*temp;
-	int	nl_idx;
-	int	len;
-	
+	int		nl_idx;
+	int		len;
+
 	nl_idx = find_nl(*builder);
 	len = ft_strlen(*builder);
 	if (nl_idx == -1)
@@ -70,7 +70,7 @@ static char	*build_line(char **builder)
 	return (ret);
 }
 
-char	*get_next_line()
+char	*get_next_line(void)
 {
 	static char	*builder = 0;
 	char		*output;

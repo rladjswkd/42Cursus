@@ -6,7 +6,7 @@
 /*   By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/27 18:23:50 by gyepark           #+#    #+#             */
-/*   Updated: 2022/02/16 15:04:25 by gyepark          ###   ########.fr       */
+/*   Updated: 2022/02/16 16:16:26 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,8 +14,8 @@
 
 int	main(int argc, char **argv)
 {
-	t_stack *a;
-	t_stack *b;
+	t_stack	*a;
+	t_stack	*b;
 
 	init_both(&a, &b, argc, argv);
 	if (is_sorted(a))

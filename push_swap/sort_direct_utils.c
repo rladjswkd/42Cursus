@@ -6,7 +6,7 @@
 /*   By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/10 23:30:51 by gyepark           #+#    #+#             */
-/*   Updated: 2022/02/11 13:02:40 by gyepark          ###   ########.fr       */
+/*   Updated: 2022/02/16 15:59:12 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,8 +14,8 @@
 
 void	move_smallest(t_stack *a, t_stack *b)
 {
-	unsigned	ra;
-	unsigned	rra;
+	unsigned int	ra;
+	unsigned int	rra;
 
 	ra = get_min_index(a) - get_top_index(a);
 	rra = (a->len - ra) % a->len;

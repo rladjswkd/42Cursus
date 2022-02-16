@@ -6,7 +6,7 @@
 /*   By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/10 18:48:37 by gyepark           #+#    #+#             */
-/*   Updated: 2022/02/10 18:49:01 by gyepark          ###   ########.fr       */
+/*   Updated: 2022/02/16 15:58:42 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,8 +14,8 @@
 
 void	operate_rr(t_stack *a, t_stack *b, t_ops ops)
 {
-	unsigned	rr_cnt;
-	unsigned	i;
+	unsigned int	rr_cnt;
+	unsigned int	i;
 
 	rr_cnt = get_min(ops.ra, ops.rb);
 	i = 0;
@@ -30,8 +30,8 @@ void	operate_rr(t_stack *a, t_stack *b, t_ops ops)
 
 void	operate_rrr(t_stack *a, t_stack *b, t_ops ops)
 {
-	unsigned	rrr_cnt;
-	unsigned	i;
+	unsigned int	rrr_cnt;
+	unsigned int	i;
 
 	rrr_cnt = get_min(ops.rra, ops.rrb);
 	i = 0;
@@ -46,8 +46,8 @@ void	operate_rrr(t_stack *a, t_stack *b, t_ops ops)
 
 void	operate_cross(t_stack *a, t_stack *b, t_ops ops)
 {
-	unsigned	a_cnt;
-	unsigned	b_cnt;
+	unsigned int	a_cnt;
+	unsigned int	b_cnt;
 
 	a_cnt = get_min(ops.ra, ops.rra);
 	b_cnt = get_min(ops.rb, ops.rrb);

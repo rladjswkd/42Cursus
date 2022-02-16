@@ -6,7 +6,7 @@
 /*   By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/29 13:12:05 by gyepark           #+#    #+#             */
-/*   Updated: 2022/02/10 18:26:45 by gyepark          ###   ########.fr       */
+/*   Updated: 2022/02/16 16:12:33 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,14 +29,14 @@ void	push(t_stack *from, t_stack *to)
 {
 	if (!(from->len))
 		return ;
-	(to->arr)[to->size - (to->len)++ - 1] =
-		(from->arr)[from->size - (from->len)--];
+	(to->arr)[to->size - (to->len)++ - 1]
+		= (from->arr)[from->size - (from->len)--];
 }
 
 void	rotate(t_stack *s, int is_forward)
 {
-	unsigned	i;
-	int		temp;
+	unsigned int	i;
+	int				temp;
 
 	if (is_forward)
 	{

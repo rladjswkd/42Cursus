@@ -6,7 +6,7 @@
 /*   By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/04 14:32:07 by gyepark           #+#    #+#             */
-/*   Updated: 2022/02/10 18:50:05 by gyepark          ###   ########.fr       */
+/*   Updated: 2022/02/16 16:22:38 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,10 +14,13 @@
 
 void	sort_greedy(t_stack *a, t_stack *b)
 {
-	t_ops		ops;
-	unsigned	b_max_idx;
-	void		(*fp[3])(t_stack *, t_stack *, t_ops) = {operate_rr, operate_rrr, operate_cross};
+	t_ops			ops;
+	unsigned int	b_max_idx;
+	void			(*fp[3])(t_stack *, t_stack *, t_ops);
 
+	fp[0] = &operate_rr;
+	fp[1] = &operate_rrr;
+	fp[2] = &operate_cross;
 	print_push(a, b);
 	while (a->len)
 	{

@@ -6,31 +6,31 @@
 /*   By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/14 15:54:58 by gyepark           #+#    #+#             */
-/*   Updated: 2022/02/16 15:03:42 by gyepark          ###   ########.fr       */
+/*   Updated: 2022/02/16 16:23:38 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "push_swap.h"
 
-static t_stack *init_stack(int *arr, unsigned size, unsigned len, char name)
+static t_stack	*init_stack(int *arr, unsigned int s, unsigned int l, char c)
 {
-	t_stack	*s;
+	t_stack	*stack;
 
-	s = (t_stack *)malloc(sizeof(t_stack));
-	if (!s)
+	stack = (t_stack *)malloc(sizeof(t_stack));
+	if (!stack)
 		return (0);
 	if (!arr)
 	{
-		s->arr = (int *)malloc(sizeof (int) * size);
-		if (!(s->arr))
+		stack->arr = (int *)malloc(sizeof (int) * s);
+		if (!(stack->arr))
 			return (0);
 	}
 	else
-		s->arr = arr;
-	s->size = size;
-	s->len = len;
-	s->name = name;
-	return (s);
+		stack->arr = arr;
+	stack->size = s;
+	stack->len = l;
+	stack->name = c;
+	return (stack);
 }
 
 int	init_both(t_stack **a, t_stack **b, int argc, char **argv)
@@ -50,5 +50,3 @@ int	init_both(t_stack **a, t_stack **b, int argc, char **argv)
 		exit_on_error(*a, *b);
 	return (1);
 }
-
-

@@ -6,7 +6,7 @@
 /*   By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/14 15:25:48 by gyepark           #+#    #+#             */
-/*   Updated: 2022/02/16 14:56:20 by gyepark          ###   ########.fr       */
+/*   Updated: 2022/02/16 16:05:57 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,7 @@ static void	do_operation(t_stack **a, t_stack **b, char *op)
 int	main(int argc, char **argv)
 {
 	t_stack	*a;
-	t_stack *b;
+	t_stack	*b;
 	char	*op;
 
 	if (!(argc > 1 && init_both(&a, &b, argc, argv)))
