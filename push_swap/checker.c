@@ -6,7 +6,11 @@
 /*   By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/14 15:25:48 by gyepark           #+#    #+#             */
+<<<<<<< HEAD
 /*   Updated: 2022/02/17 19:47:37 by gyepark          ###   ########.fr       */
+=======
+/*   Updated: 2022/02/17 12:53:56 by gyepark          ###   ########.fr       */
+>>>>>>> da1fee4f327065c0a9b742ecaf0b5fb6e8848234
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,7 +70,7 @@ int	main(int argc, char **argv)
 		free(op);
 		op = get_next_line();
 	}
-	if (is_sorted(a))
+	if (is_sorted(a) && a->len == a->size)
 		write(1, "OK\n", 3);
 	else
 		write(1, "KO\n", 3);
