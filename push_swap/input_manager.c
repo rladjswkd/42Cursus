@@ -6,7 +6,7 @@
 /*   By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/28 23:50:02 by gyepark           #+#    #+#             */
-/*   Updated: 2022/02/16 16:14:13 by gyepark          ###   ########.fr       */
+/*   Updated: 2022/02/17 11:09:29 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,8 @@ static int	check_type_range(char *str, int *current)
 	if (*str == '-' || *str == '+')
 		if (*(str++) == '-')
 			sign = -1;
+	if (!(*str))
+		return (0);
 	value = 0;
 	while (47 < *str && *str < 58)
 	{
