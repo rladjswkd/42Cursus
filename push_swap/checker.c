@@ -6,11 +6,7 @@
 /*   By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/14 15:25:48 by gyepark           #+#    #+#             */
-<<<<<<< HEAD
-/*   Updated: 2022/02/17 19:47:37 by gyepark          ###   ########.fr       */
-=======
-/*   Updated: 2022/02/17 12:53:56 by gyepark          ###   ########.fr       */
->>>>>>> da1fee4f327065c0a9b742ecaf0b5fb6e8848234
+/*   Updated: 2022/02/19 10:10:21 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +21,12 @@ static void	do_ss(t_stack **a, t_stack **b)
 {
 	swap(*a);
 	swap(*b);
+}
+
+static void	exit_on_error_checker(t_stack *a, t_stack *b, char *op)
+{
+	free(op);
+	exit_on_error(a, b);
 }
 
 static void	do_operation(t_stack **a, t_stack **b, char *op)
@@ -52,7 +54,7 @@ static void	do_operation(t_stack **a, t_stack **b, char *op)
 	else if (are_same_strings(op, "rb"))
 		rotate(*b, 1);
 	else
-		exit_on_error(*a, *b);
+		exit_on_error_checker(*a, *b, op);
 }
 
 int	main(int argc, char **argv)
@@ -61,8 +63,9 @@ int	main(int argc, char **argv)
 	t_stack	*b;
 	char	*op;
 
-	if (!(argc > 1 && init_both(&a, &b, argc, argv)))
+	if (argc < 2)
 		return (0);
+	init_both(&a, &b, argc, argv);
 	op = get_next_line();
 	while (op)
 	{

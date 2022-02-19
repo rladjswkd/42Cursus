@@ -6,7 +6,7 @@
 /*   By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/01/28 23:50:02 by gyepark           #+#    #+#             */
-/*   Updated: 2022/02/17 11:09:29 by gyepark          ###   ########.fr       */
+/*   Updated: 2022/02/17 22:35:00 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,7 +66,10 @@ int	*get_ints(int argc, char **argv)
 	{
 		if (!(check_type_range(argv[i_argv], &(arr[++i_arr]))
 				&& check_duplication(arr, i_arr)))
+		{
+			free(arr);
 			return ((int *)0);
+		}
 	}
 	return (arr);
 }
