@@ -6,59 +6,64 @@
 /*   By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/18 17:28:22 by gyepark           #+#    #+#             */
-/*   Updated: 2022/02/18 22:44:00 by gyepark          ###   ########.fr       */
+/*   Updated: 2022/02/19 21:00:30 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <sys/types.h>
-#include <unistd.h>
-#include <signal.h>
-#include <stdlib.h>
 #include <stdio.h>
+#include "minitalk.h"
 
 void	sig_handler(int sig)
 {
-	static unsigned char	byte;
+	/*
+	static unsigned char	byte = 0;
 	static int				bits = 0;
 
+	byte <<= 1;
 	if (sig == SIGUSR1)
-	{
-		byte <<= 1;
 		byte |= 1;
-		bits++;
-	}
-	else if (sig == SIGUSR2)
-	{
-		byte <<= 1;
-		bits++;
-	}
-	if (bits == 8)
+	if (++bits == 8)
 	{
 		write(1, &byte, 1);
 		bits = 0;
 		byte = 0;
 	}
+	*/
+	char	c;
+
+	if (sig == SIGUSR1)
+	{
+		c = 49;
+		write(1, &c, 1);
+	}
+	else if (sig == SIGUSR2)
+	{
+		c = 50;
+		write(1, &c, 1);
+	}
 }
 
 int	main(void)
 {
-	struct sigaction	sa;
+	struct sigaction	sigact;
 
 	printf("Server's pid is %d\n", getpid());
-	sa.sa_handler = &sig_handler;
-	sa.sa_flags = SA_NODEFER;
-	sigemptyset(&sa.sa_mask);
-	if (sigaction(SIGUSR1, &sa, (struct sigaction *)0) < 0)
+	sigact.sa_handler = &sig_handler;
+	sigact.sa_flags = SA_NODEFER;
+	sigact.sa_flags |= SA_RESETHAND;
+	sigemptyset(&sigact.sa_mask);
+	if (sigaction(SIGUSR1, &sigact, (struct sigaction *)0) < 0)
 	{
-		write(2, "Error\n", 6);
+		write(STDERR_FILENO, "Error\n", 6);
 		exit(EXIT_FAILURE);
 	}
-	if (sigaction(SIGUSR2, &sa, (struct sigaction *)0) < 0)
+	if (sigaction(SIGUSR2, &sigact, (struct sigaction *)0) < 0)
 	{
-		write(2, "Error\n", 6);
+		write(STDERR_FILENO, "Error\n", 6);
 		exit(EXIT_FAILURE);
 	}
 	while (1)
-		pause();
+	{
+	}
 	return (0);
 }

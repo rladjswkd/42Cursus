@@ -1,23 +1,22 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   client.c                                           :+:      :+:    :+:   */
+/*   minitalk.h                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/02/18 17:28:27 by gyepark           #+#    #+#             */
-/*   Updated: 2022/02/19 21:10:02 by gyepark          ###   ########.fr       */
+/*   Created: 2022/02/19 21:00:05 by gyepark           #+#    #+#             */
+/*   Updated: 2022/02/19 21:08:23 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minitalk.h"
+#ifndef MINITALK_H
+# include <sys/types.h>
+# include <unistd.h>
+# include <signal.h>
+# include <stdlib.h>
 
-int	main(int argc, char **argv)
-{
-	pid_t	pid;
-
-	if (!(argc == 3 && atoi_minitalk(argv[1], (int *)(&pid))))
-		exit(EXIT_FAILURE);
-	kill(pid, SIGINT);
-	return (0);
-}
+int		atoi_minitalk(const char *str, int *ptr);
+void	ft_putnbr_fd(int n, int fd);
+void	putstr_fd_minitalk(char *s, int fd);
+#endif
