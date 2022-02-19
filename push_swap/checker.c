@@ -6,7 +6,7 @@
 /*   By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/14 15:25:48 by gyepark           #+#    #+#             */
-/*   Updated: 2022/02/19 13:02:46 by gyepark          ###   ########.fr       */
+/*   Updated: 2022/02/19 13:41:26 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,27 +31,27 @@ static void	exit_on_error_checker(t_stack *a, t_stack *b, char *op)
 
 static void	do_operation(t_stack **a, t_stack **b, char *op)
 {
-	if (are_same_strings(op, "rrr"))
+	if (are_same_strings(op, "rrr\n"))
 		do_rr_rrr(a, b, 0);
-	else if (are_same_strings(op, "rra"))
+	else if (are_same_strings(op, "rra\n"))
 		rotate(*a, 0);
-	else if (are_same_strings(op, "rrb"))
+	else if (are_same_strings(op, "rrb\n"))
 		rotate(*b, 0);
-	else if (are_same_strings(op, "ss"))
+	else if (are_same_strings(op, "ss\n"))
 		do_ss(a, b);
-	else if (are_same_strings(op, "sa"))
+	else if (are_same_strings(op, "sa\n"))
 		swap(*a);
-	else if (are_same_strings(op, "sb"))
+	else if (are_same_strings(op, "sb\n"))
 		swap(*b);
-	else if (are_same_strings(op, "pa"))
+	else if (are_same_strings(op, "pa\n"))
 		push(*b, *a);
-	else if (are_same_strings(op, "pb"))
+	else if (are_same_strings(op, "pb\n"))
 		push(*a, *b);
-	else if (are_same_strings(op, "rr"))
+	else if (are_same_strings(op, "rr\n"))
 		do_rr_rrr(a, b, 1);
-	else if (are_same_strings(op, "ra"))
+	else if (are_same_strings(op, "ra\n"))
 		rotate(*a, 1);
-	else if (are_same_strings(op, "rb"))
+	else if (are_same_strings(op, "rb\n"))
 		rotate(*b, 1);
 	else
 		exit_on_error_checker(*a, *b, op);

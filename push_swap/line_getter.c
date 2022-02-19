@@ -6,7 +6,7 @@
 /*   By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/14 16:10:31 by gyepark           #+#    #+#             */
-/*   Updated: 2022/02/19 12:57:33 by gyepark          ###   ########.fr       */
+/*   Updated: 2022/02/19 13:39:31 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,7 +55,7 @@ static char	*build_line(char **builder)
 	len = ft_strlen(*builder);
 	if (nl_idx == -1)
 		return (*builder);
-	ret = ft_substr(*builder, 0, nl_idx);
+	ret = ft_substr(*builder, 0, nl_idx + 1);
 	if (!ret)
 		return (0);
 	temp = ft_substr(*builder, nl_idx + 1, len - nl_idx - 1);
@@ -95,15 +95,17 @@ char	*get_next_line(void)
 			return (0);
 		builder[0] = '\0';
 	}
-	if (read_stdin(&builder) == -1 || !is_valid_instruction(builder))
+	if (read_stdin(&builder) == -1)
 	{
 		free(builder);
 		return (0);
 	}
 	output = build_line(&builder);
-	if (!output)
+	if (!output || !is_valid_instruction(output))
 	{
 		free(builder);
+		if (builder != output)
+			free(output);
 		return (0);
 	}
 	return (output);
