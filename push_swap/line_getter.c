@@ -6,7 +6,7 @@
 /*   By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/14 16:10:31 by gyepark           #+#    #+#             */
-/*   Updated: 2022/02/19 11:00:01 by gyepark          ###   ########.fr       */
+/*   Updated: 2022/02/19 12:57:33 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,11 +54,7 @@ static char	*build_line(char **builder)
 	nl_idx = find_nl(*builder);
 	len = ft_strlen(*builder);
 	if (nl_idx == -1)
-	{
-		if (!len)
-			return (0);
 		return (*builder);
-	}
 	ret = ft_substr(*builder, 0, nl_idx);
 	if (!ret)
 		return (0);
@@ -72,17 +68,18 @@ static char	*build_line(char **builder)
 
 static int	is_valid_instruction(char *str)
 {
-	return (are_same_strings(str, "sa")
-			|| are_same_strings(str, "sb")
-			|| are_same_strings(str, "ss")
-			|| are_same_strings(str, "pa")
-			|| are_same_strings(str, "pb")
-			|| are_same_strings(str, "ra")
-			|| are_same_strings(str, "rb")
-			|| are_same_strings(str, "rr")
-			|| are_same_strings(str, "rra")
-			|| are_same_strings(str, "rrb")
-			|| are_same_strings(str, "rrr")
+	return (are_same_strings(str, "sa\n")
+			|| are_same_strings(str, "sb\n")
+			|| are_same_strings(str, "ss\n")
+			|| are_same_strings(str, "pa\n")
+			|| are_same_strings(str, "pb\n")
+			|| are_same_strings(str, "ra\n")
+			|| are_same_strings(str, "rb\n")
+			|| are_same_strings(str, "rr\n")
+			|| are_same_strings(str, "rra\n")
+			|| are_same_strings(str, "rrb\n")
+			|| are_same_strings(str, "rrr\n")
+			|| are_same_strings(str, "")
 	       );
 }
 
@@ -98,7 +95,7 @@ char	*get_next_line(void)
 			return (0);
 		builder[0] = '\0';
 	}
-	if (read_stdin(&builder) == -1)
+	if (read_stdin(&builder) == -1 || !is_valid_instruction(builder))
 	{
 		free(builder);
 		return (0);
@@ -109,7 +106,5 @@ char	*get_next_line(void)
 		free(builder);
 		return (0);
 	}
-	if (output != builder && !is_valid_instruction(output))
-		free(builder);
 	return (output);
 }

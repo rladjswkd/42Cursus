@@ -6,7 +6,7 @@
 /*   By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/14 15:25:48 by gyepark           #+#    #+#             */
-/*   Updated: 2022/02/19 10:10:21 by gyepark          ###   ########.fr       */
+/*   Updated: 2022/02/19 13:02:46 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,17 +66,21 @@ int	main(int argc, char **argv)
 	if (argc < 2)
 		return (0);
 	init_both(&a, &b, argc, argv);
-	op = get_next_line();
-	while (op)
+	while (1)
 	{
+		op = get_next_line();
+		if (!op)
+			exit_on_error(a, b);
+		if (!*op)
+			break ;
 		do_operation(&a, &b, op);
 		free(op);
-		op = get_next_line();
 	}
 	if (is_sorted(a) && a->len == a->size)
 		write(1, "OK\n", 3);
 	else
 		write(1, "KO\n", 3);
 	free_all(a, b);
+	free(op);
 	return (0);
 }
