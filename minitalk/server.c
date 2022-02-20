@@ -6,7 +6,7 @@
 /*   By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/18 17:28:22 by gyepark           #+#    #+#             */
-/*   Updated: 2022/02/19 21:00:30 by gyepark          ###   ########.fr       */
+/*   Updated: 2022/02/19 22:47:32 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,31 +15,16 @@
 
 void	sig_handler(int sig)
 {
-	/*
-	static unsigned char	byte = 0;
-	static int				bits = 0;
+	static char	byte = 0;
+	static int		bit = 0;
 
-	byte <<= 1;
 	if (sig == SIGUSR1)
-		byte |= 1;
-	if (++bits == 8)
+		byte |= 1 << bit;
+	if (++bit == 8)
 	{
 		write(1, &byte, 1);
-		bits = 0;
+		bit = 0;
 		byte = 0;
-	}
-	*/
-	char	c;
-
-	if (sig == SIGUSR1)
-	{
-		c = 49;
-		write(1, &c, 1);
-	}
-	else if (sig == SIGUSR2)
-	{
-		c = 50;
-		write(1, &c, 1);
 	}
 }
 
@@ -49,8 +34,7 @@ int	main(void)
 
 	printf("Server's pid is %d\n", getpid());
 	sigact.sa_handler = &sig_handler;
-	sigact.sa_flags = SA_NODEFER;
-	sigact.sa_flags |= SA_RESETHAND;
+	sigact.sa_flags = SA_RESTART;
 	sigemptyset(&sigact.sa_mask);
 	if (sigaction(SIGUSR1, &sigact, (struct sigaction *)0) < 0)
 	{
@@ -63,7 +47,7 @@ int	main(void)
 		exit(EXIT_FAILURE);
 	}
 	while (1)
-	{
-	}
+		if (pause() != -1)
+			break ;
 	return (0);
 }
