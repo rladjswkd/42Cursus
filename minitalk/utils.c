@@ -6,7 +6,7 @@
 /*   By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/19 19:43:52 by gyepark           #+#    #+#             */
-/*   Updated: 2022/02/19 21:40:17 by gyepark          ###   ########.fr       */
+/*   Updated: 2022/02/20 17:49:27 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,11 +59,11 @@ void	putnbr_fd_minitalk(int n, int fd)
 void	putstr_fd_minitalk(char *s, int fd)
 {
 	while (*s)
-		write(fd, s, 1);
+		write(fd, s++, 1);
 }
 
 void	exit_on_error(void)
 {
-	putstr_fd_minitalk("Error\n", 2);
+	putstr_fd_minitalk("Error\n", STDERR_FILENO);
 	exit(EXIT_FAILURE);
 }
