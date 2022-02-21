@@ -6,7 +6,7 @@
 /*   By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/18 17:28:22 by gyepark           #+#    #+#             */
-/*   Updated: 2022/02/20 21:51:35 by gyepark          ###   ########.fr       */
+/*   Updated: 2022/02/21 11:07:09 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,11 +21,19 @@ void	sig_handler(int sig, siginfo_t *info, void *ucontext)
 	byte |= (sig == SIGUSR1) << bit;
 	if (++bit == 8)
 	{
+		if (!byte)
+		{
+			if (kill(info->si_pid, SIGUSR2) < 0)
+				exit_on_error();
+			bit = 0;
+			byte = 0;
+			return ;
+		}
 		write(1, &byte, 1);
 		bit = 0;
 		byte = 0;
 	}
-	if (kill(info->si_pid, sig))
+	if (kill(info->si_pid, SIGUSR1) < 0)
 		exit_on_error();
 }
 

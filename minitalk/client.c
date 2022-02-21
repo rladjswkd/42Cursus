@@ -6,7 +6,7 @@
 /*   By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/18 17:28:27 by gyepark           #+#    #+#             */
-/*   Updated: 2022/02/20 21:52:52 by gyepark          ###   ########.fr       */
+/*   Updated: 2022/02/21 11:05:47 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,14 +14,18 @@
 
 static void	sig_handler(int sig, siginfo_t *info, void *ucontext)
 {
+	static int	count;
+
 	(void)ucontext;
-	putnbr_fd_minitalk(info->si_pid, 1);
-	putstr_fd_minitalk(" server received signal ", 1);
 	if (sig == SIGUSR1)
-		putstr_fd_minitalk("SIGUSR1", 1);
+		count++;
 	else
-		putstr_fd_minitalk("SIGUSR2", 1);
-	putstr_fd_minitalk("\n", 1);
+	{
+		putnbr_fd_minitalk(count - 7, 1);
+		putstr_fd_minitalk(" signals is sent to server", 1);
+		putnbr_fd_minitalk(info->si_pid, 1);
+		putstr_fd_minitalk("\n", 1);
+	}
 }
 
 static void	send_bit(int server, int sig)
@@ -42,7 +46,7 @@ static void	send_char(int server, char c)
 		else
 			send_bit(server, SIGUSR2);
 		c >>= 1;
-		usleep(5500);
+		usleep(10000);
 	}
 }
 
@@ -62,6 +66,6 @@ int	main(int argc, char **argv)
 		exit_on_error();
 	while (*(argv[2]))
 		send_char(server, *(argv[2]++));
-	sleep(1);
+	send_char(server, 0);
 	return (0);
 }
