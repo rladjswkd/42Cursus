@@ -6,7 +6,7 @@
 #    By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/02/10 20:46:08 by gyepark           #+#    #+#              #
-#    Updated: 2022/02/20 21:37:31 by gyepark          ###   ########.fr        #
+#    Updated: 2022/02/21 22:00:54 by gyepark          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -39,7 +39,7 @@ $(CLIENT_OBJS) : $(CLIENT_SRCS)
 	$(CC) $(CFLAGS) -c $(CLIENT_SRCS)
 
 $(COMMON_OBJS) : $(COMMON_SRCS)
-	$(CC) $(CLFAGS) -c $(COMMON_SRCS)
+	$(CC) $(CFLAGS) -c $(COMMON_SRCS)
 
 clean :
 	$(RM) $(SERVER_OBJS) $(CLIENT_OBJS) $(COMMON_OBJS)
