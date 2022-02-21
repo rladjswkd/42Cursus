@@ -6,7 +6,7 @@
 /*   By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/18 17:28:22 by gyepark           #+#    #+#             */
-/*   Updated: 2022/02/21 11:07:09 by gyepark          ###   ########.fr       */
+/*   Updated: 2022/02/21 11:24:45 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,9 +41,9 @@ int	main(void)
 {
 	struct sigaction	sigact;
 
-	putstr_fd_minitalk("Server's pid is ", 1);
+	write(1, "Server's pid is ", 16);
 	putnbr_fd_minitalk(getpid(), 1);
-	putstr_fd_minitalk("\n", 1);
+	write(1, "\n", 1);
 	sigact.sa_sigaction = &sig_handler;
 	sigact.sa_flags = SA_SIGINFO;
 	sigemptyset(&sigact.sa_mask);

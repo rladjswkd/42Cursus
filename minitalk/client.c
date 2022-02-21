@@ -6,7 +6,7 @@
 /*   By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/18 17:28:27 by gyepark           #+#    #+#             */
-/*   Updated: 2022/02/21 11:05:47 by gyepark          ###   ########.fr       */
+/*   Updated: 2022/02/21 11:30:49 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,9 +22,9 @@ static void	sig_handler(int sig, siginfo_t *info, void *ucontext)
 	else
 	{
 		putnbr_fd_minitalk(count - 7, 1);
-		putstr_fd_minitalk(" signals is sent to server", 1);
+		write(1, " signals are sent to server ", 28);
 		putnbr_fd_minitalk(info->si_pid, 1);
-		putstr_fd_minitalk("\n", 1);
+		write(1, "\n", 1);
 	}
 }
 
