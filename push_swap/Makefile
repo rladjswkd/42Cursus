@@ -6,7 +6,7 @@
 #    By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/02/10 20:46:08 by gyepark           #+#    #+#              #
-#    Updated: 2022/02/16 14:36:29 by gyepark          ###   ########.fr        #
+#    Updated: 2022/02/21 11:38:00 by gyepark          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -38,6 +38,10 @@ RM = rm -f
 $(NAME) : $(OBJS) $(C_OBJS)
 	$(CC) $(CFLAGS) -o $(NAME) $(OBJS) $(C_OBJS)
 
+all : $(NAME) $(B_NAME)
+
+bonus : $(B_NAME)
+
 $(B_NAME) : $(B_OBJS) $(C_OBJS)
 	$(CC) $(CFLAGS) -o $(B_NAME) $(B_OBJS) $(C_OBJS)
 
@@ -50,8 +54,6 @@ $(B_OBJS) : $(B_SRCS)
 $(C_OBJS) : $(C_SRCS)
 	$(CC) $(CLFAGS) -c $(C_SRCS)
 
-all : $(NAME) $(B_NAME)
-
 clean :
 	$(RM) $(OBJS) $(B_OBJS) $(C_OBJS)
 
@@ -60,4 +62,4 @@ fclean : clean
 
 re : fclean all
 
-.PHONY : all clean fclean re
+.PHONY : all clean fclean re bonus
