@@ -6,7 +6,7 @@
 #    By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/02/10 20:46:08 by gyepark           #+#    #+#              #
-#    Updated: 2022/02/21 22:00:54 by gyepark          ###   ########.fr        #
+#    Updated: 2022/02/22 14:30:08 by gyepark          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -25,6 +25,8 @@ CFLAGS = -Wall -Wextra -Werror
 RM = rm -f
 
 all : $(SERVER_NAME) $(CLIENT_NAME)
+
+bonus : all
 
 $(SERVER_NAME) : $(SERVER_OBJS) $(COMMON_OBJS)
 	$(CC) $(CFLAGS) -o $(SERVER_NAME) $(SERVER_OBJS) $(COMMON_OBJS)
@@ -49,4 +51,4 @@ fclean : clean
 
 re : fclean all
 
-.PHONY : all clean fclean re
+.PHONY : all clean fclean re bonus
