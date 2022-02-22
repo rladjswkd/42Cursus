@@ -6,7 +6,7 @@
 /*   By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/18 17:28:27 by gyepark           #+#    #+#             */
-/*   Updated: 2022/02/21 11:30:49 by gyepark          ###   ########.fr       */
+/*   Updated: 2022/02/22 17:44:46 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 static void	sig_handler(int sig, siginfo_t *info, void *ucontext)
 {
-	static int	count;
+	static int	count = 0;
 
 	(void)ucontext;
 	if (sig == SIGUSR1)

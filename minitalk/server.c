@@ -6,13 +6,13 @@
 /*   By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/18 17:28:22 by gyepark           #+#    #+#             */
-/*   Updated: 2022/02/21 11:24:45 by gyepark          ###   ########.fr       */
+/*   Updated: 2022/02/22 17:45:02 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minitalk.h"
 
-void	sig_handler(int sig, siginfo_t *info, void *ucontext)
+static void	sig_handler(int sig, siginfo_t *info, void *ucontext)
 {
 	static char	byte = 0;
 	static int	bit = 0;
