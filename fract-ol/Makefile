@@ -4,7 +4,7 @@ OBJS = test.o
 CC = gcc
 CFLAGS = -Wall -Wextra -Werror
 RM = rm
-RMFLAGS = -rf
+RMFLAGS = -f
 
 %.o : %.c
 	$(CC) $(CFLAGS) -I/usr/include -Imlx_linux -O3 -c $< -o $@
