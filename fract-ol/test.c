@@ -2,10 +2,10 @@
 #include <math.h>
 #include <stdio.h>
 #define EVENT_KEY	114
-#define WIDTH		1000
-#define HEIGHT		1000
-#define ESCAPE_RADIUS	2
-#define MAX_ITERATION	1000
+#define WIDTH		800
+#define HEIGHT		600
+#define ESCAPE_RADIUS	2.0
+#define MAX_ITERATION	256
 #define C_RE		(double)-0.4
 #define C_IM		(double)0.6
 
@@ -28,28 +28,31 @@ typedef struct	s_vars
 {
 	void	*mlx;
 	void	*win;
-	t_complex	c;
 	t_data		data;
 }		t_vars;
 
-int	is_in_julia_set(int i, int j)
+int	is_in_julia_set(int x, int y)
 {
 	t_complex	z;
 	int		r_squared;
 	int		iteration;
+	int		size;
 	double		temp;
 
-	z.re = (j - WIDTH / 2.0) * (ESCAPE_RADIUS + ESCAPE_RADIUS) / HEIGHT;
-	z.im = (HEIGHT / 2.0 - i) * (ESCAPE_RADIUS + ESCAPE_RADIUS) / HEIGHT;
+	size = WIDTH;
+	if (HEIGHT < WIDTH)
+		size = HEIGHT;
+	z.re = (x - WIDTH / 2) * (ESCAPE_RADIUS + ESCAPE_RADIUS) / size;
+	z.im = (HEIGHT / 2 - y) * (ESCAPE_RADIUS + ESCAPE_RADIUS) / size;
 	r_squared = pow(ESCAPE_RADIUS, 2);
-	iteration = -1;
-	while (pow(z.re, 2) + pow(z.im, 2) < r_squared && ++iteration < MAX_ITERATION)
+	iteration = 0;
+	while (pow(z.re, 2) + pow(z.im, 2) < r_squared && ++iteration <= MAX_ITERATION)
 	{
 		temp = z.re;
 		z.re = pow(z.re, 2) - pow(z.im, 2) + C_RE;
 		z.im = 2 * temp * z.im + C_IM;
 	}
-	return (iteration == MAX_ITERATION);
+	return (iteration);
 }
 
 void	my_mlx_pixel_put(t_data *data, int x, int y, int color)
@@ -62,21 +65,22 @@ void	my_mlx_pixel_put(t_data *data, int x, int y, int color)
 
 int	key_pressed(int keycode, t_vars *vars)
 {
-	int	i;
-	int	j;
+	int	x_idx;
+	int	y_idx;
 	int	color;
 
 	if (keycode != EVENT_KEY)
 		return (0);
-	color = 0xFFFFFF00;
-	i = -1;
-	while (i++ < HEIGHT)
+	x_idx = -1;
+	while (x_idx++ < WIDTH)
 	{
-		j = -1;
-		while (j++ < WIDTH)
-			if (is_in_julia_set(i, j))
-				my_mlx_pixel_put(&vars->data, i, j, color);
-		color += 0x00000001;
+		y_idx = -1;
+		while (y_idx++ < HEIGHT)
+		{
+			color = is_in_julia_set(x_idx, y_idx);
+			if (color < MAX_ITERATION)
+				my_mlx_pixel_put(&(vars->data), x_idx, y_idx, color);
+		}
 	}
 	mlx_put_image_to_window(vars->mlx, vars->win, vars->data.img, 0, 0);
 	return (0);
