@@ -5,9 +5,9 @@
 #define WIDTH		1000
 #define HEIGHT		1000
 #define ESCAPE_RADIUS	2
-#define MAX_ITERATION	240
-#define C_RE		0.285	
-#define C_IM		0.01
+#define MAX_ITERATION	48//64//100//120
+#define C_RE		0.45//0//-0.835//-0.70716	
+#define C_IM		0.1428//-0.8//-0.2321//-0.3842
 
 typedef struct	s_complex
 {
@@ -44,24 +44,25 @@ int	get_rgb(int r, int g, int b)
 	return (r << 16 | g << 8 | b);
 }
 
-int	is_in_julia_set(int x, int y)
+int	check_julia_set(int x, int y)
 {
 	t_complex	z;
 	int		r_squared;
 	int		iter;
 	int		size;
 	double		temp;
+	
 	size = WIDTH;
 	if (HEIGHT < WIDTH)
 		size = HEIGHT;
 	z.re = (x - WIDTH / 2.0) * (ESCAPE_RADIUS + ESCAPE_RADIUS) / size;
 	z.im = (HEIGHT / 2.0 - y) * (ESCAPE_RADIUS + ESCAPE_RADIUS) / size;
-	r_squared = pow(ESCAPE_RADIUS, 2);
+	r_squared = ESCAPE_RADIUS * ESCAPE_RADIUS;
 	iter = 0;
-	while (pow(z.re, 2) + pow(z.im, 2) <= r_squared && iter++ < MAX_ITERATION)
+	while (z.re * z.re + z.im * z.im <= r_squared && iter++ < MAX_ITERATION)
 	{
 		temp = z.re;
-		z.re = pow(z.re, 2) - pow(z.im, 2) + C_RE;
+		z.re = z.re * z.re - z.im * z.im + C_RE;
 		z.im = 2 * temp * z.im + C_IM;
 	}
 	if (iter > MAX_ITERATION)
@@ -69,9 +70,44 @@ int	is_in_julia_set(int x, int y)
 	else
 	{
 		iter = (int)((double)iter / MAX_ITERATION * 255.0);
-		iter = iter;
-		return (iter << 16 | iter << 8 | iter);
+		iter = 255 - iter;
+		return (iter << 16 | iter << 8 |  iter);
 	}
+}
+
+int	check_mandelbrot_set(int x, int y)
+{
+	t_complex	z;
+	t_complex	c;
+	int		r_squared;
+	int		iter;
+	int		size;
+	double		temp;
+	
+	size = WIDTH;
+	if (HEIGHT < WIDTH)
+		size = HEIGHT;
+	c.re = (x - WIDTH / 2.0) * (ESCAPE_RADIUS + ESCAPE_RADIUS) / size;
+	c.im = (HEIGHT / 2.0 - y) * (ESCAPE_RADIUS + ESCAPE_RADIUS) / size;
+	z.re = 0;
+	z.im = 0;
+	r_squared = ESCAPE_RADIUS * ESCAPE_RADIUS;
+	iter = 0;
+	while (z.re * z.re + z.im * z.im <= r_squared && iter++ < MAX_ITERATION)
+	{
+		temp = z.re;
+		z.re = z.re * z.re - z.im * z.im + c.re;
+		z.im = 2 * temp * z.im + c.im;
+	}
+	if (iter > MAX_ITERATION)
+		return (0);
+	else
+	{
+		iter = (int)((double)iter / MAX_ITERATION * 255.0);
+		iter = 255 - iter;
+		return (iter << 16 | iter << 8 |  iter);
+	}
+
 }
 
 int	key_pressed(int keycode, t_vars *vars)
@@ -86,7 +122,8 @@ int	key_pressed(int keycode, t_vars *vars)
 	{
 		y_idx = -1;
 		while (y_idx++ < HEIGHT)
-			my_mlx_pixel_put(&(vars->data), x_idx, y_idx, is_in_julia_set(x_idx, y_idx));
+//			my_mlx_pixel_put(&(vars->data), x_idx, y_idx, check_julia_set(x_idx, y_idx));
+			my_mlx_pixel_put(&(vars->data), x_idx, y_idx, check_mandelbrot_set(x_idx, y_idx));
 	}
 	mlx_put_image_to_window(vars->mlx, vars->win, vars->data.img, 0, 0);
 	return (0);
