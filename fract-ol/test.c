@@ -1,13 +1,16 @@
 #include <mlx.h>
+#include <stdlib.h>
 #include <math.h>
+#include <unistd.h>
 #include <stdio.h>
-#define EVENT_KEY	114
-#define WIDTH		1000
-#define HEIGHT		1000
+#define EVENT_KEY		15//114
+#define ESC_KEY			53
+#define WIDTH			1000
+#define HEIGHT			1000
 #define ESCAPE_RADIUS	2
-#define MAX_ITERATION	48//64//100//120
-#define C_RE		0.45//0//-0.835//-0.70716	
-#define C_IM		0.1428//-0.8//-0.2321//-0.3842
+#define MAX_ITERATION	256//48//64//100//120
+#define C_RE			-0.4//0.45//0//-0.835//-0.70716	
+#define C_IM			0.6//0.1428//-0.8//-0.2321//-0.3842
 
 typedef struct	s_complex
 {
@@ -115,25 +118,48 @@ int	key_pressed(int keycode, t_vars *vars)
 	int	x_idx;
 	int	y_idx;
 
-	if (keycode != EVENT_KEY)
-		return (0);
+	if (keycode == ESC_KEY)
+	{
+		mlx_destroy_window(vars->mlx, vars->win);
+		exit(EXIT_SUCCESS);
+	}
 	x_idx = -1;
-	while (x_idx++ < WIDTH)
+	while (++x_idx < WIDTH)
 	{
 		y_idx = -1;
-		while (y_idx++ < HEIGHT)
-//			my_mlx_pixel_put(&(vars->data), x_idx, y_idx, check_julia_set(x_idx, y_idx));
+		while (++y_idx < HEIGHT)
+			//my_mlx_pixel_put(&(vars->data), x_idx, y_idx, check_julia_set(x_idx, y_idx));
 			my_mlx_pixel_put(&(vars->data), x_idx, y_idx, check_mandelbrot_set(x_idx, y_idx));
 	}
 	mlx_put_image_to_window(vars->mlx, vars->win, vars->data.img, 0, 0);
 	return (0);
 }
 
+int	get_len(char *str)
+{
+	int	len;
+
+	len = 0;
+	while (*(str++))
+		len++;
+	return (len);
+}
+
+void	print_param_info(void)
+{
+	static char	*str = "\nparameter format:\n[fractal type][escape radius][max iteration][real value][imaginary value]\n\nfractal type is integer:\n1) Julia set, 2) Mandelbrot set, 3) Newton fractal\n\nescape radius and max iteration are integers.\n\nlast two parameters are floating point numbers and for Julia set.\n\n";
+
+	write(2, str, get_len(str));
+	exit(EXIT_FAILURE);
+}
+
 int	main(int argc, char **argv)
 {
 	t_vars	vars;
 
-	(void)argc;
+	if (argc < 2)
+		print_param_list();
+	
 	(void)argv;
 	vars.mlx = mlx_init();
 	vars.win = mlx_new_window(vars.mlx, WIDTH, HEIGHT, "fractol");
