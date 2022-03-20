@@ -18,33 +18,98 @@ typedef struct	s_complex
 	double	im;
 }		t_complex;
 
-typedef struct	s_data
+typedef struct	s_img
 {
-	void	*img;
+	void	*ptr;
 	char	*addr;
 	int		bits_per_pixel;
 	int		line_length;
 	int		endian;
-}				t_data;
+}				t_img;
+
+typedef struct	s_params
+{
+	char		*type;
+	int			radius;
+	int			max_iter;
+	t_complex	julia_c;
+}		t_params;
 
 typedef struct	s_vars
 {
 	void	*mlx;
 	void	*win;
-	t_data		data;
+	t_img		img;
+	t_params	params;
 }		t_vars;
 
-void	my_mlx_pixel_put(t_data *data, int x, int y, int color)
+void	my_mlx_pixel_put(t_img *img, int x, int y, int color)
 {
 	char	*dst;
 
-	dst = data->addr + (y * data->line_length + x * (data->bits_per_pixel / 8));
+	dst = img->addr + (y * img->line_length + x * (img->bits_per_pixel / 8));
 	*(unsigned int *)dst = color;
 }
 
 int	get_rgb(int r, int g, int b)
 {
 	return (r << 16 | g << 8 | b);
+}
+
+int	get_len(char *str)
+{
+	int	len;
+
+	len = 0;
+	while (*(str++))
+		len++;
+	return (len);
+}
+
+double	*get_double(char *str, double *val)
+{
+	double		scale;
+       	int		sign;
+
+	*val = 0;
+	sign = 1;
+	if (*str == '+' || *str == '-')
+		if (*(str++) == '-')
+			sign = -1;
+	while (47 < *str && *str < 58)
+		*val = *val * 10 + sign * (*(str++) - 48);
+	if (*str != '.' && *str != '\0')
+		return (0);
+	scale = 10;
+	while (47 < *str && *str < 58)
+	{
+		*val += sign *(*(str++) - 48) / scale;
+		scale *= 10;
+	}
+	if (*str != '\0')
+		return (0);
+	return (val);
+}
+
+int	*get_int(char *str, int *val)
+{
+	int					sign;
+
+	while ((8 < *str && *str < 14) || *str == 32)
+		str++;
+	sign = 1;
+	if (*str == '-' || *str == '+')
+	{
+		if (*str == '-')
+			sign = -1;
+		str++;
+	}	
+	*val = 0;
+	while (47 < *str && *str < 58)
+		*val = 10 * *val + sign * (*str - 48);
+	if (*str != '\0')
+		return (0);
+	return (val);
 }
 
 int	check_julia_set(int x, int y)
@@ -112,86 +177,70 @@ int	check_mandelbrot_set(int x, int y)
 	}
 }
 
-int	key_pressed(int keycode, t_vars *vars)
+void	exit_print_param_info(t_vars *vars)
+{
+	static char	*str = "\nParameter format:\n\t[fractal type][escape radius][max iteration][real value][imaginary value]\n\nFractal type is integer:\n\t1) Julia set, 2) Mandelbrot set, 3) Newton fractal\n\nEscape radius and max iteration are integers.\n\nLast two parameters are floating point numbers and for Julia set.\n\n";
+
+	(void)write(2, str, get_len(str));
+	mlx_destroy_window(vars->mlx, vars->win);
+	exit(EXIT_FAILURE);
+}
+
+void	exit_complete(t_vars *vars)
+{
+	mlx_destroy_window(vars->mlx, vars->win);
+	exit(EXIT_SUCCESS);
+}
+
+t_params	*process_params(int argc, char **argv)
+{
+	t_params	params;
+
+	if (argc < 4)
+		return (0);
+	if (!get_int(argv[1], &(params.type)) || !(0 < params.type && params.type < 4))
+		return (0);
+	if (!get_int(argv[2], &(params.radius)))
+		return (0);
+	if (!get_int(argv[3], &(params.max_iter)))
+		return (0);
+	if (params.type == 1 && !get_double(argv[4], &(params.julia_c.
+	return (&params);
+}
+
+void	draw_fractal(t_vars *vars)
 {
 	int	x_idx;
 	int	y_idx;
 
-	if (keycode == ESC_KEY)
-	{
-		mlx_destroy_window(vars->mlx, vars->win);
-		exit(EXIT_SUCCESS);
-	}
 	x_idx = -1;
 	while (++x_idx < WIDTH)
 	{
 		y_idx = -1;
 		while (++y_idx < HEIGHT)
 			//my_mlx_pixel_put(&(vars->data), x_idx, y_idx, check_julia_set(x_idx, y_idx));
-			my_mlx_pixel_put(&(vars->data), x_idx, y_idx, check_mandelbrot_set(x_idx, y_idx));
+			my_mlx_pixel_put(&(vars->img), x_idx, y_idx, check_mandelbrot_set(x_idx, y_idx));
 	}
-	mlx_put_image_to_window(vars->mlx, vars->win, vars->data.img, 0, 0);
+	mlx_put_image_to_window(vars->mlx, vars->win, vars->img.ptr, 0, 0);
+}
+
+int	key_press_handler(int keycode, t_vars *vars)
+{
+	if (keycode == ESC_KEY)
+		exit_complete(vars);
+	draw_fractal(vars);
 	return (0);
-}
-
-int	get_len(char *str)
-{
-	int	len;
-
-	len = 0;
-	while (*(str++))
-		len++;
-	return (len);
-}
-
-void	exit_print_param_info(void)
-{
-	static char	*str = "\nparameter format:\n[fractal type][escape radius][max iteration][real value][imaginary value]\n\nfractal type is integer:\n1) Julia set, 2) Mandelbrot set, 3) Newton fractal\n\nescape radius and max iteration are integers.\n\nlast two parameters are floating point numbers and for Julia set.\n\n";
-
-	if (write(2, str, get_len(str)))
-	exit(EXIT_FAILURE);
-}
-
-double	ft_atod(char *str)
-{
-	long double	integer;
-	double		scale;
-       	int		sign;
-
-	integer = 0;
-	sign = 1;
-	if (*str == '+' || *str == '-')
-		if (*(str++) == '-')
-			sign = -1;
-	while (47 < *str && *str < 58)
-		integer = integer * 10 + sign * (*(str++) - 48);
-	if (*str != '.' && *str != '\0')
-		exit_print_param_info();
-	if (*(str++) == '\0')
-	       return (integer);
-	scale = 10;
-	while (47 < *str && *str < 58)
-	{
-		integer += sign *(*(str++) - 48) / scale;
-		scale *= 10;
-	}
-	if (*str != '\0')
-		exit_print_param_info();
-	return ((double)integer);
 }
 
 int	main(int argc, char **argv)
 {
 	t_vars	vars;
-
-	if (argc < 2)
-		exit_print_param_info();
 	
 	vars.mlx = mlx_init();
 	vars.win = mlx_new_window(vars.mlx, WIDTH, HEIGHT, "fractol");
-	vars.data.img = mlx_new_image(vars.mlx, WIDTH, HEIGHT);
-	vars.data.addr = mlx_get_data_addr(vars.data.img, &vars.data.bits_per_pixel, &vars.data.line_length, &vars.data.endian);
-	mlx_hook(vars.win, 2, 1L<<0, key_pressed, &vars);
+	vars.img.ptr = mlx_new_image(vars.mlx, WIDTH, HEIGHT);
+	vars.img.addr = mlx_get_data_addr(vars.img.ptr, &vars.img.bits_per_pixel, &vars.img.line_length, &vars.img.endian);
+	mlx_hook(vars.win, 2, 1L<<0, key_press_handler, &vars);
 	mlx_loop(vars.mlx);
 	return (0);
 }
