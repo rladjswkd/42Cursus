@@ -108,7 +108,40 @@ int	*get_int(char *str, int *val)
 	return (val);
 }
 
+/*
 int	check_julia_set(int x, int y)
+{
+	t_complex	z;
+	int		r_squared;
+	int		iter;
+	int		size;
+	double		temp;
+	
+	size = width;
+	if (height < width)
+		size = height;
+	z.re = (x - width / 2.0) * (escape_radius + escape_radius) / size;
+	z.im = (height / 2.0 - y) * (escape_radius + escape_radius) / size;
+	r_squared = escape_radius * escape_radius;
+	iter = 0;
+	while (z.re * z.re + z.im * z.im <= r_squared && iter++ < max_iteration)
+	{
+		temp = z.re;
+		z.re = z.re * z.re - z.im * z.im + c_re;
+		z.im = 2 * temp * z.im + c_im;
+	}
+	if (iter > max_iteration)
+		return (0);
+	else
+	{
+		iter = (int)((double)iter / max_iteration * 255.0);
+		iter = 255 - iter;
+		return (iter << 16 | iter << 8 |  iter);
+	}
+}
+*/
+
+int	check_julia_set(int x, int y, t_vars *vars)
 {
 	t_complex	z;
 	int		r_squared;
@@ -119,23 +152,23 @@ int	check_julia_set(int x, int y)
 	size = WIDTH;
 	if (HEIGHT < WIDTH)
 		size = HEIGHT;
-	z.re = (x - WIDTH / 2.0) * (ESCAPE_RADIUS + ESCAPE_RADIUS) / size;
-	z.im = (HEIGHT / 2.0 - y) * (ESCAPE_RADIUS + ESCAPE_RADIUS) / size;
-	r_squared = ESCAPE_RADIUS * ESCAPE_RADIUS;
+	z.re = (x - WIDTH / 2.0) * (vars->params.radius + vars->params.radius) / size;
+	z.im = (HEIGHT / 2.0 - y) * (vars->params.radius + vars->params.radius) / size;
+	r_squared = vars->params.radius * vars->params.radius;
 	iter = 0;
-	while (z.re * z.re + z.im * z.im <= r_squared && iter++ < MAX_ITERATION)
+	while (z.re * z.re + z.im * z.im <= r_squared && iter++ < vars->params.max_iter)
 	{
 		temp = z.re;
-		z.re = z.re * z.re - z.im * z.im + C_RE;
-		z.im = 2 * temp * z.im + C_IM;
+		z.re = z.re * z.re - z.im * z.im + vars->params.julia_c.re;
+		z.im = 2 * temp * z.im + vars->params.julia_c.im;
 	}
-	if (iter > MAX_ITERATION)
+	if (iter > vars->params.max_iter)
 		return (0);
 	else
 	{
-		iter = (int)((double)iter / MAX_ITERATION * 255.0);
+		iter = (int)((double)iter / vars->params.max_iter * 255.0);
 		iter = 255 - iter;
-		return (iter << 16 | iter << 8 |  iter);
+		return (iter << 16 | iter << 8 | iter);
 	}
 }
 
@@ -207,25 +240,22 @@ t_params	*process_params(int argc, char **argv, t_params *params)
 
 void	draw_fractal(t_vars *vars)
 {
-	printf("%d\n", vars->params.type);
-	printf("%d\n", vars->params.radius);
-	printf("%d\n", vars->params.max_iter);
-	printf("%lf\n", vars->params.julia_c.re);
-	printf("%lf\n", vars->params.julia_c.im);
-	/*
-	int	x_idx;
-	int	y_idx;
+	int		x_idx;
+	int		y_idx;
+	int		(*fp)(int, int, t_vars *);
 
+	if (vars->params.type == 1)
+		fp = &check_julia_set;
 	x_idx = -1;
 	while (++x_idx < WIDTH)
 	{
 		y_idx = -1;
 		while (++y_idx < HEIGHT)
+			my_mlx_pixel_put(&(vars->img), x_idx, y_idx, (*fp)(x_idx, y_idx, vars));
 			//my_mlx_pixel_put(&(vars->data), x_idx, y_idx, check_julia_set(x_idx, y_idx));
-			my_mlx_pixel_put(&(vars->img), x_idx, y_idx, check_mandelbrot_set(x_idx, y_idx));
+			//my_mlx_pixel_put(&(vars->img), x_idx, y_idx, check_mandelbrot_set(x_idx, y_idx));
 	}
 	mlx_put_image_to_window(vars->mlx, vars->win, vars->img.ptr, 0, 0);
-	*/
 }
 
 int	key_press_handler(int keycode, t_vars *vars)
