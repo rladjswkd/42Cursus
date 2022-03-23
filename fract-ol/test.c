@@ -4,7 +4,7 @@
 #include <unistd.h>
 #include <stdio.h>
 #define EVENT_KEY		114//15
-#define ESC_KEY			65307//53
+#define ESC_KEY			53//65307
 #define WHEELUP			4
 #define WHEELDOWN		5
 #define WIDTH			1000
@@ -37,6 +37,7 @@ typedef struct	s_params
 typedef	struct	s_screen
 {
 	double	zoom_rate;
+	double	scale;
 	int		x_start;
 	int		y_start;
 	int		img_width;
@@ -127,79 +128,13 @@ int	*get_int(char *str, int *val)
 		return (0);
 	return (val);
 }
-/*
-int	check_julia_set(int x, int y)
-{
-	t_complex	z;
-	int		r_squared;
-	int		iter;
-	int		size;
-	double		temp;
-	
-	size = width;
-	if (height < width)
-		size = height;
-	z.re = (x - width / 2.0) * (escape_radius + escape_radius) / size;
-	z.im = (height / 2.0 - y) * (escape_radius + escape_radius) / size;
-	r_squared = escape_radius * escape_radius;
-	iter = 0;
-	while (z.re * z.re + z.im * z.im <= r_squared && iter++ < max_iteration)
-	{
-		temp = z.re;
-		z.re = z.re * z.re - z.im * z.im + c_re;
-		z.im = 2 * temp * z.im + c_im;
-	}
-	if (iter > max_iteration)
-		return (0);
-	else
-	{
-		iter = (int)((double)iter / max_iteration * 255.0);
-		iter = 255 - iter;
-		return (iter << 16 | iter << 8 |  iter);
-	}
-}
-
-int	check_mandelbrot_set(int x, int y)
-{
-	t_complex	z;
-	t_complex	c;
-	int		r_squared;
-	int		iter;
-	int		size;
-	double		temp;
-	
-	size = WIDTH;
-	if (HEIGHT < WIDTH)
-		size = HEIGHT;
-	c.re = (x - WIDTH / 2.0) * (ESCAPE_RADIUS + ESCAPE_RADIUS) / size;
-	c.im = (HEIGHT / 2.0 - y) * (ESCAPE_RADIUS + ESCAPE_RADIUS) / size;
-	z.re = 0;
-	z.im = 0;
-	r_squared = ESCAPE_RADIUS * ESCAPE_RADIUS;
-	iter = 0;
-	while (z.re * z.re + z.im * z.im <= r_squared && iter++ < MAX_ITERATION)
-	{
-		temp = z.re;
-		z.re = z.re * z.re - z.im * z.im + c.re;
-		z.im = 2 * temp * z.im + c.im;
-	}
-	if (iter > MAX_ITERATION)
-		return (0);
-	else
-	{
-		iter = (int)((double)iter / MAX_ITERATION * 255.0);
-		iter = 255 - iter;
-		return (iter << 16 | iter << 8 |  iter);
-	}
-}
-*/
 
 t_complex	get_transposed_point(int x, int y, t_vars *vars)
 {
 	t_complex	res;
 
-	res.re = (x - WIDTH / 2.0) * (vars->params.radius + vars->params.radius) / SIZE;
-	res.im = (HEIGHT / 2.0 - y) * (vars->params.radius + vars->params.radius) / SIZE;
+	res.re = (x - WIDTH / 2.0) * (vars->params.radius + vars->params.radius) / SIZE / vars->scr.scale;
+	res.im = (HEIGHT / 2.0 - y) * (vars->params.radius + vars->params.radius) / SIZE / vars->scr.scale;
 	return (res);
 }
 
@@ -334,29 +269,24 @@ int	base_handler(t_vars *vars)
 	return (0);
 }
 
-void	zoom_in(int x, int y, t_vars *vars)
+void	zoom_in(t_vars *vars)
 {
-//	vars->x_start = (int)((double)x / WIDTH * (WIDTH * vars->zoom_rate)) - x;
-//	vars->y_start = (int)((double)y / HEIGHT * (HEIGHT * vars->zoom_rate)) - y;
-	vars->scr.x_start = (int)((double)x / vars->scr.img_width * (vars->scr.img_width * vars->scr.zoom_rate)) - x;
-	vars->scr.y_start = (int)((double)y / vars->scr.img_height * (vars->scr.img_height * vars->scr.zoom_rate)) - y;
-	vars->scr.img_width *= vars->scr.zoom_rate;
-	vars->scr.img_height *= vars->scr.zoom_rate;
+	vars->scr.scale /= vars->scr.zoom_rate;
 }
 
-void	zoom_out(int x, int y, t_vars *vars)
+void	zoom_out(t_vars *vars)
 {
-	(void)x;
-	(void)y;
-	(void)vars;
+	vars->scr.scale *= vars->scr.zoom_rate;
 }
 
 int	zoom_handler(int button, int x, int y, t_vars *vars)
 {
+	(void)x;
+	(void)y;
 	if (button == WHEELUP)
-		zoom_in(x, y, vars);
+		zoom_in(vars);
 	else if (button == WHEELDOWN)
-		zoom_out(x, y, vars);
+		zoom_out(vars);
 	return (0);
 }
 
@@ -371,6 +301,7 @@ int	main(int argc, char **argv)
 	if (!process_params(argc, argv, &(vars.params)))
 		exit_print_param_info(&vars);
 	vars.scr.zoom_rate = 1.1;
+	vars.scr.scale = 1;
 	vars.scr.x_start = 0;
 	vars.scr.y_start = 0;
 	vars.scr.img_width = WIDTH;

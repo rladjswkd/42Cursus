@@ -7,12 +7,12 @@ RM = rm
 RMFLAGS = -f
 
 %.o : %.c
-	$(CC) $(CFLAGS) -Imlx -c $< -o $@
+	$(CC) $(CFLAGS) -I/usr/include -Imlx_linux -O3 -c $< -o $@ -g
 
 all : $(NAME)
 
 $(NAME) : $(OBJS)
-	$(CC) $(OBJS) -Lmlx -lmlx -framework OpenGL -framework AppKit -o $(NAME)
+	$(CC) $(OBJS) -Lmlx_linux -lmlx_Linux -L/usr/lib -Imlx_linux -lXext -lX11 -lm -lz -o $(NAME) -g
 
 clean :
 	$(RM) $(RMFLAGS) $(OBJS)
