@@ -155,8 +155,8 @@ int	check_divergence(t_complex z, t_complex c, int squared, int max_iter)
 
 int	get_iter_color(int iter, int max_iter)
 {
-	if (iter == max_iter)
-		return (0);
+	if (iter > max_iter)
+		return (0x0);
 	iter = (int)((double)iter / max_iter * 255.0);
 	iter = 255 - iter;
 	return (iter << 16 | iter << 8 | iter);
@@ -190,6 +190,103 @@ int	check_mandelbrot_set(int x, int y, t_vars *vars)
 	iter = check_divergence(z, c, squared, vars->params.max_iter);
 	return (get_iter_color(iter, vars->params.max_iter));
 }
+
+t_complex	get_complex_pow_2(t_complex v)
+{
+	t_complex	res;
+	double		temp_re;
+
+	temp_re = v.re;
+	res.re = v.re * v.re - v.im * v.im;
+	res.im = 2 * temp_re * v.im;
+	return (res);
+}
+
+t_complex	get_complex_pow_3(t_complex v)
+{
+	t_complex	res;
+	double		temp_re;
+
+	temp_re = v.re;
+	res.re = pow(v.re, 3) - 3 * v.re * v.im * v.im;
+	res.im = -pow(v.im, 3) + 3 * v.re * v.re * v.im;
+	return (res);
+}
+
+t_complex	get_func_value(t_complex v)
+{
+	t_complex	res;
+
+	res = get_complex_pow_3(v);
+	res.re -= 1;
+	return (res);
+}
+
+t_complex	get_derivative_value(t_complex v)
+{
+	t_complex	res;
+
+	res = get_complex_pow_2(v);
+	res.re *= 3;
+	res.im *= 3;
+	return (res);
+}
+
+t_complex	divide_func_derivative(t_complex v)
+{
+	t_complex	res;
+	t_complex	p;
+	t_complex	p_prime;
+	double		divider;
+
+	p = get_func_value(v);
+	p_prime = get_derivative_value(v);
+	divider = p_prime.re * p_prime.re + p_prime.im * p_prime.im;
+	res.re = (p.re * p_prime.re + p.im * p_prime.im) / divider;
+	res.im = (p.im * p_prime.re - p.re * p_prime.im) / divider;
+	return (res);
+}
+
+int	is_close_to_roots(t_complex v)
+{
+	double		tol;
+	t_complex	roots[3]; 
+	
+	tol = 0.000001;
+	roots[0] = (t_complex){1, 0};
+	roots[1] = (t_complex){-0.5, sqrt(3)/2.0};
+	roots[2] = (t_complex){-0.5, -sqrt(3)/2.0};
+	if (fabs(v.re - roots[0].re) < tol && fabs(v.im - roots[0].im) < tol)
+		return (0);
+	else if (fabs(v.re - roots[1].re) < tol && fabs(v.im - roots[1].im) < tol)
+		return (1);
+	else if (fabs(v.re - roots[2].re) < tol && fabs(v.im - roots[2].im) < tol)
+		return (2);
+	return (-1);
+}
+
+int	check_newton(int x, int y, t_vars *vars)
+{
+	t_complex	z;
+	t_complex	minus;
+	int			iter;
+	int			color_idx;
+	static int	color[3] = {0xFF0000, 0x00FF00, 0x0000FF};
+
+	z = get_transposed_point(x, y, vars);
+	iter = 0;
+	while (iter++ < vars->params.max_iter)
+	{
+		minus = divide_func_derivative(z);
+		z.re -= minus.re;
+		z.im -= minus.im;
+		color_idx = is_close_to_roots(z);
+		if (color_idx > -1)
+			return (color[color_idx]);
+	}
+	return (0);
+}
+
 void	exit_print_param_info(t_vars *vars)
 {
 	char	*str;
@@ -243,7 +340,7 @@ void	draw_fractal(t_vars *vars)
 	else if (vars->params.type == 2)
 		fp = &check_mandelbrot_set;
 	else
-		fp = 0;
+		fp = &check_newton;
 	x_idx = -1;
 	while (++x_idx < WIDTH)
 	{
@@ -271,13 +368,11 @@ int	base_handler(t_vars *vars)
 
 void	zoom_in(t_vars *vars)
 {
-	mlx_clear_window(vars->mlx, vars->win);
 	vars->scr.scale /= vars->scr.zoom_rate;
 }
 
 void	zoom_out(t_vars *vars)
 {
-	mlx_clear_window(vars->mlx, vars->win);
 	vars->scr.scale *= vars->scr.zoom_rate;
 }
 
