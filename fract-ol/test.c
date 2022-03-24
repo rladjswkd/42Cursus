@@ -271,11 +271,13 @@ int	base_handler(t_vars *vars)
 
 void	zoom_in(t_vars *vars)
 {
+	mlx_clear_window(vars->mlx, vars->win);
 	vars->scr.scale /= vars->scr.zoom_rate;
 }
 
 void	zoom_out(t_vars *vars)
 {
+	mlx_clear_window(vars->mlx, vars->win);
 	vars->scr.scale *= vars->scr.zoom_rate;
 }
 
