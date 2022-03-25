@@ -7,6 +7,10 @@
 #define ESC_KEY			53//65307
 #define WHEELUP			4
 #define WHEELDOWN		5
+#define LEFT			65361
+#define	UP			65362
+#define	RIGHT			65363
+#define	DOWN			65364
 #define WIDTH			1000
 #define HEIGHT			1000
 #define SIZE			1000
@@ -40,8 +44,6 @@ typedef	struct	s_screen
 	double	scale;
 	int		x_start;
 	int		y_start;
-	int		img_width;
-	int		img_height;
 }		t_screen;
 
 typedef struct	s_vars
@@ -133,8 +135,8 @@ t_complex	get_transposed_point(int x, int y, t_vars *vars)
 {
 	t_complex	res;
 
-	res.re = (x - WIDTH / 2.0) * (vars->params.radius + vars->params.radius) / SIZE / vars->scr.scale;
-	res.im = (HEIGHT / 2.0 - y) * (vars->params.radius + vars->params.radius) / SIZE / vars->scr.scale;
+	res.re = (x - WIDTH / 2.0) * (vars->params.radius + vars->params.radius) / (SIZE * vars->scr.scale);
+	res.im = (HEIGHT / 2.0 - y) * (vars->params.radius + vars->params.radius) / (SIZE * vars->scr.scale);
 	return (res);
 }
 
@@ -205,9 +207,7 @@ t_complex	get_complex_pow_2(t_complex v)
 t_complex	get_complex_pow_3(t_complex v)
 {
 	t_complex	res;
-	double		temp_re;
 
-	temp_re = v.re;
 	res.re = pow(v.re, 3) - 3 * v.re * v.im * v.im;
 	res.im = -pow(v.im, 3) + 3 * v.re * v.re * v.im;
 	return (res);
@@ -271,7 +271,7 @@ int	check_newton(int x, int y, t_vars *vars)
 	t_complex	minus;
 	int			iter;
 	int			color_idx;
-	static int	color[3] = {0xFF0000, 0x00FF00, 0x0000FF};
+	static int	color[3] = {0x0000FF, 0x00FF00, 0xFF0000};
 
 	z = get_transposed_point(x, y, vars);
 	iter = 0;
@@ -355,6 +355,14 @@ int	key_press_handler(int keycode, t_vars *vars)
 {
 	if (keycode == ESC_KEY)
 		exit_complete(vars);
+	if (keycode == LEFT)
+		vars->scr.x_start -= 50;
+	else if (keycode == RIGHT)
+		vars->scr.x_start += 50;
+	else if (keycode == UP)
+		vars->scr.y_start -= 50;
+	else if (keycode == DOWN)
+		vars->scr.y_start += 50;
 	return (0);
 }
 
@@ -366,24 +374,14 @@ int	base_handler(t_vars *vars)
 	return (0);
 }
 
-void	zoom_in(t_vars *vars)
-{
-	vars->scr.scale /= vars->scr.zoom_rate;
-}
-
-void	zoom_out(t_vars *vars)
-{
-	vars->scr.scale *= vars->scr.zoom_rate;
-}
-
 int	zoom_handler(int button, int x, int y, t_vars *vars)
 {
 	(void)x;
 	(void)y;
 	if (button == WHEELUP)
-		zoom_in(vars);
+		vars->scr.scale /= vars->scr.zoom_rate;
 	else if (button == WHEELDOWN)
-		zoom_out(vars);
+		vars->scr.scale *= vars->scr.zoom_rate;
 	return (0);
 }
 
@@ -401,8 +399,6 @@ int	main(int argc, char **argv)
 	vars.scr.scale = 1;
 	vars.scr.x_start = 0;
 	vars.scr.y_start = 0;
-	vars.scr.img_width = WIDTH;
-	vars.scr.img_height = HEIGHT;
 	//vars.effect_val = 0;
 	mlx_hook(vars.win, 2, 1L<<0, key_press_handler, &vars);
 	mlx_hook(vars.win, 4, 1L<<2, zoom_handler, &vars);
