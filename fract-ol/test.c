@@ -135,8 +135,10 @@ t_complex	get_transposed_point(int x, int y, t_vars *vars)
 {
 	t_complex	res;
 
-	res.re = (x - WIDTH / 2.0) * (vars->params.radius + vars->params.radius) / (SIZE * vars->scr.scale);
-	res.im = (HEIGHT / 2.0 - y) * (vars->params.radius + vars->params.radius) / (SIZE * vars->scr.scale);
+	res.re = (x - WIDTH / 2.0) / SIZE * (vars->params.radius + vars->params.radius) * vars->scr.scale;
+	res.im = (HEIGHT / 2.0 - y) / SIZE * (vars->params.radius + vars->params.radius) * vars->scr.scale;
+	res.re += (double)vars->scr.x_start / SIZE * (vars->params.radius + vars->params.radius);
+	res.im += (double)vars->scr.y_start / SIZE * (vars->params.radius + vars->params.radius);
 	return (res);
 }
 
@@ -346,7 +348,7 @@ void	draw_fractal(t_vars *vars)
 	{
 		y_idx = -1;
 		while (++y_idx < HEIGHT)
-			my_mlx_pixel_put(&(vars->img), x_idx, y_idx, (*fp)(vars->scr.x_start + x_idx, vars->scr.y_start + y_idx, vars));
+			my_mlx_pixel_put(&(vars->img), x_idx, y_idx, (*fp)(x_idx, y_idx, vars));
 	}
 	mlx_put_image_to_window(vars->mlx, vars->win, vars->img.ptr, 0, 0);
 }
@@ -356,13 +358,13 @@ int	key_press_handler(int keycode, t_vars *vars)
 	if (keycode == ESC_KEY)
 		exit_complete(vars);
 	if (keycode == LEFT)
-		vars->scr.x_start -= 50;
+		vars->scr.x_start -= 55;
 	else if (keycode == RIGHT)
-		vars->scr.x_start += 50;
+		vars->scr.x_start += 55;
 	else if (keycode == UP)
-		vars->scr.y_start -= 50;
+		vars->scr.y_start -= 55;
 	else if (keycode == DOWN)
-		vars->scr.y_start += 50;
+		vars->scr.y_start += 55;
 	return (0);
 }
 
