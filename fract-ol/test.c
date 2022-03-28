@@ -42,8 +42,8 @@ typedef	struct	s_screen
 {
 	double	zoom_rate;
 	double	scale;
-	int		x_start;
-	int		y_start;
+	double	x_start;
+	double	y_start;
 }		t_screen;
 
 typedef struct	s_vars
@@ -358,13 +358,13 @@ int	key_press_handler(int keycode, t_vars *vars)
 	if (keycode == ESC_KEY)
 		exit_complete(vars);
 	if (keycode == LEFT)
-		vars->scr.x_start -= 55;
+		vars->scr.x_start -= 10 * vars->scr.scale;
 	else if (keycode == RIGHT)
-		vars->scr.x_start += 55;
+		vars->scr.x_start += 10 * vars->scr.scale;
 	else if (keycode == UP)
-		vars->scr.y_start -= 55;
+		vars->scr.y_start -= 10 * vars->scr.scale;
 	else if (keycode == DOWN)
-		vars->scr.y_start += 55;
+		vars->scr.y_start += 10 * vars->scr.scale;
 	return (0);
 }
 
