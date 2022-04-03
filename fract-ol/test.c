@@ -3,8 +3,8 @@
 #include <math.h>
 #include <unistd.h>
 #include <stdio.h>
-#define EVENT_KEY		114//15
 #define ESC_KEY			53//65307
+#define ZOOM_KEY		99
 #define WHEELUP			4
 #define WHEELDOWN		5
 #define LEFT			65361
@@ -40,10 +40,9 @@ typedef struct	s_params
 
 typedef	struct	s_screen
 {
-	double	zoom_rate;
-	double	scale;
-	double	x_start;
-	double	y_start;
+	t_complex	mouse;
+	t_complex	frame_min;
+	t_complex	frame_max;
 }		t_screen;
 
 typedef struct	s_vars
@@ -53,6 +52,7 @@ typedef struct	s_vars
 	t_img		img;
 	t_params	params;
 	t_screen	scr;
+	int		zoom_mode;
 	int		effect_val;
 }		t_vars;
 
@@ -131,14 +131,14 @@ int	*get_int(char *str, int *val)
 	return (val);
 }
 
-t_complex	get_transposed_point(int x, int y, t_vars *vars)
+t_complex	transpose(int x, int y, t_vars *vars)
 {
 	t_complex	res;
-
-	res.re = (x - WIDTH / 2.0) / SIZE * (vars->params.radius + vars->params.radius) * vars->scr.scale;
-	res.im = (HEIGHT / 2.0 - y) / SIZE * (vars->params.radius + vars->params.radius) * vars->scr.scale;
-	res.re += (double)vars->scr.x_start / SIZE * (vars->params.radius + vars->params.radius);
-	res.im += (double)vars->scr.y_start / SIZE * (vars->params.radius + vars->params.radius);
+	
+	res.re = (double)x / SIZE * (vars->scr.frame_max.re - vars->scr.frame_min.re)
+		+ vars->scr.frame_min.re;
+	res.im = -(double)y / SIZE * (vars->scr.frame_max.im - vars->scr.frame_min.im)
+		+ vars->scr.frame_max.im;
 	return (res);
 }
 
@@ -173,7 +173,7 @@ int	check_julia_set(int x, int y, t_vars *vars)
 	int		squared;
 	int		iter;
 	
-	z = get_transposed_point(x, y, vars);
+	z = transpose(x, y, vars);
 	c = vars->params.julia_c;
 	squared = vars->params.radius * vars->params.radius;
 	iter = check_divergence(z, c, squared, vars->params.max_iter);
@@ -189,7 +189,7 @@ int	check_mandelbrot_set(int x, int y, t_vars *vars)
 	
 	z.re = 0;
 	z.im = 0;
-	c = get_transposed_point(x, y, vars);
+	c = transpose(x, y, vars);
 	squared = vars->params.radius * vars->params.radius;
 	iter = check_divergence(z, c, squared, vars->params.max_iter);
 	return (get_iter_color(iter, vars->params.max_iter));
@@ -275,7 +275,7 @@ int	check_newton(int x, int y, t_vars *vars)
 	int			color_idx;
 	static int	color[3] = {0x0000FF, 0x00FF00, 0xFF0000};
 
-	z = get_transposed_point(x, y, vars);
+	z = transpose(x, y, vars);
 	iter = 0;
 	while (iter++ < vars->params.max_iter)
 	{
@@ -353,18 +353,36 @@ void	draw_fractal(t_vars *vars)
 	mlx_put_image_to_window(vars->mlx, vars->win, vars->img.ptr, 0, 0);
 }
 
+void	move_point(t_vars *vars, double val_x, double val_y)
+{
+	vars->scr.frame_max.re += val_x;
+	vars->scr.frame_min.re += val_x;
+	vars->scr.frame_max.im += val_y;
+	vars->scr.frame_min.im += val_y;
+}
+
 int	key_press_handler(int keycode, t_vars *vars)
 {
+	double	w;
+	double	h;
+
 	if (keycode == ESC_KEY)
 		exit_complete(vars);
+	if (keycode == ZOOM_KEY)
+	{
+		vars->zoom_mode = !(vars->zoom_mode);
+		return (0);
+	}
+	w = vars->scr.frame_max.re - vars->scr.frame_min.re;
+	h = vars->scr.frame_max.im - vars->scr.frame_min.im;
 	if (keycode == LEFT)
-		vars->scr.x_start -= 10 * vars->scr.scale;
+		move_point(vars, -w * 0.05, 0);
 	else if (keycode == RIGHT)
-		vars->scr.x_start += 10 * vars->scr.scale;
+		move_point(vars, w * 0.05, 0);
 	else if (keycode == UP)
-		vars->scr.y_start -= 10 * vars->scr.scale;
+		move_point(vars, 0, h * 0.05);
 	else if (keycode == DOWN)
-		vars->scr.y_start += 10 * vars->scr.scale;
+		move_point(vars, 0, -h * 0.05);
 	return (0);
 }
 
@@ -378,12 +396,22 @@ int	base_handler(t_vars *vars)
 
 int	zoom_handler(int button, int x, int y, t_vars *vars)
 {
-	(void)x;
-	(void)y;
-	if (button == WHEELUP)
-		vars->scr.scale /= vars->scr.zoom_rate;
-	else if (button == WHEELDOWN)
-		vars->scr.scale *= vars->scr.zoom_rate;
+	double	rate;
+
+	if (button != WHEELUP && button != WHEELDOWN)
+		return (0);
+	rate = 1.1;
+	if (button == WHEELDOWN)
+		rate = 1 / 1.1;
+	vars->scr.mouse = transpose(x, y, vars);
+	vars->scr.frame_max.re = vars->scr.mouse.re
+		+ (vars->scr.frame_max.re - vars->scr.mouse.re) * rate;
+	vars->scr.frame_max.im = vars->scr.mouse.im
+		+ (vars->scr.frame_max.im - vars->scr.mouse.im) * rate;
+	vars->scr.frame_min.re = vars->scr.mouse.re
+		+ (vars->scr.frame_min.re - vars->scr.mouse.re) * rate;
+	vars->scr.frame_min.im = vars->scr.mouse.im
+		+ (vars->scr.frame_min.im - vars->scr.mouse.im) * rate;
 	return (0);
 }
 
@@ -397,10 +425,11 @@ int	main(int argc, char **argv)
 	vars.img.addr = mlx_get_data_addr(vars.img.ptr, &vars.img.bits_per_pixel, &vars.img.line_length, &vars.img.endian);
 	if (!process_params(argc, argv, &(vars.params)))
 		exit_print_param_info(&vars);
-	vars.scr.zoom_rate = 1.1;
-	vars.scr.scale = 1;
-	vars.scr.x_start = 0;
-	vars.scr.y_start = 0;
+	vars.scr.frame_max.re = vars.params.radius;
+	vars.scr.frame_max.im = vars.params.radius;
+	vars.scr.frame_min.re = -vars.params.radius;
+	vars.scr.frame_min.im = -vars.params.radius;
+	vars.zoom_mode = 0;
 	//vars.effect_val = 0;
 	mlx_hook(vars.win, 2, 1L<<0, key_press_handler, &vars);
 	mlx_hook(vars.win, 4, 1L<<2, zoom_handler, &vars);
