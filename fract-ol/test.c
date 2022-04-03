@@ -403,7 +403,9 @@ int	zoom_handler(int button, int x, int y, t_vars *vars)
 	rate = 1.1;
 	if (button == WHEELDOWN)
 		rate = 1 / 1.1;
-	vars->scr.mouse = transpose(x, y, vars);
+	vars->scr.mouse = (t_complex){0, 0};
+	if (vars->zoom_mode)
+		vars->scr.mouse = transpose(x, y, vars);
 	vars->scr.frame_max.re = vars->scr.mouse.re
 		+ (vars->scr.frame_max.re - vars->scr.mouse.re) * rate;
 	vars->scr.frame_max.im = vars->scr.mouse.im
