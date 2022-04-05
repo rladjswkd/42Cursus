@@ -142,28 +142,73 @@ t_complex	transpose(int x, int y, t_vars *vars)
 	return (res);
 }
 
-int	check_divergence(t_complex z, t_complex c, int squared, int max_iter)
+int	check_divergence(t_complex *z, t_complex c, int squared, int max_iter)
 {
 	int		iter;
-	double		temp;
-
+	double	temp;
+	
 	iter = 0;
-	while (z.re * z.re + z.im * z.im <= squared && iter++ < max_iter)
+	while (z->re * z->re + z->im * z->im <= squared && iter++ < max_iter)
 	{
-		temp = z.re;
-		z.re = z.re * z.re - z.im * z.im + c.re;
-		z.im = 2 * temp * z.im + c.im;
+		temp = z->re;
+		z->re = z->re * z->re - z->im * z->im + c.re;
+		z->im = 2 * temp * z->im + c.im;
 	}
 	return (iter);
 }
 
-int	get_iter_color(int iter, int max_iter)
+int	interpolate_linearly(int c1, int c2, double frac)
 {
-	if (iter > max_iter)
+	int	r;
+	int	g;
+	int	b;
+
+	r = c1 >> 16 & 0xff;
+	g = c1 >> 8 & 0xff;
+	b = c1 & 0xff;
+	return (get_rgb((int)(((c2 >> 16 & 0xff) - r) * frac + r),
+				(int)(((c2 >> 8 && 0xff) - g) * frac + g),
+				(int)(((c2 && 0xff) - b) * frac + b)
+				));
+}
+
+int	get_iter_color(int iter, t_complex z, t_vars *vars)
+{
+	int	palette[16] = {
+		    get_rgb(66, 30, 15),
+		    get_rgb(25, 7, 26),
+		    get_rgb(9, 1, 47),
+		    get_rgb(4, 4, 73),
+		    get_rgb(0, 7, 100),
+		    get_rgb(12, 44, 138),
+		    get_rgb(24, 82, 177),
+		    get_rgb(57, 125, 209),
+		    get_rgb(134, 181, 229),
+		    get_rgb(211, 236, 248),
+		    get_rgb(241, 233, 191),
+		    get_rgb(248, 201, 95),
+		    get_rgb(255, 170, 0),
+		    get_rgb(204, 128, 0),
+		    get_rgb(153, 87, 0),
+		    get_rgb(106, 52, 3),
+	};
+	int	color1;
+	int	color2;
+	double	continuous;
+
+	if (iter > vars->params.max_iter)
 		return (0x0);
-	iter = (int)((double)iter / max_iter * 255.0);
-	iter = 255 - iter;
-	return (iter << 16 | iter << 8 | iter);
+	color1 = palette[iter % 16];
+	color2 = palette[(iter + 1) % 16];
+	continuous = iter + 1 - log((log(z.re * z.re + z.im * z.im) / 2) / log(2)) / log(2);
+	return (interpolate_linearly(color1, color2, continuous - (int)continuous));
+	/*
+	(void)color1;
+	(void)color2;
+	(void)continuous;
+	(void)z;
+	return (palette[iter % 16]);
+	*/
 }
 
 int	check_julia_set(int x, int y, t_vars *vars)
@@ -176,8 +221,8 @@ int	check_julia_set(int x, int y, t_vars *vars)
 	z = transpose(x, y, vars);
 	c = vars->params.julia_c;
 	squared = vars->params.radius * vars->params.radius;
-	iter = check_divergence(z, c, squared, vars->params.max_iter);
-	return (get_iter_color(iter, vars->params.max_iter));
+	iter = check_divergence(&z, c, squared, vars->params.max_iter);
+	return (get_iter_color(iter, z, vars));
 }
 
 int	check_mandelbrot_set(int x, int y, t_vars *vars)
@@ -191,8 +236,8 @@ int	check_mandelbrot_set(int x, int y, t_vars *vars)
 	z.im = 0;
 	c = transpose(x, y, vars);
 	squared = vars->params.radius * vars->params.radius;
-	iter = check_divergence(z, c, squared, vars->params.max_iter);
-	return (get_iter_color(iter, vars->params.max_iter));
+	iter = check_divergence(&z, c, squared, vars->params.max_iter);
+	return (get_iter_color(iter, z, vars));
 }
 
 t_complex	get_complex_pow_2(t_complex v)
