@@ -167,8 +167,8 @@ int	interpolate_linearly(int c1, int c2, double frac)
 	g = c1 >> 8 & 0xff;
 	b = c1 & 0xff;
 	return (get_rgb((int)(((c2 >> 16 & 0xff) - r) * frac + r),
-				(int)(((c2 >> 8 && 0xff) - g) * frac + g),
-				(int)(((c2 && 0xff) - b) * frac + b)
+				(int)(((c2 >> 8 & 0xff) - g) * frac + g),
+				(int)(((c2 & 0xff) - b) * frac + b)
 				));
 }
 
@@ -197,11 +197,11 @@ int	get_iter_color(int iter, t_complex z, t_vars *vars)
 	double	continuous;
 
 	if (iter > vars->params.max_iter)
-		return (0x0);
-	color1 = palette[iter % 16];
-	color2 = palette[(iter + 1) % 16];
-	continuous = iter + 1 - log((log(z.re * z.re + z.im * z.im) / 2) / log(2)) / log(2);
-	return (interpolate_linearly(color1, color2, continuous - (int)continuous));
+		return (0x000000);
+	continuous = iter - (log((log(z.re * z.re + z.im * z.im) / 2.0) / log(vars->params.radius)) / log(2));
+	color1 = palette[(int)floor(continuous) % 16];
+	color2 = palette[(int)floor(continuous) % 16 + 1];
+	return (interpolate_linearly(color1, color2, continuous - floor(continuous)));
 	/*
 	(void)color1;
 	(void)color2;
