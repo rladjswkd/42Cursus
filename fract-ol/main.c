@@ -15,7 +15,8 @@ int	main(int argc, char **argv)
 	vars.scr.frame_min.re = -vars.params.radius;
 	vars.scr.frame_min.im = -vars.params.radius;
 	vars.zoom_mode = 0;
-	//vars.effect_val = 0;
+	vars.color_val = 0;
+	vars.color_flag = 0;
 	mlx_hook(vars.win, 2, 1L<<0, key_press_handler, &vars);
 	mlx_hook(vars.win, 4, 1L<<2, zoom_handler, &vars);
 	mlx_loop_hook(vars.mlx, base_handler, &vars);

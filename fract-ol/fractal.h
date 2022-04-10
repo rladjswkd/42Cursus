@@ -4,8 +4,9 @@
 # include <stdlib.h>
 # include <math.h>
 # include <unistd.h>
-# define ESC_KEY	53//65307
-# define ZOOM_KEY	99
+# define ESC_KEY	65307//53
+# define ZOOM_KEY	122
+# define COLOR_KEY	99//8
 # define WHEELUP	4
 # define WHEELDOWN	5
 # define LEFT		65361
@@ -54,7 +55,8 @@ typedef struct	s_vars
 	t_params	params;
 	t_screen	scr;
 	int		zoom_mode;
-	int		effect_val;
+	int		color_flag;
+	int		color_val;
 }		t_vars;
 
 int		get_iter_color(int iter, t_complex z, t_vars *vars);

@@ -1,5 +1,16 @@
 #include "fractal.h"
 
+static t_complex	get_next_z(t_complex z)
+{
+	t_complex	frac;
+	t_complex	res;
+
+	frac = divide_func_derivative(z);
+	res.re = z.re - frac.re;
+	res.im = z.im - frac.im;
+	return (res);
+}
+
 static int	is_close_to_roots(t_complex v)
 {
 	double		tol;
@@ -21,21 +32,24 @@ static int	is_close_to_roots(t_complex v)
 int	check_newton(int x, int y, t_vars *vars)
 {
 	t_complex	z;
-	t_complex	minus;
 	int			iter;
-	int			color_idx;
-	static int	color[3] = {0x0000FF, 0x00FF00, 0xFF0000};
+	int			root;
+	static int		palette_idx = 0;
+	static int		palette[2][3] = {
+		{0x0000FF, 0x00FF00, 0xFF0000},
+		{0xFF00FF, 0x00FFFF, 0xFFFF00}
+	};
 
+	if (vars->color_flag)
+		palette_idx = (palette_idx + 1) % 2;
 	z = transpose(x, y, vars);
 	iter = 0;
 	while (iter++ < vars->params.max_iter)
 	{
-		minus = divide_func_derivative(z);
-		z.re -= minus.re;
-		z.im -= minus.im;
-		color_idx = is_close_to_roots(z);
-		if (color_idx > -1)
-			return (color[color_idx]);
+		z = get_next_z(z);
+		root = is_close_to_roots(z);
+		if (root > -1)
+			return (palette[palette_idx][root]);
 	}
 	return (0);
 }

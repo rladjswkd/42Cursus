@@ -10,8 +10,8 @@ static void	move_point(t_vars *vars, double val_x, double val_y)
 
 int	key_press_handler(int keycode, t_vars *vars)
 {
-	double	w;
-	double	h;
+	double	dw;
+	double	dh;
 
 	if (keycode == ESC_KEY)
 		exit_complete(vars);
@@ -20,21 +20,23 @@ int	key_press_handler(int keycode, t_vars *vars)
 		vars->zoom_mode = !(vars->zoom_mode);
 		return (0);
 	}
-	w = vars->scr.frame_max.re - vars->scr.frame_min.re;
-	h = vars->scr.frame_max.im - vars->scr.frame_min.im;
-	if (keycode == LEFT)
-		move_point(vars, -w * 0.05, 0);
-	else if (keycode == RIGHT)
-		move_point(vars, w * 0.05, 0);
-	else if (keycode == UP)
-		move_point(vars, 0, h * 0.05);
-	else if (keycode == DOWN)
-		move_point(vars, 0, -h * 0.05);
+	if (keycode == COLOR_KEY)
+	{
+		vars->color_flag = !(vars->color_flag);
+		vars->color_val = 0;
+		return (0);
+	}
+	dw = (vars->scr.frame_max.re - vars->scr.frame_min.re) * 0.05;
+	dh = (vars->scr.frame_max.im - vars->scr.frame_min.im) * 0.05;
+	move_point(vars, -dw * (keycode == LEFT) + dw * (keycode == RIGHT),
+			dh * (keycode == UP) - dh * (keycode == DOWN));
 	return (0);
 }
 
 int	base_handler(t_vars *vars)
 {
+	if (vars->color_flag)
+		vars->color_val += 0x00222222;
 	draw_fractal(vars);
 	return (0);
 }
