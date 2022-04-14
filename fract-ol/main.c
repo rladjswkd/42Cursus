@@ -6,7 +6,7 @@
 /*   By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/14 15:27:30 by gyepark           #+#    #+#             */
-/*   Updated: 2022/04/14 20:36:35 by gyepark          ###   ########.fr       */
+/*   Updated: 2022/04/14 20:42:06 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,5 @@ int	main(int argc, char **argv)
 	mlx_mouse_hook(vars.win, zoom_handler, &vars);
 	mlx_loop_hook(vars.mlx, base_handler, &vars);
 	mlx_loop(vars.mlx);
-	while (1)
-	{}
 	return (0);
 }
