@@ -6,27 +6,33 @@
 /*   By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/14 15:10:46 by gyepark           #+#    #+#             */
-/*   Updated: 2022/04/14 16:12:50 by gyepark          ###   ########.fr       */
+/*   Updated: 2022/04/14 19:57:16 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "fractal.h"
 
-void	exit_print_param_info(t_vars *vars)
+void	exit_print_param_info(t_vars *vars, int print)
 {
 	char	*str;
 
-	str = "\nParameter format:\n\t[fractal type][escape radius]\
-		[max iteration][real value][imaginary value]\n\n\
-		Fractal type is integer:\n\t\
-		1) Julia set, 2) Mandelbrot set, 3) Newton fractal\n\n\
-		Escape radius and max iteration are integers.\n\n\
-		Last two parameters are floating point numbers\
-		and for Julia set.\n\n";
-	write(2, str, get_len(str));
-	mlx_destroy_image(vars->mlx, vars->img.ptr);
-	mlx_destroy_window(vars->mlx, vars->win);
-	free(vars->mlx);
+	if (print)
+	{
+		str = "\nParameter format:\n\t[fractal type][escape radius]\
+[max iteration][real value][imaginary value]\n\n\
+Fractal type is integer:\n\t\
+1) Julia set, 2) Mandelbrot set, 3) Newton fractal\n\n\
+Escape radius and max iteration are integers.\n\n\
+Last two parameters are floating point numbers\
+and for Julia set.\n\n";
+		write(2, str, get_len(str));
+	}
+	if (vars->img.ptr)
+		mlx_destroy_image(vars->mlx, vars->img.ptr);
+	if (vars->win)
+		mlx_destroy_window(vars->mlx, vars->win);
+	if (vars->mlx)
+		free(vars->mlx);
 	exit(EXIT_FAILURE);
 }
 

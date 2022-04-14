@@ -20,12 +20,18 @@ RMFLAGS = -f
 all : $(NAME)
 
 $(NAME) : $(OBJS)
+	@make -C mlx 2> /dev/null
 	$(CC) $(OBJS) -Lmlx -lmlx -framework OpenGL -framework AppKit -o $(NAME)
 
 clean :
+	@make clean -C mlx
 	$(RM) $(RMFLAGS) $(OBJS)
 
 fclean : clean
 	$(RM) $(RMFLAGS) $(NAME)
 
+bonus : $(NAME)
+
 re : fclean all
+
+.PHONY : all clean fclean re bonus

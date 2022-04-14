@@ -6,7 +6,7 @@
 /*   By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/14 15:05:13 by gyepark           #+#    #+#             */
-/*   Updated: 2022/04/14 15:05:15 by gyepark          ###   ########.fr       */
+/*   Updated: 2022/04/14 20:00:47 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,45 +16,46 @@
 # include <stdlib.h>
 # include <math.h>
 # include <unistd.h>
-# define ESC_KEY	53
-# define ZOOM_KEY	6
-# define COLOR_KEY	8
-# define WHEELUP	4
-# define WHEELDOWN	5
-# define LEFT		123
-# define UP			126
-# define RIGHT		124
-# define DOWN		125
-# define WIDTH		1000
-# define HEIGHT		1000
-# define SIZE		1000
-typedef struct	s_complex
+# define ESC_KEY		53
+# define ZOOM_KEY		6
+# define COLOR_KEY		8
+# define WHEELUP		4
+# define WHEELDOWN		5
+# define LEFT			123
+# define UP				126
+# define RIGHT			124
+# define DOWN			125
+# define WIDTH			1000
+# define HEIGHT			1000
+# define SIZE			1000
+
+typedef struct s_complex
 {
 	double	re;
 	double	im;
-}				t_complex;
-typedef struct	s_img
+}	t_complex;
+typedef struct s_img
 {
 	void	*ptr;
 	char	*addr;
 	int		bits_per_pixel;
 	int		line_length;
 	int		endian;
-}				t_img;
-typedef struct	s_params
+}	t_img;
+typedef struct s_params
 {
 	int			type;
 	int			radius;
 	int			max_iter;
 	t_complex	julia_c;
-}				t_params;
-typedef struct	s_screen
+}	t_params;
+typedef struct s_screen
 {
 	t_complex	mouse;
 	t_complex	frame_min;
 	t_complex	frame_max;
-}				t_screen;
-typedef struct	s_vars
+}	t_screen;
+typedef struct s_vars
 {
 	void		*mlx;
 	void		*win;
@@ -64,7 +65,7 @@ typedef struct	s_vars
 	int			zoom_mode;
 	int			color_flag;
 	int			color_val;
-}				t_vars;
+}	t_vars;
 int			get_iter_color(int iter, t_complex z, t_vars *vars);
 void		draw_fractal(t_vars *vars);
 t_complex	transpose(int x, int y, t_vars *vars);
@@ -75,7 +76,7 @@ int			base_handler(t_vars *vars);
 int			zoom_handler(int button, int x, int y, t_vars *vars);
 int			check_newton(int x, int y, t_vars *vars);
 t_complex	divide_func_derivative(t_complex v);
-void		exit_print_param_info(t_vars *vars);
+void		exit_print_param_info(t_vars *vars, int print);
 void		exit_complete(t_vars *vars);
 t_params	*process_params(int argc, char **argv, t_params *params);
 int			get_rgb(int r, int g, int b);

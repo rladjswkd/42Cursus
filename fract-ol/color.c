@@ -6,7 +6,7 @@
 /*   By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/14 16:09:26 by gyepark           #+#    #+#             */
-/*   Updated: 2022/04/14 16:10:13 by gyepark          ###   ########.fr       */
+/*   Updated: 2022/04/14 20:29:56 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,12 +30,9 @@ static int	interpolate_linearly(int c1, int c2, double frac)
 int	get_iter_color(int iter, t_complex z, t_vars *vars)
 {
 	static int	palette[16] = {
-		get_rgb(66, 30, 15), get_rgb(25, 7, 26), get_rgb(9, 1, 47),
-		get_rgb(4, 4, 73), get_rgb(0, 7, 100), get_rgb(12, 44, 138),
-		get_rgb(24, 82, 177), get_rgb(57, 125, 209), get_rgb(134, 181, 229),
-		get_rgb(211, 236, 248), get_rgb(241, 233, 191), get_rgb(248, 201, 95),
-		get_rgb(255, 170, 0), get_rgb(204, 128, 0), get_rgb(153, 87, 0),
-		get_rgb(106, 52, 3)
+		0x421e0f, 0x19071a, 0x09012f, 0x040449, 0x000764, 0x0c2c8a, 0x1852b1,
+		0x397dd1, 0x86b5e5, 0xd3ecf8, 0xf1e9bf, 0xf8c95f, 0xffaa00, 0xcc8000,
+		0x995700, 0x6a3403
 	};
 	int			color1;
 	int			color2;

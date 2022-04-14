@@ -6,7 +6,7 @@
 /*   By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/14 15:35:28 by gyepark           #+#    #+#             */
-/*   Updated: 2022/04/14 15:35:29 by gyepark          ###   ########.fr       */
+/*   Updated: 2022/04/14 17:00:28 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,7 +48,7 @@ int	check_julia_set(int x, int y, t_vars *vars)
 	z = transpose(x, y, vars);
 	c = vars->params.julia_c;
 	rr = vars->params.radius * vars->params.radius;
-	iter = check_divergence(&z, c, squared, vars->params.max_iter);
+	iter = check_divergence(&z, c, rr, vars->params.max_iter);
 	return (get_iter_color(iter, z, vars));
 }
 
@@ -63,6 +63,6 @@ int	check_mandelbrot_set(int x, int y, t_vars *vars)
 	z.im = 0;
 	c = transpose(x, y, vars);
 	rr = vars->params.radius * vars->params.radius;
-	iter = check_divergence(&z, c, squared, vars->params.max_iter);
+	iter = check_divergence(&z, c, rr, vars->params.max_iter);
 	return (get_iter_color(iter, z, vars));
 }
