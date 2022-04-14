@@ -1,4 +1,5 @@
 #include "fractal.h"
+#include <stdio.h>
 
 static void	move_point(t_vars *vars, double val_x, double val_y)
 {
@@ -13,6 +14,7 @@ int	key_press_handler(int keycode, t_vars *vars)
 	double	dw;
 	double	dh;
 
+	printf("%d\n", keycode);
 	if (keycode == ESC_KEY)
 		exit_complete(vars);
 	if (keycode == ZOOM_KEY)
