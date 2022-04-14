@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   utils.c                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/04/14 15:07:49 by gyepark           #+#    #+#             */
+/*   Updated: 2022/04/14 15:10:26 by gyepark          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "fractal.h"
 
 int	get_rgb(int r, int g, int b)
@@ -17,7 +29,7 @@ int	get_len(char *str)
 
 static int	get_sign(char **str)
 {
-       	int	sign;
+	int	sign;
 
 	sign = 1;
 	if (**str == '-' || **str == '+')
@@ -28,9 +40,9 @@ static int	get_sign(char **str)
 
 double	*get_double(char *str, double *val)
 {
-	long double	temp;
+	int			sign;
 	double		scale;
-       	int		sign;
+	long double	temp;
 
 	sign = get_sign(&str);
 	temp = 0;

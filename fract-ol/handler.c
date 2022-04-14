@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   handler.c                                          :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/04/14 15:28:04 by gyepark           #+#    #+#             */
+/*   Updated: 2022/04/14 15:28:06 by gyepark          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "fractal.h"
 #include <stdio.h>
 
@@ -31,7 +43,7 @@ int	key_press_handler(int keycode, t_vars *vars)
 	dw = (vars->scr.frame_max.re - vars->scr.frame_min.re) * 0.05;
 	dh = (vars->scr.frame_max.im - vars->scr.frame_min.im) * 0.05;
 	move_point(vars, -dw * (keycode == LEFT) + dw * (keycode == RIGHT),
-			dh * (keycode == UP) - dh * (keycode == DOWN));
+		dh * (keycode == UP) - dh * (keycode == DOWN));
 	return (0);
 }
 

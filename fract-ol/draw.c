@@ -1,13 +1,24 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   draw.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/04/14 15:29:15 by gyepark           #+#    #+#             */
+/*   Updated: 2022/04/14 15:29:16 by gyepark          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "fractal.h"
 
-static void	put_pixel_color(t_img *img, int x, int y, int color)
+static void	put_color(t_img *img, int x, int y, int color)
 {
 	char	*dst;
 
 	dst = img->addr + (y * img->line_length + x * (img->bits_per_pixel / 8));
 	*(unsigned int *)dst = color;
 }
-
 
 void	draw_fractal(t_vars *vars)
 {
@@ -26,7 +37,7 @@ void	draw_fractal(t_vars *vars)
 	{
 		y_idx = -1;
 		while (++y_idx < HEIGHT)
-			put_pixel_color(&(vars->img), x_idx, y_idx, (*fp)(x_idx, y_idx, vars));
+			put_color(&(vars->img), x_idx, y_idx, (*fp)(x_idx, y_idx, vars));
 	}
 	mlx_put_image_to_window(vars->mlx, vars->win, vars->img.ptr, 0, 0);
 }

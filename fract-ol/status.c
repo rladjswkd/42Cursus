@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   status.c                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/04/14 15:10:46 by gyepark           #+#    #+#             */
+/*   Updated: 2022/04/14 16:12:50 by gyepark          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "fractal.h"
 
 void	exit_print_param_info(t_vars *vars)
@@ -11,9 +23,7 @@ void	exit_print_param_info(t_vars *vars)
 		Escape radius and max iteration are integers.\n\n\
 		Last two parameters are floating point numbers\
 		and for Julia set.\n\n";
-
-	if (write(2, str, get_len(str))) // remove if statements on mac
-	{}
+	write(2, str, get_len(str));
 	mlx_destroy_image(vars->mlx, vars->img.ptr);
 	mlx_destroy_window(vars->mlx, vars->win);
 	free(vars->mlx);
@@ -33,7 +43,7 @@ t_params	*process_params(int argc, char **argv, t_params *params)
 	if (argc < 4)
 		return (0);
 	if (!get_int(argv[1], &(params->type))
-			|| !(0 < params->type && params->type < 4))
+		|| !(0 < params->type && params->type < 4))
 		return (0);
 	if (!get_int(argv[2], &(params->radius)))
 		return (0);
@@ -47,5 +57,3 @@ t_params	*process_params(int argc, char **argv, t_params *params)
 		return (0);
 	return (params);
 }
-
-
