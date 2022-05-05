@@ -1,5 +1,4 @@
 #include "philosophers.h"
-#include <stdio.h>
 
 pthread_mutex_t	*get_mutex(pthread_mutex_t *initializer, int index)
 {
@@ -19,16 +18,56 @@ t_args	get_args(t_args *initializer)
 	return (*args);
 }
 
-void	*run(void *mutex_idx)
+struct timeval	get_init_time(void)
 {
-	int	index;
+	static struct timeval	init = (struct timeval){0, 0};
 
-	index = *((int *)mutex_idx);
-	printf("index is %d\n", index);
-	pthread_mutex_lock(get_mutex(0, index));
-	printf("%d is locked\n", index);
-	pthread_mutex_unlock(get_mutex(0, index));
-	printf("%d is unlocked\n", index);
+	if (!(init.tv_sec))
+		gettimeofday(&init, 0);
+	return (init);
+}
+
+int	get_timestamp(struct timeval from)
+{
+	struct timeval	to;
+
+	gettimeofday(&to, 0);
+	return ((to.tv_sec - from.tv_sec) * 1000
+			+ (to.tv_usec - from.tv_usec) / 1000);
+}
+
+void	*run(void *index)
+{
+	struct timeval	init;
+	int		thread;
+	int		lock1;
+	int		lock2;
+	t_args		args;
+
+	init = get_init_time();
+	thread = *((int *)index);
+	args = get_args(0);
+	lock1 = (thread + args.philo_n - 1) % args.philo_n;
+	lock2 = thread;
+	if (thread & 1)
+	{
+		lock2 = lock1;
+		lock1 = thread;
+	}
+	while (1)
+	{
+		pthread_mutex_lock(get_mutex(0, lock1));
+		printf("%d %d %s\n", get_timestamp(init), thread + 1, "has taken a fork");
+		pthread_mutex_lock(get_mutex(0, lock2));
+		printf("%d %d %s\n", get_timestamp(init), thread + 1, "has taken a fork");
+		printf("%d %d %s\n", get_timestamp(init), thread + 1, "is eating");
+		usleep(args.eat_t * 1000);
+		pthread_mutex_unlock(get_mutex(0, lock2));
+		pthread_mutex_unlock(get_mutex(0, lock1));
+		printf("%d %d %s\n", get_timestamp(init), thread + 1, "is sleeping");
+		usleep(args.sleep_t * 1000);
+		printf("%d %d %s\n", get_timestamp(init), thread + 1, "is thinking");
+	}
 	return (0);
 }
 
@@ -55,7 +94,7 @@ void	free_all(pthread_mutex_t *mutexes, pthread_t *threads, int error)
 int	init_all(pthread_mutex_t **mutexes, pthread_t **threads, int philo_n)
 {
 	int	i;
-	int	*ids;
+	int	*index;
 
 	*mutexes = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t) * philo_n);
 	if (!(*mutexes))
@@ -69,14 +108,14 @@ int	init_all(pthread_mutex_t **mutexes, pthread_t **threads, int philo_n)
 	*threads = (pthread_t *)malloc(sizeof(pthread_t) * philo_n);
 	if (!(*threads))
 		return (0);
-	ids = (int *)malloc(sizeof(int) * philo_n);
-	if (!ids)
+	index = (int *)malloc(sizeof(int) * philo_n);
+	if (!index)
 		return (0);
 	i = -1;
 	while (++i < philo_n)
 	{
-		ids[i] = i;
-		if (pthread_create(&((*threads)[i]), 0, &run, &(ids[i])) != 0)
+		index[i] = i;
+		if (pthread_create(&((*threads)[i]), 0, &run, &(index[i])) != 0)
 			return (0);
 	}
 	pthread_join((*threads)[0], 0);
@@ -92,7 +131,8 @@ int	main(int argc, char **argv)
 	t_args		args;
 	pthread_t	*threads;
 	pthread_mutex_t	*mutexes;
-
+	
+	get_init_time();
 	if (argc != 5 && argc != 6)
 		return (0);
 	if (!get_int(argv[1], &(args.philo_n)))

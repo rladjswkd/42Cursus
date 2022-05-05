@@ -4,6 +4,7 @@
 #include <pthread.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <stdio.h>
 typedef struct	s_args
 {
 	int	philo_n;
@@ -13,5 +14,4 @@ typedef struct	s_args
 	int	eat_n;
 }	t_args;
 int	*get_int(char *str, int *val);
-
 #endif

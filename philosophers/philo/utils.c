@@ -1,3 +1,5 @@
+#include "philosophers.h"
+
 static int	get_sign(char **str)
 {
 	int	sign;
