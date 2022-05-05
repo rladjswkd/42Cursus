@@ -19,13 +19,14 @@ t_args	get_args(t_args *initializer)
 	return (*args);
 }
 
-void	*run_philo(void *mutex_idx)
+void	*run(void *mutex_idx)
 {
 	int	index;
 
 	index = *((int *)mutex_idx);
-	printf("%d is locked\n", index);
+	printf("index is %d\n", index);
 	pthread_mutex_lock(get_mutex(0, index));
+	printf("%d is locked\n", index);
 	pthread_mutex_unlock(get_mutex(0, index));
 	printf("%d is unlocked\n", index);
 	return (0);
@@ -54,6 +55,7 @@ void	free_all(pthread_mutex_t *mutexes, pthread_t *threads, int error)
 int	init_all(pthread_mutex_t **mutexes, pthread_t **threads, int philo_n)
 {
 	int	i;
+	int	*ids;
 
 	*mutexes = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t) * philo_n);
 	if (!(*mutexes))
@@ -67,12 +69,21 @@ int	init_all(pthread_mutex_t **mutexes, pthread_t **threads, int philo_n)
 	*threads = (pthread_t *)malloc(sizeof(pthread_t) * philo_n);
 	if (!(*threads))
 		return (0);
+	ids = (int *)malloc(sizeof(int) * philo_n);
+	if (!ids)
+		return (0);
 	i = -1;
 	while (++i < philo_n)
-		if (pthread_create(&((*threads)[i]), 0, &run_philo, &i) != 0)
+	{
+		ids[i] = i;
+		if (pthread_create(&((*threads)[i]), 0, &run, &(ids[i])) != 0)
 			return (0);
-	pthread_join((*threads)[0], (void **)0);
-	pthread_join((*threads)[1], (void **)0);
+	}
+	pthread_join((*threads)[0], 0);
+	pthread_join((*threads)[1], 0);
+	pthread_join((*threads)[2], 0);
+	pthread_join((*threads)[3], 0);
+	pthread_join((*threads)[4], 0);
 	return (1);
 }
 
