@@ -47,7 +47,7 @@ void	*run(void *index)
 	init = get_init_time();
 	thread = *((int *)index);
 	args = get_args(0);
-	lock1 = (thread + args.philo_n - 1) % args.philo_n;
+	lock1 = (thread + args.count - 1) % args.count;
 	lock2 = thread;
 	if (thread & 1)
 	{
@@ -71,71 +71,77 @@ void	*run(void *index)
 	return (0);
 }
 
-int	destroy_mutexes(pthread_mutex_t *mutexes, int error)
+int	destroy_mutexes(pthread_mutex_t *mutexes, int error_idx)
 {
 	int	i;
 
 	i = -1;
-	while (++i < error)
+	while (++i < error_idx)
 		pthread_mutex_destroy(&(mutexes[i]));
 	return (0);
 }
 
-void	free_all(pthread_mutex_t *mutexes, pthread_t *threads, int error)
+void	free_all(pthread_mutex_t *mutexes, pthread_t *threads, int is_error)
 {
 	if (mutexes)
 		free(mutexes);
 	if (threads)
 		free(threads);
-	if (error)
+	if (is_error)
 		exit(EXIT_FAILURE);
 }
 
-int	init_all(pthread_mutex_t **mutexes, pthread_t **threads, int philo_n)
+int	init_mutex(pthread_mutex_t *arr)
 {
-	int	i;
-	int	*index;
+	int		i;
+	int		n;
 
-	*mutexes = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t) * philo_n);
-	if (!(*mutexes))
+	n = get_args(0).count;
+	arr = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t) * n);
+	if (!arr)
 		return (0);
 	i = -1;
-	while (++i < philo_n)
-		if (pthread_mutex_init(&((*mutexes)[i]), 0))
-			return (destroy_mutexes(*mutexes, i));
-	/* using singleton, make getter of mutexes */
-	get_mutex(*mutexes, 0);
-	*threads = (pthread_t *)malloc(sizeof(pthread_t) * philo_n);
-	if (!(*threads))
-		return (0);
-	index = (int *)malloc(sizeof(int) * philo_n);
-	if (!index)
-		return (0);
-	i = -1;
-	while (++i < philo_n)
-	{
-		index[i] = i;
-		if (pthread_create(&((*threads)[i]), 0, &run, &(index[i])) != 0)
-			return (0);
-	}
-	pthread_join((*threads)[0], 0);
-	pthread_join((*threads)[1], 0);
-	pthread_join((*threads)[2], 0);
-	pthread_join((*threads)[3], 0);
-	pthread_join((*threads)[4], 0);
+	while (++i < n)
+		if (pthread_mutex_init(&(arr[i]), 0))
+			return (destroy_mutexes(arr, i));
+	get_mutex(arr, 0);
 	return (1);
 }
 
-int	main(int argc, char **argv)
+int	run_threads(pthread_t *threads)
 {
-	t_args		args;
-	pthread_t	*threads;
-	pthread_mutex_t	*mutexes;
-	
-	get_init_time();
+	int	i;
+	int	n;
+	int	*vars;
+
+	n = get_args(0).count;
+	threads = (pthread_t *)malloc(sizeof(pthread_t) * n);
+	if (!threads)
+		return (0);
+	vars = (int *)malloc(sizeof(int) * n);
+	if (!vars)
+		return (0);
+	i = -1;
+	while (++i < n)
+	{
+		vars[i] = i;
+		if (pthread_create(&(threads[i]), 0, &run, &(vars[i])) != 0)
+			return (0);
+	}
+	/* infinite loop and break if one of the philosophers die */
+	while (1)
+	{}
+	free(vars);
+	return (1);
+}
+
+int	parse_arguments(int argc, char **argv)
+{
+	t_args	args;
+
 	if (argc != 5 && argc != 6)
 		return (0);
-	if (!get_int(argv[1], &(args.philo_n)))
+	if (!get_int(argv[1], &(args.count)))
 		return (0);
 	if (!get_int(argv[2], &(args.die_t)))
 		return (0);	
@@ -145,12 +151,22 @@ int	main(int argc, char **argv)
 		return (0);
 	if (argc == 6 && !get_int(argv[5], &(args.eat_n)))
 		return (0);
-	/* using singleton, make getter of args */
 	get_args(&args);
-	if (!init_all(&mutexes, &threads, args.philo_n))
+	return (1);
+}
+
+int	main(int argc, char **argv)
+{
+	pthread_t	*threads;
+	pthread_mutex_t	*mutexes;
+
+	get_init_time();
+	if (!parse_arguments(argc, argv))
+		return (0);
+	if (!init_mutex(mutexes))
+		free_all(mutexes, 0, 1);
+	if (!run_threads(threads))
 		free_all(mutexes, threads, 1);
-	/* make threads work repeatedly */
-	/**/
 	free_all(mutexes, threads, 0);
 	return (0);
 }

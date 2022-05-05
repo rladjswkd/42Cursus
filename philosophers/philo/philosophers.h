@@ -7,7 +7,7 @@
 #include <stdio.h>
 typedef struct	s_args
 {
-	int	philo_n;
+	int	count;
 	int	die_t;
 	int	eat_t;
 	int	sleep_t;
