@@ -2,7 +2,7 @@
 
 pthread_mutex_t	*get_mutex(pthread_mutex_t *initializer, int index)
 {
-	static pthread_mutex_t	*mutexes = (pthread_mutex_t *)0;
+	static pthread_mutex_t	*mutexes;
 
 	if (!mutexes)
 		mutexes = initializer;
@@ -11,16 +11,16 @@ pthread_mutex_t	*get_mutex(pthread_mutex_t *initializer, int index)
 
 t_args	get_args(t_args *initializer)
 {
-	static t_args *args = (t_args *)0;
+	static t_args args;
 
-	if (!args)
-		args = initializer;
-	return (*args);
+	if (!args.count)
+		args = *initializer;
+	return (args);
 }
 
 struct timeval	get_init_time(void)
 {
-	static struct timeval	init = (struct timeval){0, 0};
+	static struct timeval	init;
 
 	if (!(init.tv_sec))
 		gettimeofday(&init, 0);
@@ -39,10 +39,10 @@ int	get_timestamp(struct timeval from)
 void	*run(void *index)
 {
 	struct timeval	init;
-	int		thread;
-	int		lock1;
-	int		lock2;
-	t_args		args;
+	int				thread;
+	int				lock1;
+	int				lock2;
+	t_args			args;
 
 	init = get_init_time();
 	thread = *((int *)index);
@@ -93,8 +93,8 @@ void	free_all(pthread_mutex_t *mutexes, pthread_t *threads, int is_error)
 
 int	init_mutex(pthread_mutex_t *arr)
 {
-	int		i;
-	int		n;
+	int	i;
+	int	n;
 
 	n = get_args(0).count;
 	arr = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t) * n);
@@ -157,7 +157,7 @@ int	parse_arguments(int argc, char **argv)
 
 int	main(int argc, char **argv)
 {
-	pthread_t	*threads;
+	pthread_t		*threads;
 	pthread_mutex_t	*mutexes;
 
 	get_init_time();
