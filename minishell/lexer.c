@@ -1,96 +1,57 @@
 #include "lexer.h"
 #include <stdlib.h>
 #include <stdio.h> // remove
+#include <string.h> // strerror
+#include <errno.h> // errno codes
 
-int	get_len(char *s)
+int	get_char(char cur, char next)
 {
+	return ((cur == CHAR_LREDIR)
+			| (cur == CHAR_RREDIR) * 2
+			| (cur == CHAR_SQUOTE) * 3
+			| (cur == CHAR_DQUOTE) * 4
+			| (cur == CHAR_PIPEOR) * 5
+			| (cur == CHAR_LBRACKET) * 6
+			| (cur == CHAR_RBRACKET) * 7
+			| (cur == CHAR_AND) * 8
+			| (cur == ' ' || c == '\t') * 9);
+}
+
+int	tokenize_input(char *input, t_list **token_list)
+{
+	int	i;
 	int	len;
-
-	len = 0;
-	while (s[len])
-		len++;
-	return (len);
-}
-
-char	*find_char(char *s, char c)
-{
-	while (*s)
-	{
-		if (*s == c)
-			return ((char *)s);
-		s++;
-	}
-	if (*s == c)
-		return ((char *)s);
-	return (0);
-}
-
-int	trim_both_end(char *str, char *trimed)
-{
-	int	start;
-	int	end;
-	int	i;
-
-	start = 0;
-	end = get_len(str) - 1;
-	while (find_char(BLANK, str[start]))
-		start++;
-	while (find_char(BLANK, str[end]))
-		end--;
-	if (start > end)
-		trimed = (char *)malloc(1);
-	else
-		trimed = (char *)malloc(end - start + 2);
-	if (!trimed)
-		return (0);
+	int	token_types;
+	t_list	*current;
+	
 	i = 0;
-	while (start <= end)
-		trimed[i++] = str[start++];
-	trimed[i] = 0;
-	free(str);
-	return (1);
-}
-
-int	get_state(char *trimed, int state, int *i)
-{
-	if (find_char(AND, trimed[*i]))
-		
-	else if (find_char(OR, trimed[*i]))
-		
-	else if (find_char(REDIR, trimed[*i]))
-		
-	else if (find_char(QUOTE, trimed[*i]))
-		
-	else if (find_char(BRACKET, trimed[*i]))
-		
-	else if (find_char(BLANK, trimed[*i]))
-}
-
-int	analyze_token(char *trimed, t_list *token_list)
-{
-	int	i;
-	int	state;
-
-	i = -1;
-	while (trimed[++i])
+	len = 0;
+	current = *token_list;
+	while (input[i])
 	{
-
+		len = (*len_func_ptrs[get_char(input[i])])(&token_types);
+		if (!create_token(&current, len))
+			return (0);
+		if (!set_token(current, input[i], len, token_types))
+			return (0);
+		token_types = 0;
+		i += len;
 	}
-	free(trimed);
 	return (1);
 }
 
-int	lexer(char *str, t_list *token_list)
+int	lexer(char *input, t_list **token_list)
 {
-	char	*trimed;
-	// 1. 좌, 우 trim
-	if (!trim_both_end(str, trimed))
-		return (0);
-	if (!analyze_token(trimed, token_list))
-		return (0);
+	if (!tokenize_input(input, &token_list))
+		return (free_token_and_input(input)); // 1. free input 2. free data if data is "not null" before token and return 0
+	free(input); // lexer is successfully done
+	return (1);
 }
 
 int	main(void)
 {
+	t_list	*token_list;
+
+	// 1. check if lexer returns 0 and print error (errno)
 	return (0);
 }
