@@ -1,19 +1,25 @@
 #ifndef LEXER_H
 # define LEXER_H
-# define BLANKS	" \t"
+# define CHAR_SPACE	' '
+# define CHAR_TAB	'\t'
 # define CHAR_LREDIR	'<'
 # define CHAR_RREDIR	'>'
 # define CHAR_SQUOTE	'\''
 # define CHAR_DQUOTE	'\"'
-# define CHAR_PIPEOR	'|'
+# define CHAR_VERBAR	'|'
 # define CHAR_LBRACKET	'('
 # define CHAR_RBRACKET	')'
-# define CHAR_AND	'&'
+# define CHAR_AMPERSAND	'&'
 typedef	struct	s_list
 {
-	void	*data;
+	void	*node;
 	struct s_list	*next;
 }	t_list;
+typedef struct	s_token
+{
+	char	*data;
+	int	types;
+}	t_token;
 typedef enum	e_token_flag
 {
 	TOKEN_NORMAL,
@@ -26,19 +32,8 @@ typedef enum	e_token_flag
 	TOKEN_PIPE,
 	TOKEN_LBRACKET,
 	TOKEN_RBRACKET,
-	TOKEN_ANDOR,
-	TOKEN_WILDCARD
+	TOKEN_LOGICAL,
+	TOKEN_WILDCARD,
+	TOKEN_IGNORE
 }	t_token_flag;
-typedef enum	e_char
-{
-	LREDIR,
-	RREDIR,
-	SQUOTE,
-	DQUOTE,
-	PIPEOR,
-	LBRACKET,
-	RBRACKET,
-	AND,
-	BLANK
-}	t_char;
 #endif
