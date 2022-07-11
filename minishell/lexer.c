@@ -156,11 +156,16 @@ int	tokenize_input(char *str, t_list *token_header)
 	return (1);
 }
 
+int	syntax_check(t_list *token_list)
+{
+}
+
 int	lexer(char *input, t_list *token_header)
 {
 	if (!tokenize_input(input, token_header))
-		return (0);//return (free_lexer(input, *token_list)); 1. free input 2. free data if data is "not null" before token and return 0
-	free(input); // lexer is successfully done
+		return (0); // set error message using singleton
+	if (!syntax_check(token_header->next))
+		return (0); // set error message using singleton for each syntax error type
 	return (1);
 }
 
@@ -168,11 +173,10 @@ int	main(void)
 {
 	t_list	token_header;
 	char	*input;
+	int	error;
 
-	input = readline(">"); 
-	// readline, while
-	if (!lexer(input, &token_header))
-		return (EXIT_FAILURE);// print strerr(ENOMEM)
-	// 1. check if lexer returns 0 and print error (errno)
+	input = readline(">"); //while readline
+	check_error(lexer(input, &token_header));
+		return (0);
 	return (0);
 }
