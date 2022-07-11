@@ -3,25 +3,49 @@
 #include <stdio.h> // remove
 #include <string.h> // strerror
 #include <errno.h> // errno codes
+#include <readline/readline.h>
+#include <readline/history.h>
 
-int	is_delimiter(char *str)
+int	is_delimiter(char *s)
 {
-	char	c;
+	char	c1;
+	char	c2;
 
-	c = *str;
-	return (c == CHAR_LREDIR || c == CHAR_RREDIR || c == CHAR_VERBAR
-			|| c == CHAR_LBRACKET || c == CHAR_RBRACKET
-			|| c == CHAR_SPACE || c == CHAR_TAB
-			|| (c == CHAR_AMPERSAND && *(str + 1) == CHAR_AMPERSAND));
+	c1 = *s;
+	c2 = *(s + 1);
+	return (c1 == CHAR_LREDIR || c1 == CHAR_RREDIR || c1 == CHAR_VERBAR
+			|| c1 == CHAR_LBRACKET || c1 == CHAR_RBRACKET
+			|| c1 == CHAR_SPACE || c1 == CHAR_TAB
+			|| (c1 == CHAR_AMPERSAND && c2 == CHAR_AMPERSAND));
+}
+
+int	is_quote(char c)
+{
+	return (c == CHAR_SQUOTE || c == CHAR_DQUOTE);
+}
+
+int	extract_normal(char *str, int *types)
+{
+	int	len;
+
+	*types = TOKEN_NORMAL;
+	len = 0;
+	while (str[len] && !(is_delimiter(&(str[len])) || is_quote(str[len])))
+		len++;
+	if (is_quote(str[len]))
+		*types |= TOKEN_CONCAT;
+	return (len);
 }
 
 int	extract_redir(char *str, int *types)
 {
-	char	c;
-
-	return (1);
+	*types = TOKEN_REDIR;
+	if (*str != *(str + 1))
+		return (1);
+	if (*str == CHAR_LREDIR)
+		*types |= TOKEN_HEREDOC;
+	return (2);
 }
-
 
 int	extract_quote(char *str, int *types)
 {
@@ -44,79 +68,97 @@ int	extract_quote(char *str, int *types)
 
 int	extract_bracket(char *str, int *types)
 {
+	*types = TOKEN_LBRACKET;
+	if (*str == CHAR_RBRACKET)
+		*types = TOKEN_RBRACKET;
+	return (1);
 }
 
-int	extract_logic_and(char *str, int *types)
+int	extract_logical_pipe(char *str, int *types)
 {
+	if (*str == CHAR_VERBAR && *(str + 1) != CHAR_VERBAR)
+	{
+		*types = TOKEN_PIPE;
+		return (1);
+	}
+	*types = TOKEN_LOGICAL;
+	return (2);
 }
 
-int	ignore_blacks(char *str, int *types)
+int	ignore_blank(char *str, int *types)
 {
+	int	len;
+
+	*types = TOKEN_IGNORE;
+	len = 0;
+	while (str[len] == CHAR_SPACE || str[len] == CHAR_TAB)
+		len++;
+	return (len);
 }
 
-int	get_char(char cur, char next)
+int	get_index(char c1, char c2)
 {
-	return ((cur == CHAR_LREDIR || cur == CHAR_RREDIR) * 1
-			| (cur == CHAR_SQUOTE || cur == CHAR_DQUOTE) * 2
-			| (cur == CHAR_VERBAR) * 4
-			| (cur == CHAR_LBRACKET) * 5
-			| (cur == CHAR_RBRACKET) * 6
-			| (cur == CHAR_AMPERSAND) * 7
-			| (cur == CHAR_SPACE || cur == CHAR_TAB) * 8);
+	return ((c1 == CHAR_LREDIR || c1 == CHAR_RREDIR) * 1
+			| (c1 == CHAR_SQUOTE || c1 == CHAR_DQUOTE) * 2
+			| (c1 == CHAR_LBRACKET || c1 == CHAR_RBRACKET) * 3
+			| ((c1 == CHAR_AMPERSAND && c2 == CHAR_AMPERSAND)
+				|| c1 == CHAR_VERBAR) * 4
+			| (c1 == CHAR_SPACE || c1 == CHAR_TAB) * 5);
 }
 
 int	create_token(t_list **token, char *str, int len, int types)
 {
-	char	*data_str;
-	int	i;
-
 	if (types & TOKEN_IGNORE)
 		return (1);
-	*token = (t_list *)malloc(sizeof(t_list *));
+	if (len < 0)
+		return (0);
+	*token = (t_list *)malloc(sizeof(t_list));
 	if (!(*token))
 		return (0);
 	(*token)->node = (t_token *)malloc(sizeof(t_token));
-	if ((*token)->node)
+	if (!((*token)->node))
 		return (0);
-	data_str = (char *)malloc(len);
-	if (!data_str)
+	len -= (types & TOKEN_SQUOTE || types & TOKEN_DQUOTE) << 2;
+	str += types & TOKEN_SQUOTE || types & TOKEN_DQUOTE;
+	((t_token *)(*token)->node)->data = (char *)malloc(len + 1);
+	if (!(((t_token *)(*token)->node)->data))
 		return (0);
-	i = -1;
-	while (++i < len)
-		data_str[i] = s[i];
-	((t_token *)token->node)->data = data_str;
-	((t_token *)token->node)->types = types;
+	(((t_token *)(*token)->node)->data)[len] = 0;
+	while (len--)
+		(((t_token *)(*token)->node)->data)[len] = str[len];
+	((t_token *)((*token)->node))->types = types;
 	return (1);
 }
 
-int	tokenize_input(char *input, t_list **token_list)
+int	tokenize_input(char *str, t_list *token_header)
 {
 	int	len;
 	int	types;
 	t_list	*cur;
-	int	(len_fp[10])(char *, int *);
-	int	flag;
-
-	cur = *token_list;
+	static int	(*len_fp[6])(char *, int *) = {
+		&extract_normal, &extract_redir,
+		&extract_quote,	&extract_bracket,
+		&extract_logical_pipe, &ignore_blank};
+	
 	while (*str)
 	{	
-		len = (len_fp[get_char(*str)])(str, &types);
-		if (len < 0)
-			return (0);
-		flag = types | TOKEN_SQUOTE || types | TOKEN_DQUOTE;
-		if (!create_token(&cur, str + flag, len - (flag << 1), types))
+		len = (len_fp[get_index(*str, *(str + 1))])(str, &types);
+		if (!create_token(&cur, str, len, types))
 			return (0);
 		if (!(types & TOKEN_IGNORE))
-			cur = cur->next;
+		{
+			token_header->next = cur;
+			token_header = token_header->next;
+		}
 		types = 0;
 		str += len;
 	}
 	return (1);
 }
 
-int	lexer(char *input, t_list **token_list)
+int	lexer(char *input, t_list *token_header)
 {
-	if (!tokenize_input(input, &token_list))
+	if (!tokenize_input(input, token_header))
 		return (0);//return (free_lexer(input, *token_list)); 1. free input 2. free data if data is "not null" before token and return 0
 	free(input); // lexer is successfully done
 	return (1);
@@ -124,11 +166,12 @@ int	lexer(char *input, t_list **token_list)
 
 int	main(void)
 {
-	t_list	*token_list;
+	t_list	token_header;
 	char	*input;
 
+	input = readline(">"); 
 	// readline, while
-	if (!lexer(input, &token_list))
+	if (!lexer(input, &token_header))
 		return (EXIT_FAILURE);// print strerr(ENOMEM)
 	// 1. check if lexer returns 0 and print error (errno)
 	return (0);
