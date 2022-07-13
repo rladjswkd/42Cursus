@@ -94,6 +94,16 @@ int	ignore_blank(char *str, int *types)
 	return (len);
 }
 
+t_token	*get_token(t_list *token_list)
+{
+	return ((t_token *)(token_list->node));
+}
+
+int	get_token_types(t_list *token_list)
+{
+	return (((t_token *)(token_list->node))->types);
+}
+
 int	get_index(char c1, char c2)
 {
 	return ((c1 == CHAR_LREDIR || c1 == CHAR_RREDIR) * 1
@@ -119,12 +129,12 @@ int	create_token(t_list **token, char *str, int len, int types)
 	len -= (!!(types & (TOKEN_SQUOTE | TOKEN_DQUOTE))) << 1;
 	str += !!(types & (TOKEN_SQUOTE | TOKEN_DQUOTE));
 	((t_token *)(*token)->node)->data = (char *)malloc(len + 1);
-	if (!(((t_token *)(*token)->node)->data))
+	if (!(get_token(*token)->data))
 		return (0);
-	(((t_token *)(*token)->node)->data)[len] = 0;
+	(get_token(*token)->data)[len] = 0;
 	while (len--)
-		(((t_token *)(*token)->node)->data)[len] = str[len];
-	((t_token *)((*token)->node))->types = types;
+		(get_token(*token)->data)[len] = str[len];
+	(get_token(*token))->types = types;
 	return (1);
 }
 
@@ -154,16 +164,6 @@ int	tokenize_input(char *str, t_list *token_header)
 	}
 	token_header->next = 0;
 	return (1);
-}
-
-t_token	*get_token(t_list *token_list)
-{
-	return ((t_token *)(token_list->node));
-}
-
-int	get_token_types(t_list *token_list)
-{
-	return (((t_token *)(token_list->node))->types);
 }
 
 int	is_redir_error(int curr, int next)
