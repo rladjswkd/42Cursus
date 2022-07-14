@@ -187,8 +187,7 @@ int	is_bracket_error(int curr, int next)
 
 int	is_normal_error(int curr, int next)
 {
-	return ((curr & TOKEN_NORMAL
-			&& next && next & (TOKEN_LBRACKET | TOKEN_RBRACKET)));
+	return (curr & TOKEN_NORMAL && next && next & TOKEN_LBRACKET);
 }
 
 int	syntax_check(t_list *token_list)
