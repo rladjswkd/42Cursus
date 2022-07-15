@@ -99,7 +99,7 @@ t_token	*get_token(t_list *token_list)
 	return ((t_token *)(token_list->node));
 }
 
-int	get_token_types(t_list *token_list)
+int	get_token_type(t_list *token_list)
 {
 	return (((t_token *)(token_list->node))->types);
 }
@@ -196,16 +196,16 @@ int	syntax_check(t_list *token_list)
 	int	next;
 	int	pair;
 
-	if (get_token_types(token_list)
+	if (get_token_type(token_list)
 		& (TOKEN_PIPE | TOKEN_LOGICAL | TOKEN_RBRACKET))
 		return (0);
 	pair = 0;
 	while (token_list)
 	{
-		curr = get_token_types(token_list);
+		curr = get_token_type(token_list);
 		next = 0;
 		if (token_list->next)
-			next = get_token_types(token_list->next);
+			next = get_token_type(token_list->next);
 		if (is_redir_error(curr, next) || is_normal_error(curr, next)
 			|| is_pipe_logical_error(curr, next)
 			|| is_bracket_error(curr, next))
@@ -220,15 +220,15 @@ int	syntax_check(t_list *token_list)
 }
 
 
-void	mask_filename_type(t_list *token_list)
+void	mask_redirarg_type(t_list *token_list)
 {
 	while (token_list)
 	{
-		if (get_token_types(token_list) & TOKEN_REDIR)
+		if (get_token_type(token_list) & TOKEN_REDIR)
 		{
 			token_list = token_list->next;
 			get_token(token_list)->types |= TOKEN_REDIRARG;
-			while (get_token_types(token_list) & TOKEN_CONCAT)
+			while (get_token_type(token_list) & TOKEN_CONCAT)
 			{
 				token_list = token_list->next;
 				get_token(token_list)->types |= TOKEN_REDIRARG;
@@ -238,13 +238,175 @@ void	mask_filename_type(t_list *token_list)
 	}
 }
 
+int	get_command_type(t_list *parsed)
+{
+	return (((t_command *)(parsed->node))->type);
+}
+
+t_command	*get_command(t_list *parsed)
+{
+	return ((t_command *)(parsed->node));
+}
+
+int	create_command(t_list *parsed, int type)
+{
+	parsed = (t_list *)malloc(sizeof(t_list));
+	if (!parsed)
+		return (0);
+	parsed->node = (t_command *)malloc(sizeof(t_command));
+	if (!(parsed->node))
+		return (0);
+	get_command(parsed)->type = type;
+	return (1);
+}
+
+int	find_command_type(t_list *token_list)
+{
+	int	type;
+
+	type = get_token_type(token_list);
+	if (type & (TOKEN_NORMAL | TOKEN_REDIR))
+		return (SIMPLE_NORMAL);
+	else if (type & TOKEN_PIPE)
+		return (SIMPLE_PIPE);
+	else if (type & TOKEN_LBRACKET)
+		return (SIMPLE_LBRACKET);
+	else if (type & TOKEN_RBRACKET)
+		return (SIMPLE_RBRACKET);
+	else if (type & TOKEN_LOGICAL)
+	{
+		if ((get_token(token_list)->data)[0] == CHAR_AMPERSAND)
+			return (SIMPLE_AND);
+		return (SIMPLE_OR);
+	}
+	return (-1);
+}
+
+void	append_token(t_list **list, t_list *token)
+{
+	t_list	*current;
+
+	if (!(*list))
+	{
+		*list = token;
+		return ;
+	}
+	current = *list;
+	while (current->next)
+		current = current->next;
+	current->next = token;
+}
+
+void	parse_args_redirs(t_list *parsed, t_list **token_list)
+{
+	int	command;
+	t_list	*token;
+
+	while (find_command_type(*token_list) & SIMPLE_NORMAL)
+	{
+		command = get_command(parsed);
+		token = *token_list;
+		token_list = token_list->next;
+		if (get_token_type(token_list) & (TOKEN_REDIR | TOKEN_REDIRARG))
+			append_token(&(command->redirs), token);
+		else
+			append_token(&(command->args), token);
+	}
+}
+
+int	parse_command(t_list *token_list, t_list *header)
+{
+	int	type;
+	t_list	*token_ptr;
+
+	while (token_list)
+	{
+		type = find_command_type(token_list);
+		if (!create_command(header->next, type))
+			return (0);
+		if (type & SIMPLE_NORMAL)
+			parse_args_redirs(header->next, &token_list);
+		else
+		{
+			token_ptr = token_list;
+			token_list = token_list->next;
+			free(get_token(token_ptr)->data)
+			free(token);
+		}
+		header = header->next;
+	}
+	return (1);
+}
+
+int	find_brackets(t_list *lst, t_list **l, t_list **r)
+{
+	int	type;
+
+	while (lst)
+	{
+		type = get_command_type(lst);
+		if (type == COMMAND_LBRACKET)
+			*l = lst;
+		else if (type == COMMAND_PIPELINE)
+		{
+			*l = 0;
+			*r = 0;
+		}
+		else if (*l && type == COMMAND_RBRACKET)
+		{
+			*r = lst;
+			return (1);
+		}
+		lst = lst->next;
+	}
+	return (0);
+}
+
+int	make_subshell(t_list **parsed, int *flag)
+{
+	t_list	*lbracket;
+	t_list 	*rbracket;
+
+	if (!find_brackets(&lbracket, &rbracket))
+		return (0);
+	
+	return (1);
+}
+
+int	make_pipeline(t_list **parsed, int *flag)
+{
+
+	return (1);
+}
+
+int	make_compound(t_list *parsed)
+{
+	int	flag;
+
+	flag = 1;
+	while (flag)
+		if (!make_subshell(&parsed, &flag)
+				|| !make_pipeline(&parsed, &flag))
+			return (0);
+	return (1);
+}
+
+int	parser(t_list *token_list, t_list *parsed_header)
+{
+	if (!parse_command(token_list, parsed_header))
+		return (0);
+	if (!make_compound(parsed_header->next))
+		return (0);
+	return (1);
+}
+
 int	lexer(char *input, t_list *token_header)
 {
 	if (!tokenize_input(input, token_header))
 		return (0); // set error message using singleton
 	if (!syntax_check(token_header->next))
 		return (0); // set error message using singleton for each syntax error type
-	mask_filename_type(token_header->next);
+	mask_redirarg_type(token_header->next);
 	return (1);
 }
 
@@ -254,7 +416,7 @@ void	print_token_content(t_list *token_list) //remove
 
 	while (token_list)
 	{
-		types = get_token_types(token_list);
+		types = get_token_type(token_list);
 		printf("\n");
 		printf("token content:\t%s\n", ((t_token *)(token_list->node))->data);
 		printf("token types:\t");
@@ -291,17 +453,20 @@ void	print_token_content(t_list *token_list) //remove
 
 int	main(void)
 {
-	t_list	token_header;
 	char	*input;
+	t_list	token_header;
+	t_list	parsed_header;
 	int		error;
 
 	while (1)
 	{
-		input = readline(">"); //while readline
+		input = readline(">");
 		if (!lexer(input, &token_header))
 			printf("%s\n", "syntax error");
-		else
+		else //remove
 			print_token_content(token_header.next);
+		if (!parser(token_header.next, &parsed_header))
+			printf("%s\n", "parser error");
 	}
 	return (0);
 }

@@ -20,6 +20,17 @@ typedef struct	s_token
 	char	*data;
 	int	types;
 }	t_token;
+typedef struct  s_command
+{
+        t_list  *args;
+        t_list  *redir;
+        int     type;
+}       t_command;
+typedef struct  s_compound
+{
+        t_list  *list;
+        int     type;
+}       t_compound;
 typedef enum	e_token_flag
 {
 	TOKEN_NORMAL = 1,
@@ -36,4 +47,16 @@ typedef enum	e_token_flag
 	TOKEN_WILDCARD = 2048,
 	TOKEN_IGNORE = 4096
 }	t_token_flag;
+typedef enum	e_command_type
+{
+	SIMPLE_NORMAL = 1,
+	SIMPLE_PIPE = 2,
+	SIMPLE_LBRACKET = 4,
+	SIMPLE_RBRACKET = 8,
+	SIMPLE_AND = 16,
+	SIMPLE_OR = 32,
+	COMPOUND_PIPELINE = 64,
+	COMPOUND_SUBSHELL = 128
+}	t_command_type;
+
 #endif
