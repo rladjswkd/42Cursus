@@ -179,10 +179,13 @@ int	is_pipe_logical_error(int curr, int next)
 
 int	is_bracket_error(int curr, int next)
 {
-	return ((curr & TOKEN_LBRACKET
-			&& !(next & (TOKEN_NORMAL | TOKEN_REDIR)))
-		|| (curr & TOKEN_RBRACKET
-			&& next && !(next & (TOKEN_PIPE | TOKEN_LOGICAL))));
+	int	lmask;
+	int	rmask;
+
+	lmask = TOKEN_NORMAL | TOKEN_REDIR | TOKEN_LBRACKET;
+	rmask = TOKEN_PIPE | TOKEN_LOGICAL | TOKEN_RBRACKET;
+	return ((curr & TOKEN_LBRACKET && !(next & lmask))
+		|| (curr & TOKEN_RBRACKET && next && !(next & rmask)));
 }
 
 int	is_normal_error(int curr, int next)
@@ -190,31 +193,37 @@ int	is_normal_error(int curr, int next)
 	return (curr & TOKEN_NORMAL && next && next & TOKEN_LBRACKET);
 }
 
-int	syntax_check(t_list *token_list)
+int	is_error(int curr, int next, int *pair)
 {
-	int	curr;
-	int	next;
-	int	pair;
+	*pair += curr == TOKEN_LBRACKET;
+	*pair -= curr == TOKEN_RBRACKET;
+	return (*pair < 0 || is_redir_error(curr, next)
+			|| is_normal_error(curr, next)
+			|| is_pipe_logical_error(curr, next)
+			|| is_bracket_error(curr, next));
+}
+
+int	check_syntax(t_list *token_list)
+{
+	int		type;
+	int		next;
+	int		pair;
+	t_list	*cur;
 
 	if (get_token_type(token_list)
 		& (TOKEN_PIPE | TOKEN_LOGICAL | TOKEN_RBRACKET))
 		return (0);
 	pair = 0;
-	while (token_list)
+	cur = token_list;
+	while (cur)
 	{
-		curr = get_token_type(token_list);
+		type = get_token_type(cur);
 		next = 0;
-		if (token_list->next)
-			next = get_token_type(token_list->next);
-		if (is_redir_error(curr, next) || is_normal_error(curr, next)
-			|| is_pipe_logical_error(curr, next)
-			|| is_bracket_error(curr, next))
+		if (cur->next)
+			next = get_token_type(cur->next);
+		if (is_error(type, next, &pair))
 			return (0);
-		pair += curr == TOKEN_LBRACKET;
-		pair -= curr == TOKEN_RBRACKET;
-		if (pair < 0)
-			return (0);
-		token_list = token_list->next;
+		cur = cur->next;
 	}
 	return (pair == 0);
 }
@@ -338,39 +347,51 @@ int	parse_command(t_list *token_list, t_list *header)
 	return (1);
 }
 
-int	find_brackets(t_list *lst, t_list **l, t_list **r)
+int	find_lbracket(t_list **parsed, t_list **rbracket, t_list **lbracket)
 {
-	int	type;
+	t_list	*cur;
+	t_list	*r;
+	int		type;
 
-	while (lst)
+	cur = *parsed;
+	r = *rbracket;
+	while (cur && cur != r)
 	{
-		type = get_command_type(lst);
-		if (type == COMMAND_LBRACKET)
-			*l = lst;
-		else if (type == COMMAND_PIPELINE)
+		type = get_command_type(cur);
+		if (type & SIMPLE_LBRACKET)
+			*lbracket = cur;
+		if (*lbracket && type & SIMPLE_PIPE)
+			*lbracket = 0;
+		cur = cur->next;
+	}
+	return (*lbracket != 0);
+}
+
+int	find_rbracket(t_list **parsed, t_list **rbracket)
+{
+	t_list	*cur;
+
+	cur = *parsed;
+	while (cur)
+	{
+		if (get_command_type(cur) & SIMPLE_RBRACKET)
 		{
-			*l = 0;
-			*r = 0;
-		}
-		else if (*l && type == COMMAND_RBRACKET)
-		{
-			*r = lst;
+			*rbracket = cur;
 			return (1);
 		}
-		lst = lst->next;
+		cur = cur->next;
 	}
 	return (0);
 }
 
 int	make_subshell(t_list **parsed, int *flag)
 {
-	t_list	*lbracket;
-	t_list 	*rbracket;
+	t_list	*l;
+	t_list	*r;
 
-	if (!find_brackets(&lbracket, &rbracket))
+	if (!find_rbracket(parsed, &r) || !find_lbracket(parsed, &r, &l))
 		return (0);
-	
-	return (1);
+
 }
 
 int	make_pipeline(t_list **parsed, int *flag)
@@ -402,9 +423,12 @@ int	parser(t_list *token_list, t_list *parsed_header)
 
 int	lexer(char *input, t_list *token_header)
 {
+	t_list	*list;
+
 	if (!tokenize_input(input, token_header))
 		return (0); // set error message using singleton
-	if (!syntax_check(token_header->next))
+	list = token_header->next;
+	if (!check_syntax(list))
 		return (0); // set error message using singleton for each syntax error type
 	mask_redirarg_type(token_header->next);
 	return (1);
