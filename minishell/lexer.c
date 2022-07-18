@@ -5,7 +5,18 @@
 #include <errno.h> // errno codes
 #include <readline/readline.h>
 #include <readline/history.h>
+void	free_compound(t_list *);
+void	free_command(t_list *);
 
+/*
+int	malloc_wrapper(size_t size, void **ptr)
+{
+	*ptr = malloc(size);
+	if (!(*ptr))
+		return (0);
+	return (1);
+}
+*/
 int	is_delimiter(char *s)
 {
 	char	c;
@@ -114,27 +125,27 @@ int	get_index(char c1, char c2)
 		| (c1 == CHAR_SPACE || c1 == CHAR_TAB) * 5);
 }
 
-int	create_token(t_list **token, char *str, int len, int types)
+int	create_token(t_list **token_list, char *str, int len, int types)
 {
 	if (types & TOKEN_IGNORE)
 		return (1);
 	if (len < 0)
 		return (0);
-	*token = (t_list *)malloc(sizeof(t_list));
-	if (!(*token))
+	*token_list = (t_list *)malloc(sizeof(t_list));
+	if (!(*token_list))
 		return (0);
-	(*token)->node = (t_token *)malloc(sizeof(t_token));
-	if (!((*token)->node))
+	(*token_list)->node = (t_token *)malloc(sizeof(t_token));
+	if (!get_token(*token_list))
 		return (0);
 	len -= (!!(types & (TOKEN_SQUOTE | TOKEN_DQUOTE))) << 1;
 	str += !!(types & (TOKEN_SQUOTE | TOKEN_DQUOTE));
-	((t_token *)(*token)->node)->data = (char *)malloc(len + 1);
-	if (!(get_token(*token)->data))
+	get_token(*token_list)->data = (char *)malloc(sizeof(len + 1));
+	if (!(get_token(*token_list)->data))
 		return (0);
-	(get_token(*token)->data)[len] = 0;
+	(get_token(*token_list)->data)[len] = 0;
 	while (len--)
-		(get_token(*token)->data)[len] = str[len];
-	(get_token(*token))->types = types;
+		(get_token(*token_list)->data)[len] = str[len];
+	get_token(*token_list)->types = types;
 	return (1);
 }
 
@@ -247,6 +258,26 @@ void	mask_redirarg_type(t_list *token_list)
 	}
 }
 
+int	get_simple_type(t_list *parsed)
+{
+	return (((t_simple *)(parsed->node))->type);
+}
+
+t_simple	*get_simple(t_list *parsed)
+{
+	return ((t_simple *)(parsed->node));
+}
+
+int	get_compound_type(t_list *parsed)
+{
+	return (((t_compound *)(parsed->node))->type);
+}
+
+t_compound	*get_compound(t_list *parsed)
+{
+	return ((t_compound *)(parsed->node));
+}
+
 int	get_command_type(t_list *parsed)
 {
 	return (((t_command *)(parsed->node))->type);
@@ -257,19 +288,19 @@ t_command	*get_command(t_list *parsed)
 	return ((t_command *)(parsed->node));
 }
 
-int	create_command(t_list *parsed, int type)
+int	create_command(t_list **new, int type)
 {
-	parsed = (t_list *)malloc(sizeof(t_list));
-	if (!parsed)
+	*new = (t_list *)malloc(sizeof(t_list));
+	if (!(*new))
 		return (0);
-	parsed->node = (t_command *)malloc(sizeof(t_command));
-	if (!(parsed->node))
+	(*new)->node = (t_command *)malloc(sizeof(t_command));
+	if (!((*new)->node))
 		return (0);
-	get_command(parsed)->type = type;
+	get_command(*new)->type = type;
 	return (1);
 }
 
-int	find_command_type(t_list *token_list)
+int	find_simple_type(t_list *token_list)
 {
 	int	type;
 
@@ -291,90 +322,144 @@ int	find_command_type(t_list *token_list)
 	return (-1);
 }
 
-void	append_token(t_list **list, t_list *token)
+void	append_token(t_list **simple, t_list *token)
 {
 	t_list	*current;
 
-	if (!(*list))
+	if (!(*simple))
 	{
-		*list = token;
+		*simple = token;
 		return ;
 	}
-	current = *list;
+	current = *simple;
 	while (current->next)
 		current = current->next;
 	current->next = token;
 }
 
-void	parse_args_redirs(t_list *parsed, t_list **token_list)
+void	parse_args_redirs(t_list *parsed, t_list **list)
 {
-	int	command;
-	t_list	*token;
+	t_simple	*simple;
+	t_list		*next;
 
-	while (find_command_type(*token_list) & SIMPLE_NORMAL)
+	while (find_simple_type(*list) & SIMPLE_NORMAL)
 	{
-		command = get_command(parsed);
-		token = *token_list;
-		token_list = token_list->next;
-		if (get_token_type(token_list) & (TOKEN_REDIR | TOKEN_REDIRARG))
-			append_token(&(command->redirs), token);
+		simple = get_simple(parsed);
+		next = (*list)->next;
+		if (get_token_type(*list) & (TOKEN_REDIR | TOKEN_REDIRARG))
+			append_token(&(simple->redirs), *list);
 		else
-			append_token(&(command->args), token);
+			append_token(&(simple->args), *list);
+		(*list)->next = 0;
+		*list = next;
 	}
 }
 
-int	parse_command(t_list *token_list, t_list *header)
+void	free_token(t_list *token)
+{
+	free(get_token(token)->data);
+	free(token);
+}
+
+void	free_token_list(t_list *list)
+{
+	t_list	*next;
+
+	while (list)
+	{
+		next = list->next;
+		free_token(list);
+		list = next;
+	}
+}
+
+void	free_simple(t_list *list)
+{
+	t_simple	*simple;
+
+	simple = get_simple(list);
+	free_token_list(simple->args);
+	free_token_list(simple->redirs);
+	free(list->node);
+	free(list);
+}
+
+void	free_compound(t_list *list)
+{
+	t_compound	*compound;
+
+	compound = get_compound(list);
+	while (compound->list)
+	{
+		free_command(compound->list);
+		compound->list = compound->list->next;
+	}
+	free(compound->list);
+	free(list);
+}
+
+void	free_command(t_list *list)
+{
+	t_command	*command;
+	t_list		*next;
+
+	command = get_command(list);
+	if (command->type & SIMPLE_NORMAL)
+		free_simple(list);
+	else
+		free_compound(list);
+}
+int	parse_simple(t_list *token_list, t_list *parsed_header)
 {
 	int	type;
 	t_list	*token_ptr;
+	t_list	*parsed;
 
+	parsed = parsed_header->next;
 	while (token_list)
 	{
-		type = find_command_type(token_list);
-		if (!create_command(header->next, type))
+		type = find_simple_type(token_list);
+		if (!create_command(&parsed, type))
 			return (0);
-		if (type & SIMPLE_NORMAL)
-			parse_args_redirs(header->next, &token_list);
+		if (type & SIMPLE_NORMAL) // SIMPLE_NORMAL을 제외한 SIMPLE 들은 TOKEN이 free된다.
+			parse_args_redirs(parsed, &token_list);
 		else
 		{
 			token_ptr = token_list;
 			token_list = token_list->next;
-			free(get_token(token_ptr)->data)
-			free(token);
+			free_token(token_ptr);
 		}
-		header = header->next;
+		parsed = parsed->next;
 	}
 	return (1);
 }
 
-int	find_lbracket(t_list **parsed, t_list **rbracket, t_list **lbracket)
+int	find_lbracket(t_list *parsed, t_list *rbracket, t_list **lbracket)
 {
-	t_list	*cur;
-	t_list	*r;
 	int		type;
 
-	cur = *parsed;
-	r = *rbracket;
-	while (cur && cur != r)
+	*lbracket = 0;
+	while (parsed && parsed != rbracket)
 	{
-		type = get_command_type(cur);
+		type = get_simple_type(parsed);
 		if (type & SIMPLE_LBRACKET)
-			*lbracket = cur;
+			*lbracket = parsed;
 		if (*lbracket && type & SIMPLE_PIPE)
 			*lbracket = 0;
-		cur = cur->next;
+		parsed = parsed->next;
 	}
 	return (*lbracket != 0);
 }
 
-int	find_rbracket(t_list **parsed, t_list **rbracket)
+int	find_rbracket(t_list *parsed, t_list **rbracket)
 {
 	t_list	*cur;
 
-	cur = *parsed;
+	cur = parsed;
+	*rbracket = 0;
 	while (cur)
 	{
-		if (get_command_type(cur) & SIMPLE_RBRACKET)
+		if (get_simple_type(cur) & SIMPLE_RBRACKET)
 		{
 			*rbracket = cur;
 			return (1);
@@ -384,40 +469,155 @@ int	find_rbracket(t_list **parsed, t_list **rbracket)
 	return (0);
 }
 
-int	make_subshell(t_list **parsed, int *flag)
+void	get_prev_command(t_list *parsed, t_list *node, t_list **prev)
+{
+	*prev = 0;
+	if (parsed == node)
+	{
+		*prev = parsed; 
+		return ;
+	}
+	while (parsed->next && parsed->next != node)
+		parsed = parsed->next;
+	*prev = parsed->next;
+}
+
+void	remove_brackets(t_list **parsed, t_list *l, t_list *r, t_list *new)
+{
+	t_list	*prev_l;
+	t_list	*l_ptr;
+
+	get_compound(new->node)->list = l->next;
+	l_ptr = l;
+	while (l_ptr->next && l_ptr->next != r)
+		l_ptr = l_ptr->next;
+	l_ptr->next = 0;
+	l->next = 0;
+	get_prev_command(*parsed, l, &prev_l);
+	if (prev_l == l)
+		*parsed = new;
+	else
+		prev_l->next = new;
+	new->next = r->next;
+	free_command(l);
+	free_command(r);
+}
+
+int	process_subshell(t_list **parsed, t_list *r)
 {
 	t_list	*l;
-	t_list	*r;
+	t_list	*new;
 
-	if (!find_rbracket(parsed, &r) || !find_lbracket(parsed, &r, &l))
+	if (!r || !find_lbracket(*parsed, r, &l))
+		return (1);
+	if (get_simple_type(l->next) & COMPOUND_SUBSHELL && l->next->next == r)
+		return (0); // syntax error. ((...))
+	if (!create_command(&new, COMPOUND_SUBSHELL))
 		return (0);
-
-}
-
-int	make_pipeline(t_list **parsed, int *flag)
-{
-
+	remove_brackets(parsed, l, r, new);
 	return (1);
 }
 
-int	make_compound(t_list *parsed)
+int	is_included_pipeline(t_list *parsed)
 {
-	int	flag;
+	static int	mask = 
+		SIMPLE_NORMAL | COMPOUND_SUBSHELL | COMPOUND_PIPELINE;
 
-	flag = 1;
+	return (parsed && get_command_type(parsed) & mask
+		&& parsed->next	&& get_command_type(parsed->next) & SIMPLE_PIPE
+		&& parsed->next->next
+		&& get_command_type(parsed->next->next) & mask);
+}
+
+void	find_pipeline(t_list *parsed, t_list **start, t_list **end)
+{
+	int	mask;
+
+	*start = 0;
+	*end = 0;
+	while (parsed && (*start)->next != parsed)
+	{
+		if (is_included_pipeline(parsed))
+			*start = parsed;
+		parsed = parsed->next;
+	}
+	while (parsed && *end != parsed)
+	{
+		if (is_included_pipeline(parsed))
+			parsed = parsed->next->next;
+		else
+			*end = parsed;
+	}
+}
+/*
+int	rearrange_pipeline(t_list **parsed, t_list *s, t_list *e, t_list *new)
+{
+	t_list	*prev_s;
+	t_compound	*pipeline;
+	t_list	*ptr;
+	int	type;
+
+	get_prev_command(*parsed, s, &prev_s);
+	if (prev_s == s)
+		*parsed = new;
+	else
+		prev_s->next = new;
+	new->next = e->next;
+	pipeline = get_compound(new);
+	while (s != e->next)
+	{
+		type = get_command_type(s);
+		ptr = s->next;
+		if (type & SIMPLE_PIPE)
+			free_command()
+	}
+}
+
+int	process_pipeline(t_list **parsed)
+{
+	t_list	*start;
+	t_list	*end;
+	t_list	*new;
+
+	find_pipeline(*parsed, &start, &end);
+	if (!create_command(&new, COMPOUND_PIPELINE))
+		return (0);
+}
+
+int	find_pipe(t_list *parsed)
+{
+	while (parsed)
+	{
+		if (get_command_type(parsed) & SIMPLE_PIPE)
+			return (1);
+		parsed = parsed->next;
+	}
+	return (0);
+}
+
+int	process_compound(t_list *parsed)
+{
+	int		flag;
+	t_list	*rbracket;
+
+	flag = find_rbracket(parsed, &rbracket) || find_pipe(parsed);
 	while (flag)
-		if (!make_subshell(&parsed, &flag)
-				|| !make_pipeline(&parsed, &flag))
+	{
+		if (!process_subshell(&parsed, rbracket)
+			|| !process_pipeline(&parsed))
 			return (0);
+		flag = find_rbracket(parsed, &rbracket)
+			|| find_pipe(parsed);
+	}
 	return (1);
 }
-
+*/
 int	parser(t_list *token_list, t_list *parsed_header)
 {
-	if (!parse_command(token_list, parsed_header))
+	if (!parse_simple(token_list, parsed_header))
 		return (0);
-	if (!make_compound(parsed_header->next))
-		return (0);
+//	if (!process_compound(parsed_header->next))
+//		return (0);
 	return (1);
 }
 

@@ -17,20 +17,27 @@ typedef	struct	s_list
 }	t_list;
 typedef struct	s_token
 {
-	char	*data;
 	int	types;
+	char	*data;
 }	t_token;
-typedef struct  s_command
+typedef struct  s_simple
 {
-        t_list  *args;
-        t_list  *redir;
-        int     type;
-}       t_command;
+	t_list  *args;
+	t_list  *redirs;
+	int     type;
+}	t_simple;
 typedef struct  s_compound
 {
-        t_list  *list;
-        int     type;
+	t_list  *list;
+	t_list	*padding;
+	int     type;
 }       t_compound;
+typedef struct	s_command
+{
+	t_list	*l1;
+	t_list	*l2;
+	int	type;
+}	t_command;
 typedef enum	e_token_flag
 {
 	TOKEN_NORMAL = 1,
