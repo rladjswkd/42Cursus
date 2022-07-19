@@ -8,15 +8,21 @@
 void	free_compound(t_list *);
 void	free_command(t_list *);
 
-/*
 int	malloc_wrapper(size_t size, void **ptr)
 {
+	size_t	 i;
+	char	*cptr;
+
 	*ptr = malloc(size);
 	if (!(*ptr))
 		return (0);
+	i = 0;
+	cptr = (char *)(*ptr);
+	while (i < size)
+		cptr[i++] = 0;
 	return (1);
 }
-*/
+
 int	is_delimiter(char *s)
 {
 	char	c;
@@ -127,6 +133,30 @@ int	get_index(char c1, char c2)
 
 int	create_token(t_list **token_list, char *str, int len, int types)
 {
+	t_token	*token;
+
+	if (types & TOKEN_IGNORE)
+		return (1);
+	if (len < 0)
+		return (0);
+	if (!malloc_wrapper(sizeof(t_list), (void **)token_list))
+		return (0);
+	if (!malloc_wrapper(sizeof(t_token), (void **)&(*token_list)->node))
+		return (0);
+	len -= (!!(types & (TOKEN_SQUOTE | TOKEN_DQUOTE))) << 1;
+	str += !!(types & (TOKEN_SQUOTE | TOKEN_DQUOTE));
+	token = get_token(*token_list);
+	if (!malloc_wrapper(sizeof(len + 1), (void **)&(token->data)))
+		return (0);
+	(token->data)[len] = 0;
+	while (len--)
+		(token->data)[len] = str[len];
+	token->types = types;
+	return (1);
+}
+/*
+int	create_token(t_list **token_list, char *str, int len, int types)
+{
 	if (types & TOKEN_IGNORE)
 		return (1);
 	if (len < 0)
@@ -148,7 +178,7 @@ int	create_token(t_list **token_list, char *str, int len, int types)
 	get_token(*token_list)->types = types;
 	return (1);
 }
-
+*/
 int	tokenize_input(char *str, t_list *token_header)
 {
 	int			len;
@@ -287,7 +317,7 @@ t_command	*get_command(t_list *parsed)
 {
 	return ((t_command *)(parsed->node));
 }
-
+/*
 int	create_command(t_list **new, int type)
 {
 	*new = (t_list *)malloc(sizeof(t_list));
@@ -295,6 +325,16 @@ int	create_command(t_list **new, int type)
 		return (0);
 	(*new)->node = (t_command *)malloc(sizeof(t_command));
 	if (!((*new)->node))
+		return (0);
+	get_command(*new)->type = type;
+	return (1);
+}
+*/
+int	create_command(t_list **new, int type)
+{
+	if (!malloc_wrapper(sizeof(t_list), (void **)new))
+		return (0);
+	if (!malloc_wrapper(sizeof(t_command), (void **)(&(*new)->node)))
 		return (0);
 	get_command(*new)->type = type;
 	return (1);
@@ -409,6 +449,7 @@ void	free_command(t_list *list)
 	else
 		free_compound(list);
 }
+
 int	parse_simple(t_list *token_list, t_list *parsed_header)
 {
 	int	type;
@@ -517,7 +558,7 @@ int	process_subshell(t_list **parsed, t_list *r)
 	remove_brackets(parsed, l, r, new);
 	return (1);
 }
-
+/*
 int	is_included_pipeline(t_list *parsed)
 {
 	static int	mask = 
@@ -549,7 +590,7 @@ void	find_pipeline(t_list *parsed, t_list **start, t_list **end)
 			*end = parsed;
 	}
 }
-/*
+
 int	rearrange_pipeline(t_list **parsed, t_list *s, t_list *e, t_list *new)
 {
 	t_list	*prev_s;
@@ -689,8 +730,8 @@ int	main(void)
 			printf("%s\n", "syntax error");
 		else //remove
 			print_token_content(token_header.next);
-		if (!parser(token_header.next, &parsed_header))
-			printf("%s\n", "parser error");
+	//	if (!parser(token_header.next, &parsed_header))
+	//		printf("%s\n", "parser error");
 	}
 	return (0);
 }
