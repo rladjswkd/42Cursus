@@ -7,8 +7,10 @@
 #include <readline/history.h>
 void	free_compound(t_list *);
 void	free_command(t_list *);
-void	print_token_content(t_list *) //remove
-void	print_command_content(t_list *) //remove
+void	print_token_content(t_list *, char *); //remove
+void	print_simple_content(t_list *, char *); //remove
+void	print_compound_content(t_list *); // remove
+void	print_command_content(t_list *); // remove
 
 int	malloc_wrapper(size_t size, void **ptr)
 {
@@ -512,33 +514,30 @@ int	find_rbracket(t_list *parsed, t_list **rbracket)
 void	get_prev_command(t_list *parsed, t_list *node, t_list **prev)
 {
 	*prev = 0;
-	if (parsed == node)
-	{
-		*prev = parsed; 
-		return ;
-	}
-	while (parsed->next && parsed->next != node)
-		parsed = parsed->next;
-	*prev = parsed->next;
+	if (parsed != node)
+		while (parsed->next && parsed->next != node)
+			parsed = parsed->next;
+	*prev = parsed;
 }
 
-void	remove_brackets(t_list **parsed, t_list *l, t_list *r, t_list *neu)
+void	rearrange_subshell(t_list **parsed, t_list *l, t_list *r, t_list *neu)
 {
 	t_list	*prev_l;
-	t_list	*l_ptr;
+	t_list	*prev_r;
 
-	get_compound(neu)->list = l->next;
-	l_ptr = l;
-	while (l_ptr->next && l_ptr->next != r)
-		l_ptr = l_ptr->next;
-	l_ptr->next = 0;
-	l->next = 0;
 	get_prev_command(*parsed, l, &prev_l);
-	if (prev_l == l)
+	if (*parsed == l)
 		*parsed = neu;
 	else
 		prev_l->next = neu;
+	get_compound(neu)->list = l->next;
+	prev_r = l;
+	while (prev_r->next != r)
+		prev_r = prev_r->next;
+	prev_r->next = 0;
+	l->next = 0;
 	neu->next = r->next;
+	r->next = 0;
 	free_command(l);
 	free_command(r);
 }
@@ -554,7 +553,7 @@ int	process_subshell(t_list **parsed, t_list *r)
 		return (0); // syntax error. ((...))
 	if (!create_command(&neu, COMPOUND_SUBSHELL))
 		return (0);
-	remove_brackets(parsed, l, r, neu);
+	rearrange_subshell(parsed, l, r, neu);
 	return (1);
 }
 
@@ -573,19 +572,15 @@ void	find_pipeline(t_list *parsed, t_list **start, t_list **end)
 {
 	*start = 0;
 	*end = 0;
-	while (parsed && (*start)->next != parsed)
-	{
-		if (is_included_pipeline(parsed))
-			*start = parsed;
+	while (parsed && !is_included_pipeline(parsed))
 		parsed = parsed->next;
-	}
-	while (parsed && *end != parsed)
-	{
-		if (is_included_pipeline(parsed))
-			parsed = parsed->next->next;
-		else
-			*end = parsed;
-	}
+	if (!parsed)
+		return ;
+	*start = parsed;
+	while (parsed && is_included_pipeline(parsed))
+		parsed = parsed->next->next;
+	if (parsed)
+		*end = parsed;
 }
 
 void	add_list_back(t_list **list, t_list *neu)
@@ -639,15 +634,18 @@ int	process_pipeline(t_list **parsed)
 	t_list	*prev_s;
 	
 	find_pipeline(*parsed, &start, &end);
-	if (!create_command(&neu, COMPOUND_PIPELINE))
-		return (0);
-	get_prev_command(*parsed, start, &prev_s);
-	if (prev_s == start)
-		*parsed = neu;
-	else
-		prev_s->next = neu;
-	neu->next = end->next;
-	rearrange_pipeline(start, end, neu);
+	if (start && end)
+	{
+		if (!create_command(&neu, COMPOUND_PIPELINE))
+			return (0);
+		get_prev_command(*parsed, start, &prev_s);
+		if (*parsed == start)
+			*parsed = neu;
+		else
+			prev_s->next = neu;
+		neu->next = end->next;
+		rearrange_pipeline(start, end, neu);
+	}
 	return (1);
 }
 
@@ -662,19 +660,19 @@ int	find_pipe(t_list *parsed)
 	return (0);
 }
 
-int	process_compound(t_list *parsed)
+int	process_compound(t_list **parsed)
 {
 	int		flag;
 	t_list	*rbracket;
 
-	flag = find_rbracket(parsed, &rbracket) || find_pipe(parsed);
+	flag = find_rbracket(*parsed, &rbracket) || find_pipe(*parsed);
 	while (flag)
 	{
-		if (!process_subshell(&parsed, rbracket)
-			|| !process_pipeline(&parsed))
+		if (!process_subshell(parsed, rbracket)
+			|| !process_pipeline(parsed))
 			return (0);
-		flag = find_rbracket(parsed, &rbracket)
-			|| find_pipe(parsed);
+		flag = find_rbracket(*parsed, &rbracket)
+			|| find_pipe(*parsed);
 	}
 	return (1);
 }
@@ -683,8 +681,10 @@ int	parser(t_list *token_list, t_list *parsed_header)
 {
 	if (!parse_simple(token_list, parsed_header))
 		return (0);
-	if (!process_compound(parsed_header->next))
+	print_command_content(parsed_header->next);
+	if (!process_compound(&(parsed_header->next)))
 		return (0);
+	print_command_content(parsed_header->next);
 	return (1);
 }
 
@@ -701,7 +701,7 @@ int	lexer(char *input, t_list *token_header)
 	return (1);
 }
 
-void	print_token_content(t_list *token_list) //remove
+void	print_token_content(t_list *token_list, char *tab) //remove
 {
 	int	types;
 
@@ -709,77 +709,101 @@ void	print_token_content(t_list *token_list) //remove
 	{
 		types = get_token_type(token_list);
 		printf("\n");
-		printf("token content:\t%s\n", ((t_token *)(token_list->node))->data);
-		printf("token types:\t");
+		printf("\033[0;35m%stoken content:\t%s\033[m\n", tab, ((t_token *)(token_list->node))->data);
+		printf("\033[0;35m%stoken types:\033[m\t", tab);
 		if (types & TOKEN_NORMAL)
-			printf("%s ", "TOKEN_NORMAL");
+			printf("\033[0;35m%s \033[m", "TOKEN_NORMAL");
 		if (types & TOKEN_REDIR)
-			printf("%s ", "TOKEN_REDIR");
+			printf("\033[0;35m%s \033[m", "TOKEN_REDIR");
 		if (types & TOKEN_HEREDOC)
-			printf("%s ", "TOKEN_HEREDOC");
+			printf("\033[0;35m%s \033[m", "TOKEN_HEREDOC");
 		if (types & TOKEN_REDIRARG)
-			printf("%s ", "TOKEN_REDIRARG");
+			printf("\033[0;35m%s \033[m", "TOKEN_REDIRARG");
 		if (types & TOKEN_SQUOTE)
-			printf("%s ", "TOKEN_SQUOTE");
+			printf("\033[0;35m%s \033[m", "TOKEN_SQUOTE");
 		if (types & TOKEN_DQUOTE)
-			printf("%s ", "TOKEN_DQUOTE");
+			printf("\033[0;35m%s \033[m", "TOKEN_DQUOTE");
 		if (types & TOKEN_CONCAT)
-			printf("%s ", "TOKEN_CONCAT");
+			printf("\033[0;35m%s \033[m", "TOKEN_CONCAT");
 		if (types & TOKEN_PIPE)
-			printf("%s ", "TOKEN_PIPE");
+			printf("\033[0;35m%s \033[m", "TOKEN_PIPE");
 		if (types & TOKEN_LBRACKET)
-			printf("%s ", "TOKEN_LBRACKET");
+			printf("\033[0;35m%s \033[m", "TOKEN_LBRACKET");
 		if (types & TOKEN_RBRACKET)
-			printf("%s ", "TOKEN_RBRACKET");
+			printf("\033[0;35m%s \033[m", "TOKEN_RBRACKET");
 		if (types & TOKEN_LOGICAL)
-			printf("%s ", "TOKEN_LOGICAL");
+			printf("\033[0;35m%s \033[m", "TOKEN_LOGICAL");
 		if (types & TOKEN_WILDCARD)
-			printf("%s ", "TOKEN_WILDCARD");
+			printf("\033[0;35m%s \033[m", "TOKEN_WILDCARD");
 		if (types & TOKEN_IGNORE)
-			printf("%s ", "TOKEN_IGNORE");
+			printf("\033[0;35m%s \033[m", "TOKEN_IGNORE");
 		printf("\n");
 		token_list = token_list->next;
 	}
 }
 
-void	print_simple_content(t_list *command)
+void	print_simple_content(t_list *command, char *tab)
 {
 	int	types;
 
-	while (token_list)
+	types = get_command_type(command);
+	printf("\n");
+	if (types & SIMPLE_NORMAL)
 	{
-		types = get_token_type(token_list);
-		printf("\n");
-		printf("token content:\t%s\n", ((t_token *)(token_list->node))->data);
-		printf("token types:\t");
-		if (types & TOKEN_NORMAL)
-			printf("%s ", "TOKEN_NORMAL");
-		if (types & TOKEN_REDIR)
-			printf("%s ", "TOKEN_REDIR");
-		if (types & TOKEN_HEREDOC)
-			printf("%s ", "TOKEN_HEREDOC");
-		if (types & TOKEN_REDIRARG)
-			printf("%s ", "TOKEN_REDIRARG");
-		if (types & TOKEN_SQUOTE)
-			printf("%s ", "TOKEN_SQUOTE");
-		if (types & TOKEN_DQUOTE)
-			printf("%s ", "TOKEN_DQUOTE");
-		if (types & TOKEN_CONCAT)
-			printf("%s ", "TOKEN_CONCAT");
-		if (types & TOKEN_PIPE)
-			printf("%s ", "TOKEN_PIPE");
-		if (types & TOKEN_LBRACKET)
-			printf("%s ", "TOKEN_LBRACKET");
-		if (types & TOKEN_RBRACKET)
-			printf("%s ", "TOKEN_RBRACKET");
-		if (types & TOKEN_LOGICAL)
-			printf("%s ", "TOKEN_LOGICAL");
-		if (types & TOKEN_WILDCARD)
-			printf("%s ", "TOKEN_WILDCARD");
-		if (types & TOKEN_IGNORE
-			printf("%s ", "TOKEN_IGNORE");
-		printf("\n");
-		token_list = token_list->next;
+		printf("%s\033[0;36m%s \033[m", tab, "SIMPLE_NORMAL");
+		if (get_simple(command)->args)
+		{
+			printf("%s\033[0;36m\n\n\t%s\033[m\n", tab, "ARGUMENTS");
+			print_token_content(get_simple(command)->args, "\t");
+		}
+		if (get_simple(command)->redirs)
+		{
+			printf("\033[0;36m\n\t%s\033[m\n", "RERIECTIONS");
+			print_token_content(get_simple(command)->redirs, "\t");
+		}
+	}
+	if (types & SIMPLE_PIPE)
+		printf("%s\033[0;36m%s \033[m", tab, "SIMPLE_PIPE");
+	if (types & SIMPLE_LBRACKET)
+		printf("%s\033[0;36m%s \033[m", tab, "SIMPLE_LBRACKET");
+	if (types & SIMPLE_RBRACKET)
+		printf("%s\033[0;36m%s \033[m", tab, "SIMPLE_RBRACKET");
+	if (types & SIMPLE_AND)
+		printf("%s\033[0;36m%s \033[m", tab, "SIMPLE_AND");
+	if (types & SIMPLE_OR)
+		printf("%s\033[0;36m%s \033[m", tab, "SIMPLE_OR");
+	printf("\n");
+}
+
+void	print_compound_content(t_list *command)
+{
+	int	types;
+	t_list	*list;
+
+	types = get_command_type(command);
+	printf("\n");
+	if (get_command_type(command) == COMPOUND_PIPELINE)
+		printf("\033[0;31m%s \033[m\n", "COMPOUND_PIPELINE::START");
+	else
+		printf("\033[0;31m%s \033[m\n", "COMPOUND_SUBSHELL::START");
+	list = get_compound(command)->list;
+	while (list)
+	{
+		print_command_content(list);
+		list = list->next;
+	}
+	printf("\033[0;31m::END \033[m\n");
+}
+
+void	print_command_content(t_list *command)
+{
+	while (command)
+	{
+		if (get_command_type(command) < COMPOUND_PIPELINE)
+			print_simple_content(command, "");
+		else
+			print_compound_content(command);
+		command = command->next;
 	}
 }
 
@@ -799,7 +823,7 @@ int	main(void)
 			printf("%s\n", "syntax error");
 			continue;
 		}
-		print_token_content(token_header.next); // remove
+		print_token_content(token_header.next, ""); // remove
 		if (!parser(token_header.next, &parsed_header))
 			printf("%s\n", "parser error");
 	}
