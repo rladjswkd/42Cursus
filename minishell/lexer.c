@@ -7,6 +7,8 @@
 #include <readline/history.h>
 void	free_compound(t_list *);
 void	free_command(t_list *);
+void	print_token_content(t_list *) //remove
+void	print_command_content(t_list *) //remove
 
 int	malloc_wrapper(size_t size, void **ptr)
 {
@@ -318,32 +320,34 @@ t_command	*get_command(t_list *parsed)
 	return ((t_command *)(parsed->node));
 }
 /*
-int	create_command(t_list **new, int type)
+int	create_command(t_list **neu, int type)
 {
-	*new = (t_list *)malloc(sizeof(t_list));
-	if (!(*new))
+	*neu = (t_list *)malloc(sizeof(t_list));
+	if (!(*neu))
 		return (0);
-	(*new)->node = (t_command *)malloc(sizeof(t_command));
-	if (!((*new)->node))
+	(*neu)->node = (t_command *)malloc(sizeof(t_command));
+	if (!((*neu)->node))
 		return (0);
-	get_command(*new)->type = type;
+	get_command(*neu)->type = type;
 	return (1);
 }
 */
-int	create_command(t_list **new, int type)
+int	create_command(t_list **neu, int type)
 {
-	if (!malloc_wrapper(sizeof(t_list), (void **)new))
+	if (!malloc_wrapper(sizeof(t_list), (void **)neu))
 		return (0);
-	if (!malloc_wrapper(sizeof(t_command), (void **)(&(*new)->node)))
+	if (!malloc_wrapper(sizeof(t_command), (void **)(&(*neu)->node)))
 		return (0);
-	get_command(*new)->type = type;
+	get_command(*neu)->type = type;
 	return (1);
 }
 
 int	find_simple_type(t_list *token_list)
 {
 	int	type;
-
+	
+	if (!token_list)
+		return (0);
 	type = get_token_type(token_list);
 	if (type & (TOKEN_NORMAL | TOKEN_REDIR))
 		return (SIMPLE_NORMAL);
@@ -359,7 +363,7 @@ int	find_simple_type(t_list *token_list)
 			return (SIMPLE_AND);
 		return (SIMPLE_OR);
 	}
-	return (-1);
+	return (0);
 }
 
 void	append_token(t_list **simple, t_list *token)
@@ -413,7 +417,7 @@ void	free_token_list(t_list *list)
 	}
 }
 
-void	free_simple(t_list *list)
+void	free_simple_members(t_list *list)
 {
 	t_simple	*simple;
 
@@ -421,56 +425,51 @@ void	free_simple(t_list *list)
 	free_token_list(simple->args);
 	free_token_list(simple->redirs);
 	free(list->node);
-	free(list);
 }
 
-void	free_compound(t_list *list)
+void	free_compound_members(t_list *list)
 {
 	t_compound	*compound;
+	t_list		*next;
 
 	compound = get_compound(list);
 	while (compound->list)
 	{
+		next = compound->list->next;
 		free_command(compound->list);
-		compound->list = compound->list->next;
+		free(compound->list);
+		compound->list = next;
 	}
-	free(compound->list);
-	free(list);
 }
 
 void	free_command(t_list *list)
 {
-	t_command	*command;
-	t_list		*next;
-
-	command = get_command(list);
-	if (command->type & SIMPLE_NORMAL)
-		free_simple(list);
+	if (get_command_type(list) & SIMPLE_NORMAL)
+		free_simple_members(list);
 	else
-		free_compound(list);
+		free_compound_members(list);
+	free(list);
 }
 
-int	parse_simple(t_list *token_list, t_list *parsed_header)
+int	parse_simple(t_list *token_list, t_list *header)
 {
 	int	type;
 	t_list	*token_ptr;
-	t_list	*parsed;
 
-	parsed = parsed_header->next;
 	while (token_list)
 	{
 		type = find_simple_type(token_list);
-		if (!create_command(&parsed, type))
+		if (!create_command(&(header->next), type))
 			return (0);
 		if (type & SIMPLE_NORMAL) // SIMPLE_NORMAL을 제외한 SIMPLE 들은 TOKEN이 free된다.
-			parse_args_redirs(parsed, &token_list);
+			parse_args_redirs(header->next, &token_list);
 		else
 		{
 			token_ptr = token_list;
 			token_list = token_list->next;
 			free_token(token_ptr);
 		}
-		parsed = parsed->next;
+		header = header->next;
 	}
 	return (1);
 }
@@ -523,12 +522,12 @@ void	get_prev_command(t_list *parsed, t_list *node, t_list **prev)
 	*prev = parsed->next;
 }
 
-void	remove_brackets(t_list **parsed, t_list *l, t_list *r, t_list *new)
+void	remove_brackets(t_list **parsed, t_list *l, t_list *r, t_list *neu)
 {
 	t_list	*prev_l;
 	t_list	*l_ptr;
 
-	get_compound(new->node)->list = l->next;
+	get_compound(neu)->list = l->next;
 	l_ptr = l;
 	while (l_ptr->next && l_ptr->next != r)
 		l_ptr = l_ptr->next;
@@ -536,10 +535,10 @@ void	remove_brackets(t_list **parsed, t_list *l, t_list *r, t_list *new)
 	l->next = 0;
 	get_prev_command(*parsed, l, &prev_l);
 	if (prev_l == l)
-		*parsed = new;
+		*parsed = neu;
 	else
-		prev_l->next = new;
-	new->next = r->next;
+		prev_l->next = neu;
+	neu->next = r->next;
 	free_command(l);
 	free_command(r);
 }
@@ -547,18 +546,18 @@ void	remove_brackets(t_list **parsed, t_list *l, t_list *r, t_list *new)
 int	process_subshell(t_list **parsed, t_list *r)
 {
 	t_list	*l;
-	t_list	*new;
+	t_list	*neu;
 
 	if (!r || !find_lbracket(*parsed, r, &l))
 		return (1);
 	if (get_simple_type(l->next) & COMPOUND_SUBSHELL && l->next->next == r)
 		return (0); // syntax error. ((...))
-	if (!create_command(&new, COMPOUND_SUBSHELL))
+	if (!create_command(&neu, COMPOUND_SUBSHELL))
 		return (0);
-	remove_brackets(parsed, l, r, new);
+	remove_brackets(parsed, l, r, neu);
 	return (1);
 }
-/*
+
 int	is_included_pipeline(t_list *parsed)
 {
 	static int	mask = 
@@ -572,8 +571,6 @@ int	is_included_pipeline(t_list *parsed)
 
 void	find_pipeline(t_list *parsed, t_list **start, t_list **end)
 {
-	int	mask;
-
 	*start = 0;
 	*end = 0;
 	while (parsed && (*start)->next != parsed)
@@ -591,38 +588,67 @@ void	find_pipeline(t_list *parsed, t_list **start, t_list **end)
 	}
 }
 
-int	rearrange_pipeline(t_list **parsed, t_list *s, t_list *e, t_list *new)
+void	add_list_back(t_list **list, t_list *neu)
 {
-	t_list	*prev_s;
-	t_compound	*pipeline;
-	t_list	*ptr;
-	int	type;
+	t_list	*temp;
 
-	get_prev_command(*parsed, s, &prev_s);
-	if (prev_s == s)
-		*parsed = new;
-	else
-		prev_s->next = new;
-	new->next = e->next;
-	pipeline = get_compound(new);
+	if (!(*list))
+	{
+		*list = neu;
+		return ;
+	}
+	temp = *list;
+	while (temp->next)
+		temp = temp->next;
+	temp->next = neu;
+}
+
+void	rearrange_pipeline(t_list *s, t_list *e, t_list *neu)
+{
+	t_list	*next;
+	int		type;
+
 	while (s != e->next)
 	{
 		type = get_command_type(s);
-		ptr = s->next;
+		next = s->next;
 		if (type & SIMPLE_PIPE)
-			free_command()
+			free_command(s);
+		else if (type & COMPOUND_PIPELINE)
+		{
+			add_list_back(&(get_compound(neu)->list), get_compound(s)->list);
+			get_compound(s)->list = 0;
+			free_command(s);
+		}
+		else
+		{
+			add_list_back(&(get_compound(neu)->list), s);
+			if (s != e)
+				s->next = 0;
+		}
+		s = next;
 	}
+	e->next = 0;
 }
 
 int	process_pipeline(t_list **parsed)
 {
 	t_list	*start;
 	t_list	*end;
-	t_list	*new;
-
+	t_list	*neu;
+	t_list	*prev_s;
+	
 	find_pipeline(*parsed, &start, &end);
-	if (!create_command(&new, COMPOUND_PIPELINE))
+	if (!create_command(&neu, COMPOUND_PIPELINE))
 		return (0);
+	get_prev_command(*parsed, start, &prev_s);
+	if (prev_s == start)
+		*parsed = neu;
+	else
+		prev_s->next = neu;
+	neu->next = end->next;
+	rearrange_pipeline(start, end, neu);
+	return (1);
 }
 
 int	find_pipe(t_list *parsed)
@@ -652,13 +678,13 @@ int	process_compound(t_list *parsed)
 	}
 	return (1);
 }
-*/
+
 int	parser(t_list *token_list, t_list *parsed_header)
 {
 	if (!parse_simple(token_list, parsed_header))
 		return (0);
-//	if (!process_compound(parsed_header->next))
-//		return (0);
+	if (!process_compound(parsed_header->next))
+		return (0);
 	return (1);
 }
 
@@ -716,22 +742,66 @@ void	print_token_content(t_list *token_list) //remove
 	}
 }
 
+void	print_simple_content(t_list *command)
+{
+	int	types;
+
+	while (token_list)
+	{
+		types = get_token_type(token_list);
+		printf("\n");
+		printf("token content:\t%s\n", ((t_token *)(token_list->node))->data);
+		printf("token types:\t");
+		if (types & TOKEN_NORMAL)
+			printf("%s ", "TOKEN_NORMAL");
+		if (types & TOKEN_REDIR)
+			printf("%s ", "TOKEN_REDIR");
+		if (types & TOKEN_HEREDOC)
+			printf("%s ", "TOKEN_HEREDOC");
+		if (types & TOKEN_REDIRARG)
+			printf("%s ", "TOKEN_REDIRARG");
+		if (types & TOKEN_SQUOTE)
+			printf("%s ", "TOKEN_SQUOTE");
+		if (types & TOKEN_DQUOTE)
+			printf("%s ", "TOKEN_DQUOTE");
+		if (types & TOKEN_CONCAT)
+			printf("%s ", "TOKEN_CONCAT");
+		if (types & TOKEN_PIPE)
+			printf("%s ", "TOKEN_PIPE");
+		if (types & TOKEN_LBRACKET)
+			printf("%s ", "TOKEN_LBRACKET");
+		if (types & TOKEN_RBRACKET)
+			printf("%s ", "TOKEN_RBRACKET");
+		if (types & TOKEN_LOGICAL)
+			printf("%s ", "TOKEN_LOGICAL");
+		if (types & TOKEN_WILDCARD)
+			printf("%s ", "TOKEN_WILDCARD");
+		if (types & TOKEN_IGNORE
+			printf("%s ", "TOKEN_IGNORE");
+		printf("\n");
+		token_list = token_list->next;
+	}
+}
+
 int	main(void)
 {
 	char	*input;
 	t_list	token_header;
 	t_list	parsed_header;
-	int		error;
 
 	while (1)
 	{
 		input = readline(">");
+		if (!input[0])
+			continue;
 		if (!lexer(input, &token_header))
+		{
 			printf("%s\n", "syntax error");
-		else //remove
-			print_token_content(token_header.next);
-	//	if (!parser(token_header.next, &parsed_header))
-	//		printf("%s\n", "parser error");
+			continue;
+		}
+		print_token_content(token_header.next); // remove
+		if (!parser(token_header.next, &parsed_header))
+			printf("%s\n", "parser error");
 	}
 	return (0);
 }
