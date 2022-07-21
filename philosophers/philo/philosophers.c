@@ -1,72 +1,112 @@
 #include "philosophers.h"
 
-pthread_mutex_t	*get_mutex(pthread_mutex_t *initializer, int index)
+pthread_mutex_t	*access_mutex(pthread_mutex_t *initializer, int index)
 {
 	static pthread_mutex_t	*mutexes;
 
-	if (!mutexes)
+	if (initializer)
 		mutexes = initializer;
 	return (&(mutexes[index]));
 }
 
-t_args	get_args(t_args *initializer)
+pthread_mutex_t	*access_rights(pthread_mutex_t *initializer)
+{
+	static pthread_mutex_t	*rights;
+
+	if (initializer)
+		rights = initializer;
+	return (rights);
+}
+
+t_args	access_args(t_args *initializer)
 {
 	static t_args args;
 
-	if (!args.count)
+	if (initializer)
 		args = *initializer;
 	return (args);
 }
 
-struct timeval	get_init_time(void)
+struct timeval	access_init_time(int flag)
 {
 	static struct timeval	init;
 
-	if (!(init.tv_sec))
-		gettimeofday(&init, 0);
+	if (flag)
+		gettimeofday(&init, (struct timezone *)0);
 	return (init);
 }
 
-int	get_timestamp(struct timeval from)
+int	get_interval(struct timeval t1)
 {
-	struct timeval	to;
+	struct timeval	t2;
 
-	gettimeofday(&to, 0);
-	return ((to.tv_sec - from.tv_sec) * 1000
-			+ (to.tv_usec - from.tv_usec) / 1000);
+	gettimeofday(&t2, (struct timezone *)0);
+	return ((t2.tv_sec - t1.tv_sec) * 1000
+			+ (t2.tv_usec - t1.tv_usec) / 1000);
 }
 
-void	*run(void *index)
+void	print_log(int idx, char *state)
 {
-	struct timeval	init;
-	int				thread;
-	int				lock1;
-	int				lock2;
-	t_args			args;
+	pthread_mutex_lock(access_rights(GET));
+	printf(FORMAT, get_interval(access_init_time(GET)), idx + 1, state);
+	pthread_mutex_unlock(access_rights(GET));
+}
 
-	init = get_init_time();
-	thread = *((int *)index);
-	args = get_args(0);
-	lock1 = (thread + args.count - 1) % args.count;
-	lock2 = thread;
-	if (thread & 1)
-	{
-		lock2 = lock1;
-		lock1 = thread;
-	}
+void	swap_forks(int *fork1, int *fork2)
+{
+	int	temp;
+
+	temp = *fork1;
+	*fork1 = *fork2;
+	*fork2 = temp;
+}
+
+void	philo_pickup(int fork, int idx)
+{
+	pthread_mutex_lock(access_mutex(GET, fork));
+	print_log(idx, FORK);
+}
+
+void	usleep_iterative(int time)
+{
+	struct timeval	start;
+	
+	gettimeofday(&start, (struct timezone *)0);
+	while (get_interval(start) < time)
+		usleep(15);
+}
+
+void	philo_eat_sleep(int idx, int time, char *state)
+{
+	print_log(idx, state);
+	usleep_iterative(time);
+}
+
+void	philo_putdown(int fork)
+{
+	pthread_mutex_unlock(access_mutex(GET, fork));
+}
+
+void	*routine(void *param)
+{
+	int		idx;
+	int		fork1;
+	int		fork2;
+
+	idx = *((int *)param);
+	fork1 = idx;
+	fork2 = (idx + 1) % access_args(GET).n_philo;
+	if (idx & 1)
+		swap_forks(&fork1, &fork2);
 	while (1)
 	{
-		pthread_mutex_lock(get_mutex(0, lock1));
-		printf("%d %d %s\n", get_timestamp(init), thread + 1, "has taken a fork");
-		pthread_mutex_lock(get_mutex(0, lock2));
-		printf("%d %d %s\n", get_timestamp(init), thread + 1, "has taken a fork");
-		printf("%d %d %s\n", get_timestamp(init), thread + 1, "is eating");
-		usleep(args.eat_t * 1000);
-		pthread_mutex_unlock(get_mutex(0, lock2));
-		pthread_mutex_unlock(get_mutex(0, lock1));
-		printf("%d %d %s\n", get_timestamp(init), thread + 1, "is sleeping");
-		usleep(args.sleep_t * 1000);
-		printf("%d %d %s\n", get_timestamp(init), thread + 1, "is thinking");
+		philo_pickup(fork1, idx);
+		philo_pickup(fork2, idx);
+		philo_eat_sleep(idx, access_args(GET).time_eat, EAT);
+		philo_putdown(fork2);
+		philo_putdown(fork1);
+		philo_eat_sleep(idx, access_args(GET).time_sleep, SLEEP);
+		print_log(idx, THINK);
 	}
 	return (0);
 }
@@ -81,30 +121,39 @@ int	destroy_mutexes(pthread_mutex_t *mutexes, int error_idx)
 	return (0);
 }
 
-void	free_all(pthread_mutex_t *mutexes, pthread_t *threads, int is_error)
+void	free_all(pthread_t *threads, int is_error)
 {
-	if (mutexes)
-		free(mutexes);
+	if (access_mutex(GET, 0))
+		free(access_mutex(GET, 0));
+	if (access_rights(GET))
+		free(access_rights(GET));
 	if (threads)
 		free(threads);
 	if (is_error)
 		exit(EXIT_FAILURE);
 }
 
-int	init_mutex(pthread_mutex_t *arr)
+int	init_mutex(void)
 {
-	int	i;
-	int	n;
+	int			i;
+	int			n;
+	pthread_mutex_t	*mutex;
+	pthread_mutex_t	*rights;
 
-	n = get_args(0).count;
-	arr = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t) * n);
-	if (!arr)
+	n = access_args(0).n_philo;
+	mutex = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t) * n);
+	if (!mutex)
 		return (0);
 	i = -1;
 	while (++i < n)
-		if (pthread_mutex_init(&(arr[i]), 0))
-			return (destroy_mutexes(arr, i));
-	get_mutex(arr, 0);
+		if (pthread_mutex_init(&(mutex[i]), 0))
+			return (destroy_mutexes(mutex, i));
+	access_mutex(mutex, 0);
+	rights = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t));
+	if (!rights)
+		return (0);
+	pthread_mutex_init(rights, 0);
+	access_rights(rights);
 	return (1);
 }
 
@@ -112,26 +161,26 @@ int	run_threads(pthread_t *threads)
 {
 	int	i;
 	int	n;
-	int	*vars;
+	int	*idx;
 
-	n = get_args(0).count;
+	n = access_args(0).n_philo;
 	threads = (pthread_t *)malloc(sizeof(pthread_t) * n);
 	if (!threads)
 		return (0);
-	vars = (int *)malloc(sizeof(int) * n);
-	if (!vars)
+	idx = (int *)malloc(sizeof(int) * n);
+	if (!idx)
 		return (0);
 	i = -1;
 	while (++i < n)
 	{
-		vars[i] = i;
-		if (pthread_create(&(threads[i]), 0, &run, &(vars[i])) != 0)
+		idx[i] = i;
+		if (pthread_create(&(threads[i]), 0, &routine, &(idx[i])) != 0)
 			return (0);
 	}
-	/* infinite loop and break if one of the philosophers die */
+	/* infinite loop. break ; if one of the philosophers die */
 	while (1)
 	{}
-	free(vars);
+	free(idx);
 	return (1);
 }
 
@@ -141,32 +190,31 @@ int	parse_arguments(int argc, char **argv)
 
 	if (argc != 5 && argc != 6)
 		return (0);
-	if (!get_int(argv[1], &(args.count)))
+	if (!get_int(argv[1], &(args.n_philo)))
 		return (0);
-	if (!get_int(argv[2], &(args.die_t)))
+	if (!get_int(argv[2], &(args.time_die)))
 		return (0);	
-	if (!get_int(argv[3], &(args.eat_t)))
+	if (!get_int(argv[3], &(args.time_eat)))
 		return (0);
-	if (!get_int(argv[4], &(args.sleep_t)))
+	if (!get_int(argv[4], &(args.time_sleep)))
 		return (0);
-	if (argc == 6 && !get_int(argv[5], &(args.eat_n)))
+	if (argc == 6 && !get_int(argv[5], &(args.n_eat)))
 		return (0);
-	get_args(&args);
+	access_args(&args);
 	return (1);
 }
 
 int	main(int argc, char **argv)
 {
 	pthread_t		*threads;
-	pthread_mutex_t	*mutexes;
-
-	get_init_time();
+	
 	if (!parse_arguments(argc, argv))
 		return (0);
-	if (!init_mutex(mutexes))
-		free_all(mutexes, 0, 1);
+	access_init_time(1);
+	if (!init_mutex())
+		free_all(0, 1);
 	if (!run_threads(threads))
-		free_all(mutexes, threads, 1);
-	free_all(mutexes, threads, 0);
+		free_all(threads, 1);
+	free_all(threads, 0);
 	return (0);
 }
