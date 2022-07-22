@@ -36,6 +36,15 @@ struct timeval	access_init_time(int flag)
 	return (init);
 }
 
+struct timeval	convert_to_timeval(int time)
+{
+	struct timeval	val;
+
+	val.tv_sec = time / 1000;
+	val.tv_usec = (time % 1000) * 1000;
+	return (val);
+}
+
 int	convert_to_usec(struct timeval t)
 {
 	return (t.tv_sec * 1000 + t.tv_usec / 1000);
@@ -52,8 +61,7 @@ int	get_interval(struct timeval t1)
 void	print_log(int idx, char *state)
 {
 	pthread_mutex_lock(access_rights(GET));
-	printf(FORMAT, get_interval(access_init_time(GET)) - START
-		, idx + 1, state);
+	printf(FORMAT, get_interval(access_init_time(GET)), idx + 1, state);
 	pthread_mutex_unlock(access_rights(GET));
 }
 
@@ -72,30 +80,52 @@ void	philo_pickup(int fork, int idx)
 	print_log(idx, FORK);
 }
 
-int	get_current_usec(void)
+struct timeval	add_timeval(struct timeval t1, struct timeval t2)
 {
-	struct	timeval	t;
+	struct timeval	val;
+	int			usec;
 
-	gettimeofday(&t, (struct timeval *)0);
-	return (t.tv_sec * 1000 + t.tv_usec / 1000);
+	val.tv_sec = t1.tv_sec + t2.tv_sec;
+	usec = (int)t1.tv_usec + t2.tv_usec;
+	if (usec >= 1000000)
+		(val.tv_sec)++;
+	val.tv_usec = usec % 1000000;
+	return (val);
+}
+
+int	compare_timeval(struct timeval t1, struct timeval t2)
+{
+	if (t1.tv_sec > t2.tv_sec)
+		return (1);
+	else if (t1.tv_sec == t2.tv_sec)
+	{
+		if (t1.tv_usec < t2.tv_usec)
+			return (-1);
+		else
+			return (t1.tv_usec - t2.tv_usec > 0);
+	}
+	else
+		return (-1);
 }
 
 void	usleep_iterative(int time)
 {
-	int	from;
-	int	usec;
-	int	current;
+	struct timeval	to;
+	struct timeval	start;
+	struct timeval	current;
+	int			interval;
 
-	from = get_current_usec();
-	usec = time * 333;
+	gettimeofday(&start, (struct timezone *)0);
+	to = add_timeval(start, convert_to_timeval(time));
+	interval = time * 500;
 	while (1)
 	{
-		current = get_current_usec();
-		if (current - from >= time)
+		gettimeofday(&current, (struct timezone *)0);
+		if (compare_timeval(current, to) > 0)
 			return ;
-		if (time - (current - from) <= usec)
-			usec /= 2;
-		usleep(usec);
+		usleep(interval);
+		if (convert_to_usec(to) - convert_to_usec(current) <= interval)
+			interval /= 2;
 	}
 }
 
@@ -116,12 +146,6 @@ void	philo_think(int idx, char *state)
 	usleep(access_args(GET).time_eat * 500);
 }
 
-void	synchronize_start_time(void)
-{
-	while (get_interval(access_init_time(0)) < START)
-		usleep(100);
-}
-
 void	*routine(void *param)
 {
 	int		idx;
@@ -133,7 +157,6 @@ void	*routine(void *param)
 	fork2 = (idx + 1) % access_args(GET).n_philo;
 	if (idx & 1)
 		swap_forks(&fork1, &fork2);
-	synchronize_start_time();
 	while (1)
 	{
 		philo_pickup(fork1, idx);
@@ -207,7 +230,6 @@ int	run_threads(pthread_t *threads)
 	if (!idx)
 		return (0);
 	i = -1;
-	access_init_time(1);
 	while (++i < n)
 	{
 		idx[i] = i;
@@ -247,6 +269,7 @@ int	main(int argc, char **argv)
 	
 	if (!parse_arguments(argc, argv))
 		return (0);
+	access_init_time(1);
 	if (!init_mutex())
 		free_all(0, 1);
 	if (!run_threads(threads))
