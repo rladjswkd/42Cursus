@@ -150,9 +150,9 @@ int	create_token(t_list **token_list, char *str, int len, int types)
 	len -= (!!(types & (TOKEN_SQUOTE | TOKEN_DQUOTE))) << 1;
 	str += !!(types & (TOKEN_SQUOTE | TOKEN_DQUOTE));
 	token = get_token(*token_list);
-	if (!malloc_wrapper(sizeof(len + 1), (void **)&(token->data)))
+	if (!malloc_wrapper(len + 1, (void **)&(token->data)))
 		return (0);
-	while (--len)
+	while (len--)
 		(token->data)[len] = str[len];
 	token->types = types;
 	return (1);
