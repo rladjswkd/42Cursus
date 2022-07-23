@@ -113,7 +113,7 @@ void	philo_putdown(int fork)
 void	philo_think(int idx, char *state)
 {
 	print_log(idx, THINK);
-	usleep(access_args(GET).time_eat * 500);
+	usleep(access_args(GET).time_eat);
 }
 
 void	synchronize_start_time(void)

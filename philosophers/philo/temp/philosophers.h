@@ -1,17 +1,26 @@
 #ifndef PHILOSOPHERS_H
 # define PHILOSOPHERS_H
-# define FORMAT "%dms %d %s\n"
-# define FORK	"has taken a fork"
-# define EAT	"is eating"
-# define SLEEP	"is sleeping"
-# define THINK	"is thinking"
-# define GET	0
+# define FORMAT 	"%dms\t%d %s\n"
+# define STR_FORK	"has taken a fork"
+# define STR_EAT	"is eating"
+# define STR_SLEEP	"is sleeping"
+# define STR_THINK	"is thinking"
+# define GET		0
+# define SET		1
+# define NO_INDEX	0
+# define SYNC_TIME	2
+# define SYNC_USEC	100
+# define WEIGHT		333
 # include <sys/time.h>
 # include <pthread.h>
 # include <stdlib.h>
 # include <unistd.h>
 # include <stdio.h>
-typedef unsigned long long	t_uint64;
+typedef enum	e_state
+{
+	EAT,
+	SLEEP
+}	t_state;
 typedef struct	s_args
 {
 	int	n_philo;
@@ -20,5 +29,5 @@ typedef struct	s_args
 	int	time_sleep;
 	int	n_eat;
 }	t_args;
-int	*get_int(char *str, int *val);
+int	get_int(char *str, int *val);
 #endif
