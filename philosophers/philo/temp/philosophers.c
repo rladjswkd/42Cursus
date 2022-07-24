@@ -244,12 +244,14 @@ void	*routine(void *param)
 	int		fork1;
 	int		fork2;
 
+	synchronize_start_time();
 	idx = *((int *)param);
 	fork1 = idx;
 	fork2 = (idx + 1) % access_args(GET).n_philo;
+//	if (idx & 1)
+//		swap_forks(&fork1, &fork2);
 	if (idx & 1)
-		swap_forks(&fork1, &fork2);
-	synchronize_start_time();
+		usleep_splitted(access_args(GET).time_eat / 2);
 	while (!is_flag_set())
 		if (!philo_cycle(fork1, fork2, idx))
 			break ;
@@ -287,7 +289,7 @@ int	check_if_done(int idx)
 	pthread_mutex_lock(access_n_eat_mutex(GET, idx));
 	res = *access_n_eat(GET, idx);
 	pthread_mutex_unlock(access_n_eat_mutex(GET, idx));
-	return (res == 0);
+	return (res < 1);
 }
 
 void	monitor_threads(int n, int limit)
@@ -474,7 +476,7 @@ int	parse_arguments(int argc, char **argv)
 	if (!get_int(argv[4], &(args.time_sleep)))
 		return (0);
 	if (argc == 5)
-		args.n_eat = -1;
+		args.n_eat = 2147483648;
 	else if (argc == 6 && !get_int(argv[5], &(args.n_eat)))
 		return (0);
 	access_args(&args);
