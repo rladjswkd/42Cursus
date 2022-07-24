@@ -1,14 +1,15 @@
 #ifndef PHILOSOPHERS_H
 # define PHILOSOPHERS_H
-# define FORMAT 	"%dms\t%d %s\n"
+# define FORMAT 	"%dms %d %s\n"
 # define STR_FORK	"has taken a fork"
 # define STR_EAT	"is eating"
 # define STR_SLEEP	"is sleeping"
 # define STR_THINK	"is thinking"
+# define STR_DIED	"is died"
 # define GET		0
 # define SET		1
 # define NO_INDEX	0
-# define SYNC_TIME	2
+# define SYNC_TIME	5
 # define SYNC_USEC	100
 # define WEIGHT		333
 # include <sys/time.h>
