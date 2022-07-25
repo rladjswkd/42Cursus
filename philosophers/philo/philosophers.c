@@ -17,6 +17,7 @@ pthread_mutex_t	*access_fork_mutex(pthread_mutex_t *initializer, int index)
 	return (&(mutex[index]));
 }
 
+/*
 pthread_mutex_t	*access_rights_mutex(pthread_mutex_t *initializer)
 {
 	static pthread_mutex_t	*mutex;
@@ -25,6 +26,7 @@ pthread_mutex_t	*access_rights_mutex(pthread_mutex_t *initializer)
 		mutex = initializer;
 	return (mutex);
 }
+*/
 
 t_args	access_args(t_args *initializer)
 {
@@ -136,10 +138,10 @@ int	is_flag_set(void)
 
 void	print_log(int idx, char *str)
 {
-	pthread_mutex_lock(access_rights_mutex(GET));
+//	pthread_mutex_lock(access_rights_mutex(GET));
 	if (!is_flag_set())
 		printf(FORMAT, get_init_interval(), idx + 1, str);
-	pthread_mutex_unlock(access_rights_mutex(GET));
+//	pthread_mutex_unlock(access_rights_mutex(GET));
 }
 
 void	swap_forks(int *fork1, int *fork2) // utils
@@ -339,8 +341,8 @@ void	free_all(pthread_t *threads, int is_error)
 	n = access_args(GET).n_philo;
 	if (access_fork_mutex(GET, 0))
 		destroy_free_mutex(access_fork_mutex(GET, 0), n);
-	if (access_rights_mutex(GET))
-		destroy_free_mutex(access_rights_mutex(GET), 1);
+//	if (access_rights_mutex(GET))
+//		destroy_free_mutex(access_rights_mutex(GET), 1);
 	if (access_last_eat_mutex(GET, 0))
 		destroy_free_mutex(access_last_eat_mutex(GET, 0), n);
 	if (access_last_eat(GET, 0))
@@ -374,19 +376,19 @@ int	init_mutex(pthread_mutex_t **mutex, int n)
 int	init_mutex_all(void)
 {
 	pthread_mutex_t	*fork;
-	pthread_mutex_t	*rights;
+//	pthread_mutex_t	*rights;
 	pthread_mutex_t	*last_eat;
 	pthread_mutex_t	*flag;
 	pthread_mutex_t	*n_eat;
 
 	if (!init_mutex(&fork, access_args(GET).n_philo)
-		|| !init_mutex(&rights, 1)
+//		|| !init_mutex(&rights, 1)
 		|| !init_mutex(&last_eat, access_args(GET).n_philo)
 		|| !init_mutex(&flag, 1)
 		|| !init_mutex(&n_eat, access_args(GET).n_philo))
 		return (0);
 	access_fork_mutex(fork, NO_INDEX);
-	access_rights_mutex(rights);
+//	access_rights_mutex(rights);
 	access_last_eat_mutex(last_eat, NO_INDEX);
 	access_flag_mutex(flag);
 	access_n_eat_mutex(n_eat, NO_INDEX);
@@ -476,7 +478,7 @@ int	parse_arguments(int argc, char **argv)
 	if (!get_int(argv[4], &(args.time_sleep)))
 		return (0);
 	if (argc == 5)
-		args.n_eat = 2147483648;
+		args.n_eat = 2147483647;
 	else if (argc == 6 && !get_int(argv[5], &(args.n_eat)))
 		return (0);
 	access_args(&args);
