@@ -12,6 +12,10 @@
 # define SYNC_TIME	5
 # define SYNC_USEC	100
 # define WEIGHT		333
+# define MAX_INT	2147483647
+# define FORK_NAME	"/fork"
+# define FLAG_NAME	"/flag"
+# define PROG_NAME	"/prog"
 # include <sys/time.h>
 # include <pthread.h>
 # include <stdlib.h>
