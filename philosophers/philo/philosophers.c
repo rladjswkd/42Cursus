@@ -128,10 +128,8 @@ int	is_flag_set(void)
 {
 	int	res;
 
-	res = 0;
 	pthread_mutex_lock(access_flag_mutex(GET));
-	if (access_flag(GET))
-		res = 1;
+	res = access_flag(GET);
 	pthread_mutex_unlock(access_flag_mutex(GET));
 	return (res);
 }
@@ -139,8 +137,9 @@ int	is_flag_set(void)
 void	print_log(int idx, char *str)
 {
 //	pthread_mutex_lock(access_rights_mutex(GET));
-	if (!is_flag_set())
-		printf(FORMAT, get_init_interval(), idx + 1, str);
+	if (is_flag_set())
+		return ;
+	printf(FORMAT, get_init_interval(), idx + 1, str);
 //	pthread_mutex_unlock(access_rights_mutex(GET));
 }
 
@@ -177,6 +176,7 @@ void	set_flag(void)
 	pthread_mutex_lock(access_flag_mutex(GET));
 	access_flag(SET);
 	pthread_mutex_unlock(access_flag_mutex(GET));
+	usleep_splitted(100);
 }
 
 /*************************************step************************************/
@@ -278,7 +278,7 @@ int	check_if_died(int idx, int limit)
 	if (now - get_last_eat(idx) > limit)
 	{
 		set_flag();
-		printf(FORMAT, now, idx + 1, STR_DIED);
+		printf(FORMAT, now, idx + 1, STR_DIED); 	
 		return (1);
 	}
 	return (0);
