@@ -80,7 +80,7 @@ int	extract_quote(char *str, int *types)
 		len++;
 	if (!(*str))
 		return (-1);
-	if (str[len] && !is_delimiter(&(str[len])))
+	if (*(str + 1) && !is_delimiter(str + 1))
 		*types |= TOKEN_CONCAT;
 	return (len + 1);
 }
