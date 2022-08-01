@@ -803,33 +803,33 @@ void	print_command_content(t_list *command)
 {
 	while (command)
 	{
-		if (get_command_type(command) < COMPOUND_PIPELINE)
-			print_simple_content(command, "");
-		else
+		if (get_command_type(command) & (COMPOUND_PIPELINE | COMPOUND_SUBSHELL))
 			print_compound_content(command);
+		else
+			print_simple_content(command, "");
 		command = command->next;
 	}
 }
-
+/* free_all 이라는 함수 만들어서 input, token_header->next, parsed_header->next 중 null이 아닌 거 다 free하기 */
 int	main(void)
 {
 	char	*input;
 	t_list	token_header;
 	t_list	parsed_header;
 
-	//while (1)
-	//{
+	while (1)
+	{
 		input = readline(">");
-//		if (!input[0])
-	//		continue;
+		if (!input[0])
+			continue;
 		if (!lexer(input, &token_header))
 		{
 			printf("%s\n", "syntax error");
-//			continue;
+			continue;
 		}
 		if (!parser(token_header.next, &parsed_header))
 			printf("%s\n", "parser error");
-	//}
+	}
 	free(input);
 	free_command_list(parsed_header.next);
 	return (0);
