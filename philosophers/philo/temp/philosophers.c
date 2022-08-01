@@ -137,8 +137,10 @@ int	is_flag_set(void)
 void	print_log(int idx, char *str)
 {
 	pthread_mutex_lock(access_rights_mutex(GET));
-	if (!is_flag_set())
+	pthread_mutex_lock(access_flag_mutex(GET));
+	if (!access_flag(GET))
 		printf(FORMAT, get_init_interval(), idx + 1, str);
+	pthread_mutex_unlock(access_flag_mutex(GET));
 	pthread_mutex_unlock(access_rights_mutex(GET));
 }
 
@@ -275,8 +277,13 @@ int	check_if_died(int idx, int limit)
 	now = get_init_interval();
 	if (now - get_last_eat(idx) > limit)
 	{
-		set_flag();
+		//set_flag();
+		pthread_mutex_lock(access_rights_mutex(GET));
+		pthread_mutex_lock(access_flag_mutex(GET));
+		access_flag(SET);
 		printf(FORMAT, now, idx + 1, STR_DIED);
+		pthread_mutex_unlock(access_flag_mutex(GET));
+		pthread_mutex_unlock(access_rights_mutex(GET));
 		return (1);
 	}
 	return (0);
@@ -476,7 +483,7 @@ int	parse_arguments(int argc, char **argv)
 	if (!get_int(argv[4], &(args.time_sleep)))
 		return (0);
 	if (argc == 5)
-		args.n_eat = 2147483648;
+		args.n_eat = 2147483647;
 	else if (argc == 6 && !get_int(argv[5], &(args.n_eat)))
 		return (0);
 	access_args(&args);
