@@ -387,9 +387,9 @@ void	parse_args_redirs(t_list *parsed, t_list **list)
 	t_simple	*simple;
 	t_list		*next;
 
+	simple = get_simple(parsed);
 	while (find_simple_type(*list) & SIMPLE_NORMAL)
 	{
-		simple = get_simple(parsed);
 		next = (*list)->next;
 		if (get_token_type(*list) & (TOKEN_REDIR | TOKEN_REDIRARG))
 			append_token(&(simple->redirs), *list);
@@ -400,10 +400,11 @@ void	parse_args_redirs(t_list *parsed, t_list **list)
 	}
 }
 
-void	free_token(t_list *token)
+void	free_token(t_list *list)
 {
-	free(get_token(token)->data);
-	free(token);
+	free(get_token(list)->data);
+	free(list->node);
+	free(list);
 }
 
 void	free_token_list(t_list *list)
@@ -418,40 +419,44 @@ void	free_token_list(t_list *list)
 	}
 }
 
-void	free_simple_members(t_list *list)
-{
-	t_simple	*simple;
-
-	simple = get_simple(list);
-	free_token_list(simple->args);
-	free_token_list(simple->redirs);
-	free(list->node);
-}
-
-void	free_compound_members(t_list *list)
-{
-	t_compound	*compound;
-	t_list		*next;
-
-	compound = get_compound(list);
-	while (compound->list)
-	{
-		next = compound->list->next;
-		free_command(compound->list);
-		free(compound->list);
-		compound->list = next;
-	}
-}
-
 void	free_command(t_list *list)
 {
-	if (get_command_type(list) & SIMPLE_NORMAL)
-		free_simple_members(list);
-	else
-		free_compound_members(list);
+	t_command	*command;
+	t_list		*next;
+
+	command = get_command(list);
+	if (command->type & SIMPLE_NORMAL)
+	{
+		free_token_list(command->l1);
+		free_token_list(command->l2);
+		free(command);
+	}
+	else if (command->type & (COMPOUND_PIPELINE | COMPOUND_SUBSHELL)) 
+	{
+		while (command->l1)
+		{
+			next = command->l1->next;
+			free_command(command->l1);
+			command->l1 = next;
+		}
+		free(command);
+	}
 	free(list);
 }
 
+void	free_command_list(t_list *list)
+{
+	t_list	*next;
+
+	while (list)
+	{
+		next = list->next;
+		free_command(list);
+		list = next;
+	}
+}
+
+/* SIMPLE_NORMAL을 제외한 SIMPLE 들은 TOKEN이 free된다 */
 int	parse_simple(t_list *token_list, t_list *header)
 {
 	int	type;
@@ -460,17 +465,17 @@ int	parse_simple(t_list *token_list, t_list *header)
 	while (token_list)
 	{
 		type = find_simple_type(token_list);
-		if (!create_command(&(header->next), type))
-			return (0);
-		if (type & SIMPLE_NORMAL) // SIMPLE_NORMAL을 제외한 SIMPLE 들은 TOKEN이 free된다.
-			parse_args_redirs(header->next, &token_list);
-		else
+		if (type & SIMPLE_NORMAL)
 		{
-			token_ptr = token_list;
-			token_list = token_list->next;
-			free_token(token_ptr);
+			if (!create_command(&(header->next), type))
+				return (0);
+			parse_args_redirs(header->next, &token_list);
+			header = header->next;
+			continue ;
 		}
-		header = header->next;
+		token_ptr = token_list;
+		token_list = token_list->next;
+		free_token(token_ptr);
 	}
 	return (1);
 }
@@ -617,7 +622,7 @@ void	rearrange_pipeline(t_list *s, t_list *e, t_list *neu)
 		else
 		{
 			add_list_back(&(get_compound(neu)->list), s);
-			if (s != e)
+			if (s != e) // s == e일 때도 s->next = 0을 하면 while 조건식이 s != NULL이 된다.
 				s->next = 0;
 		}
 		s = next;
@@ -680,10 +685,10 @@ int	parser(t_list *token_list, t_list *parsed_header)
 {
 	if (!parse_simple(token_list, parsed_header))
 		return (0);
-	print_command_content(parsed_header->next);
+	//print_command_content(parsed_header->next);
 	if (!process_compound(&(parsed_header->next)))
 		return (0);
-	print_command_content(parsed_header->next);
+	//print_command_content(parsed_header->next);
 	return (1);
 }
 
@@ -812,19 +817,20 @@ int	main(void)
 	t_list	token_header;
 	t_list	parsed_header;
 
-	while (1)
-	{
+	//while (1)
+	//{
 		input = readline(">");
-		if (!input[0])
-			continue;
+//		if (!input[0])
+	//		continue;
 		if (!lexer(input, &token_header))
 		{
 			printf("%s\n", "syntax error");
-			continue;
+//			continue;
 		}
-		print_token_content(token_header.next, ""); // remove
 		if (!parser(token_header.next, &parsed_header))
 			printf("%s\n", "parser error");
-	}
+	//}
+	free(input);
+	free_command_list(parsed_header.next);
 	return (0);
 }
