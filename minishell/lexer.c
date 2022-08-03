@@ -429,7 +429,6 @@ void	free_command(t_list *list)
 	{
 		free_token_list(command->l1);
 		free_token_list(command->l2);
-		free(command);
 	}
 	else if (command->type & (COMPOUND_PIPELINE | COMPOUND_SUBSHELL)) 
 	{
@@ -439,8 +438,8 @@ void	free_command(t_list *list)
 			free_command(command->l1);
 			command->l1 = next;
 		}
-		free(command);
 	}
+	free(command);
 	free(list);
 }
 
@@ -465,17 +464,17 @@ int	parse_simple(t_list *token_list, t_list *header)
 	while (token_list)
 	{
 		type = find_simple_type(token_list);
+		if (!create_command(&(header->next), type))
+			return (0);
 		if (type & SIMPLE_NORMAL)
-		{
-			if (!create_command(&(header->next), type))
-				return (0);
 			parse_args_redirs(header->next, &token_list);
-			header = header->next;
-			continue ;
+		else
+		{
+			token_ptr = token_list;
+			token_list = token_list->next;
+			free_token(token_ptr);
 		}
-		token_ptr = token_list;
-		token_list = token_list->next;
-		free_token(token_ptr);
+		header = header->next;
 	}
 	return (1);
 }
@@ -685,10 +684,10 @@ int	parser(t_list *token_list, t_list *parsed_header)
 {
 	if (!parse_simple(token_list, parsed_header))
 		return (0);
-	//print_command_content(parsed_header->next);
+	print_command_content(parsed_header->next);
 	if (!process_compound(&(parsed_header->next)))
 		return (0);
-	//print_command_content(parsed_header->next);
+	print_command_content(parsed_header->next);
 	return (1);
 }
 
@@ -782,7 +781,6 @@ void	print_simple_content(t_list *command, char *tab)
 void	print_compound_content(t_list *command)
 {
 	int	types;
-	t_list	*list;
 
 	types = get_command_type(command);
 	printf("\n");
@@ -790,12 +788,7 @@ void	print_compound_content(t_list *command)
 		printf("\033[0;31m%s \033[m\n", "COMPOUND_PIPELINE::START");
 	else
 		printf("\033[0;31m%s \033[m\n", "COMPOUND_SUBSHELL::START");
-	list = get_compound(command)->list;
-	while (list)
-	{
-		print_command_content(list);
-		list = list->next;
-	}
+	print_command_content(get_compound(command)->list);
 	printf("\033[0;31m::END \033[m\n");
 }
 
