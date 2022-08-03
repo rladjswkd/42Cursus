@@ -18,7 +18,7 @@ int	get_int(char *str, int *val)
 	int	sign;
 
 	sign = get_sign(&str);
-	if (!sign)
+	if (sign < 1)
 		return (0);
 	*val = 0;
 	while (47 < *str && *str < 58)

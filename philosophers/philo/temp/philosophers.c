@@ -89,7 +89,6 @@ int	access_flag(int initializer) // need mutex. main thread (monitor) - philosop
 	return (flag);
 }
 
-
 /*****************************************************************************/
 /*************************************time************************************/
 struct timeval	access_init_time(int flag)
@@ -126,31 +125,18 @@ int	is_flag_set(void)
 {
 	int	res;
 
-	res = 0;
 	pthread_mutex_lock(access_flag_mutex(GET));
-	if (access_flag(GET))
-		res = 1;
+	res = access_flag(GET);
 	pthread_mutex_unlock(access_flag_mutex(GET));
 	return (res);
 }
 
-void	print_log(int idx, char *str)
+void	print_state(int idx, char *str, int state)
 {
 	pthread_mutex_lock(access_rights_mutex(GET));
-	pthread_mutex_lock(access_flag_mutex(GET));
-	if (!access_flag(GET))
+	if (!is_flag_set() || state)
 		printf(FORMAT, get_init_interval(), idx + 1, str);
-	pthread_mutex_unlock(access_flag_mutex(GET));
 	pthread_mutex_unlock(access_rights_mutex(GET));
-}
-
-void	swap_forks(int *fork1, int *fork2) // utils
-{
-	int	temp;
-
-	temp = *fork1;
-	*fork1 = *fork2;
-	*fork2 = temp;
 }
 
 void	usleep_splitted(int time) // utils
@@ -180,17 +166,22 @@ void	set_flag(void)
 }
 
 /*************************************step************************************/
-void	philo_pickup(int fork, int idx)
+int	philo_pickup(int fork, int idx)
 {
+	if (is_flag_set())
+		return (0);
 	pthread_mutex_lock(access_fork_mutex(GET, fork));
-	print_log(idx, STR_FORK);
+	print_state(idx, STR_FORK, ALIVE);
+	return (1);
 }
 
-void	philo_eat_sleep(int idx, int time, int state)
+int	philo_eat_sleep(int idx, int time, int flag)
 {
-	if (state == EAT)
+	if (is_flag_set())
+		return (0);
+	if (flag == EAT)
 	{
-		print_log(idx, STR_EAT);
+		print_state(idx, STR_EAT, ALIVE);
 		pthread_mutex_lock(access_last_eat_mutex(GET, idx));
 		*access_last_eat(GET, idx) = get_init_interval();
 		pthread_mutex_unlock(access_last_eat_mutex(GET, idx));
@@ -199,9 +190,9 @@ void	philo_eat_sleep(int idx, int time, int state)
 		pthread_mutex_unlock(access_n_eat_mutex(GET, idx));
 	}
 	else
-		print_log(idx, STR_SLEEP);
-	if (!is_flag_set())
-		usleep_splitted(time);
+		print_state(idx, STR_SLEEP, ALIVE);
+	usleep_splitted(time);
+	return (1);
 }
 
 void	philo_putdown(int fork)
@@ -209,27 +200,35 @@ void	philo_putdown(int fork)
 	pthread_mutex_unlock(access_fork_mutex(GET, fork));
 }
 
-void	philo_think(int idx)
+int	philo_think(int idx)
 {
-	print_log(idx, STR_THINK);
-	if (!is_flag_set())
-		usleep(access_args(GET).time_eat);
+	if (is_flag_set())
+		return (0);
+	print_state(idx, STR_THINK, ALIVE);
+	usleep_splitted(access_args(GET).time_eat);
+	return (1);
 }
 
 int	philo_cycle(int fork1, int fork2, int idx)
 {
-	philo_pickup(fork1, idx);
-	if (fork1 == fork2)
+	int	state;
+
+	if (!philo_pickup(fork1, idx))
+		return (0);
+	if (fork1 == fork2 || !philo_pickup(fork2, idx))
 	{
-		pthread_mutex_unlock(access_fork_mutex(GET, fork1));
+		philo_putdown(fork1);
 		return (0);
 	}
-	philo_pickup(fork2, idx);
-	philo_eat_sleep(idx, access_args(GET).time_eat, EAT);
+	state = philo_eat_sleep(idx, access_args(GET).time_eat, EAT);
 	philo_putdown(fork2);
 	philo_putdown(fork1);
-	philo_eat_sleep(idx, access_args(GET).time_sleep, SLEEP);
-	philo_think(idx);
+	if (!state)
+		return (0);
+	if (!philo_eat_sleep(idx, access_args(GET).time_sleep, SLEEP))
+		return (0);
+	if (!philo_think(idx))
+		return (0);
 	return (1);
 }
 /*****************************************************************************/
@@ -250,13 +249,10 @@ void	*routine(void *param)
 	idx = *((int *)param);
 	fork1 = idx;
 	fork2 = (idx + 1) % access_args(GET).n_philo;
-//	if (idx & 1)
-//		swap_forks(&fork1, &fork2);
 	if (idx & 1)
 		usleep_splitted(access_args(GET).time_eat / 2);
-	while (!is_flag_set())
-		if (!philo_cycle(fork1, fork2, idx))
-			break ;
+	while (philo_cycle(fork1, fork2, idx))
+		continue ;
 	return (0);
 }
 
@@ -277,13 +273,8 @@ int	check_if_died(int idx, int limit)
 	now = get_init_interval();
 	if (now - get_last_eat(idx) > limit)
 	{
-		//set_flag();
-		pthread_mutex_lock(access_rights_mutex(GET));
-		pthread_mutex_lock(access_flag_mutex(GET));
-		access_flag(SET);
-		printf(FORMAT, now, idx + 1, STR_DIED);
-		pthread_mutex_unlock(access_flag_mutex(GET));
-		pthread_mutex_unlock(access_rights_mutex(GET));
+		set_flag();
+		print_state(idx, STR_DIED, DEAD);
 		return (1);
 	}
 	return (0);
