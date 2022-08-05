@@ -5,7 +5,7 @@
 # define STR_EAT	"is eating"
 # define STR_SLEEP	"is sleeping"
 # define STR_THINK	"is thinking"
-# define STR_DIED	"is died"
+# define STR_DIED	"died"
 # define GET		0
 # define SET		1
 # define NO_INDEX	0
@@ -17,10 +17,15 @@
 # include <stdlib.h>
 # include <unistd.h>
 # include <stdio.h>
-typedef enum	e_state
+typedef enum	e_stage
 {
 	EAT,
 	SLEEP
+}	t_stage;
+typedef enum	e_state
+{
+	ALIVE,
+	DEAD
 }	t_state;
 typedef struct	s_args
 {
