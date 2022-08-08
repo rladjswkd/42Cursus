@@ -10,6 +10,11 @@
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "structure_linked_list.h"
+#include "structure_token.h"
+#include "type_command.h"
+#include "command.h"
+
 void	print_token_content(t_list *token_list, char *tab)
 {
 	int			types;
@@ -48,15 +53,15 @@ void	print_simple_content(t_list *command, char *tab)
 	if (types & SIMPLE_NORMAL)
 	{
 		printf("%s\033[0;36m%s \033[m", tab, "SIMPLE_NORMAL");
-		if (get_simple(command)->args)
+		if (get_command(command)->l1)
 		{
 			printf("%s\033[0;36m\n\n\t%s\033[m\n", tab, "ARGUMENTS");
-			print_token_content(get_simple(command)->args, "\t");
+			print_token_content(get_command(command)->l1, "\t");
 		}
-		if (get_simple(command)->redirs)
+		if (get_command(command)->l2)
 		{
 			printf("\033[0;36m\n\t%s\033[m\n", "RERIECTIONS");
-			print_token_content(get_simple(command)->redirs, "\t");
+			print_token_content(get_command(command)->l2, "\t");
 		}
 	}
 	i = -1;

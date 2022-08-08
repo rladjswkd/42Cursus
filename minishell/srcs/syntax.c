@@ -10,6 +10,8 @@
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "type_token.h"
+
 static int	is_redir_error(int curr, int next)
 {
 	return (curr & TOKEN_REDIR && !(next & TOKEN_NORMAL));

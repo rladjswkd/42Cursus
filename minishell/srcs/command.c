@@ -10,6 +10,9 @@
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "structure_linked_list.h"
+
+
 t_command	*get_command(t_list *parsed)
 {
 	return ((t_command *)(parsed->node));
