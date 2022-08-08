@@ -1,7 +1,19 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   parser_simple.c                                    :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/08/08 19:53:33 by gyepark           #+#    #+#             */
+/*   Updated: 2022/08/08 19:53:35 by gyepark          ###   ########.kr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 int	find_simple_type(t_list *token_list)
 {
 	int	type;
-	
+
 	if (!token_list)
 		return (0);
 	type = get_token_type(token_list);
@@ -36,9 +48,9 @@ void	parse_args_redirs(t_list *parsed, t_list **list)
 			if (get_token_type(*list) & TOKEN_HEREDOC)
 			{
 				if (concat_heredoc_word_list((*list)->next))
-					return ; // token, parse free and exit()
-				get_token((*list)->next)->heredoc_fd =
-                        heredoc_routine(get_token((*list)->next)->data);
+					return ;// token, parse free and exit()
+				get_token((*list)->next)->heredoc_fd = heredoc_routine(
+					get_token((*list)->next)->data);
 				if (get_token((*list)->next)->heredoc_fd < 0)
 					return ;
 			}
@@ -53,7 +65,7 @@ void	parse_args_redirs(t_list *parsed, t_list **list)
 
 int	parse_simple(t_list *token_list, t_list *header)
 {
-	int	type;
+	int		type;
 	t_list	*token_ptr;
 
 	while (token_list)

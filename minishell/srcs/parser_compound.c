@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   parser_compound.c                                  :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/08/08 19:53:30 by gyepark           #+#    #+#             */
+/*   Updated: 2022/08/08 19:53:32 by gyepark          ###   ########.kr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 void	rearrange_subshell(t_list **parsed, t_list *l, t_list *r, t_list *neu)
 {
 	t_list	*prev_l;
@@ -69,7 +81,7 @@ int	process_pipeline(t_list **parsed)
 	t_list	*end;
 	t_list	*neu;
 	t_list	*prev_s;
-	
+
 	find_pipeline(*parsed, &start, &end);
 	if (start && end)
 	{
@@ -91,14 +103,12 @@ int	parse_compound(t_list **parsed)
 	int		flag;
 	t_list	*rbracket;
 
-	flag = find_rbracket(*parsed, &rbracket) || find_pipe(*parsed);
+	flag = (find_rbracket(*parsed, &rbracket) || find_pipe(*parsed));
 	while (flag)
 	{
-		if (!process_subshell(parsed, rbracket)
-			|| !process_pipeline(parsed))
+		if (!process_subshell(parsed, rbracket) || !process_pipeline(parsed))
 			return (0);
-		flag = find_rbracket(*parsed, &rbracket)
-			|| find_pipe(*parsed);
+		flag = (find_rbracket(*parsed, &rbracket) || find_pipe(*parsed));
 	}
 	return (1);
 }

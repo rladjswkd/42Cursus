@@ -1,6 +1,18 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   finder_compound.c                                  :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/08/08 19:53:21 by gyepark           #+#    #+#             */
+/*   Updated: 2022/08/08 19:56:09 by gyepark          ###   ########.kr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 int	find_lbracket(t_list *parsed, t_list *rbracket, t_list **lbracket)
 {
-	int		type;
+	int	type;
 
 	*lbracket = 0;
 	while (parsed && parsed != rbracket)
@@ -46,11 +58,11 @@ int	find_pipe(t_list *parsed)
 
 static int	is_included_pipeline(t_list *parsed)
 {
-	static int	mask = 
-		SIMPLE_NORMAL | COMPOUND_SUBSHELL | COMPOUND_PIPELINE;
+	static int	mask = SIMPLE_NORMAL
+		| COMPOUND_SUBSHELL | COMPOUND_PIPELINE;
 
 	return (parsed && get_command_type(parsed) & mask
-		&& parsed->next	&& get_command_type(parsed->next) & SIMPLE_PIPE
+		&& parsed->next && get_command_type(parsed->next) & SIMPLE_PIPE
 		&& parsed->next->next
 		&& get_command_type(parsed->next->next) & mask);
 }

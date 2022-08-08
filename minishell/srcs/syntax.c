@@ -6,7 +6,7 @@
 /*   By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/08 17:01:09 by gyepark           #+#    #+#             */
-/*   Updated: 2022/08/08 17:01:11 by gyepark          ###   ########.kr       */
+/*   Updated: 2022/08/08 19:53:39 by gyepark          ###   ########.kr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,6 @@ int	is_error(int curr, int next, int *pair)
 	*pair += curr == TOKEN_LBRACKET;
 	*pair -= curr == TOKEN_RBRACKET;
 	return (*pair < 0 || is_redir_error(curr, next)
-			|| is_normal_error(curr, next)
-			|| is_pipe_logical_error(curr, next)
-			|| is_bracket_error(curr, next));
+		|| is_normal_error(curr, next) || is_pipe_logical_error(curr, next)
+		|| is_bracket_error(curr, next));
 }

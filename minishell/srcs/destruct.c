@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   destruct.c                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/08/08 19:53:15 by gyepark           #+#    #+#             */
+/*   Updated: 2022/08/08 19:53:16 by gyepark          ###   ########.kr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 void	free_token(t_list *list)
 {
 	free(get_token(list)->data);
@@ -28,7 +40,7 @@ void	free_command(t_list *list)
 		free_token_list(command->l1);
 		free_token_list(command->l2);
 	}
-	else if (command->type & (COMPOUND_PIPELINE | COMPOUND_SUBSHELL)) 
+	else if (command->type & (COMPOUND_PIPELINE | COMPOUND_SUBSHELL))
 	{
 		while (command->l1)
 		{
