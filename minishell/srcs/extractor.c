@@ -10,6 +10,8 @@
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "lexer_util.h"
+
 int	extract_normal(char *str, int *types)
 {
 	int	len;

@@ -10,9 +10,10 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-# include "structure_token.h"
-# include "structure_linked_list.h"
-# include "type_token.h"
+#include "structure_token.h"
+#include "structure_linked_list.h"
+#include "type_token.h"
+#include "construct.h"
 
 t_token	*get_token(t_list *token_list)
 {

@@ -1,23 +1,21 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   command_compound.c                                 :+:      :+:    :+:   */
+/*   lexer_util.h                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/08/08 19:53:08 by gyepark           #+#    #+#             */
-/*   Updated: 2022/08/08 19:53:09 by gyepark          ###   ########.kr       */
+/*   Created: 2022/08/10 12:53:27 by gyepark           #+#    #+#             */
+/*   Updated: 2022/08/10 12:53:28 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "structure_compound.h"
+#ifndef LEXER_UTIL_H
+# define LEXER_UTIL_H
+# include "constants.h"
+# include "type_token.h"
 
-int	get_compound_type(t_list *parsed)
-{
-	return (((t_compound *)(parsed->node))->type);
-}
-
-t_compound	*get_compound(t_list *parsed)
-{
-	return ((t_compound *)(parsed->node));
-}
+int	is_delimiter(char *s);
+int	is_quote(char c);
+int	ignore_blank(char *str, int *types);
+#endif

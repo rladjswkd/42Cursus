@@ -10,6 +10,8 @@
 /*                                                                            */
 /* ************************************************************************** */
 
+#include <stdlib.h>
+
 int	malloc_wrapper(size_t size, void **ptr)
 {
 	size_t	i;

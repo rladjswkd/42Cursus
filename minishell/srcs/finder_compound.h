@@ -1,23 +1,23 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   command_compound.c                                 :+:      :+:    :+:   */
+/*   finder_compound.h                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/08/08 19:53:08 by gyepark           #+#    #+#             */
-/*   Updated: 2022/08/08 19:53:09 by gyepark          ###   ########.kr       */
+/*   Created: 2022/08/10 12:53:23 by gyepark           #+#    #+#             */
+/*   Updated: 2022/08/10 12:53:24 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "structure_compound.h"
+#ifndef FINDER_COMPOUND_H
+# define FINDER_COMPOUND_H
+# include "structure_linked_list.h"
+# include "command_simple.h"
+# include "command.h"
 
-int	get_compound_type(t_list *parsed)
-{
-	return (((t_compound *)(parsed->node))->type);
-}
-
-t_compound	*get_compound(t_list *parsed)
-{
-	return ((t_compound *)(parsed->node));
-}
+int		find_lbracket(t_list *parsed, t_list *rbracket, t_list **lbracket);
+int		find_rbracket(t_list *parsed, t_list **rbracket);
+int		find_pipe(t_list *parsed);
+void	find_pipeline(t_list *parsed, t_list **start, t_list **end);
+#endif

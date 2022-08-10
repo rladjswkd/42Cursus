@@ -1,26 +1,21 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   list.c                                             :+:      :+:    :+:   */
+/*   lexer.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/08/08 19:53:26 by gyepark           #+#    #+#             */
-/*   Updated: 2022/08/08 19:53:28 by gyepark          ###   ########.kr       */
+/*   Created: 2022/08/10 12:53:25 by gyepark           #+#    #+#             */
+/*   Updated: 2022/08/10 12:53:26 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-void	append_back(t_list **list, t_list *neu)
-{
-	t_list	*temp;
+#ifndef LEXER_H
+# define LEXER_H
+# include "constants.h"
+# include "token.h"
+# include "extractor.h"
+# include "syntax.h"
 
-	if (!(*list))
-	{
-		*list = neu;
-		return ;
-	}
-	temp = *list;
-	while (temp->next)
-		temp = temp->next;
-	temp->next = neu;
-}
+int	lexer(char *input, t_list *token_header);
+#endif

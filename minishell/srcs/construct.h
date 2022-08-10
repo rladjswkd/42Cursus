@@ -1,23 +1,18 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   command_compound.c                                 :+:      :+:    :+:   */
+/*   construct.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/08/08 19:53:08 by gyepark           #+#    #+#             */
-/*   Updated: 2022/08/08 19:53:09 by gyepark          ###   ########.kr       */
+/*   Created: 2022/08/10 12:53:17 by gyepark           #+#    #+#             */
+/*   Updated: 2022/08/10 12:53:18 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "structure_compound.h"
+#ifndef CONSTRUCT_H
+# define CONSTRUCT_H
+# include <stdlib.h>
 
-int	get_compound_type(t_list *parsed)
-{
-	return (((t_compound *)(parsed->node))->type);
-}
-
-t_compound	*get_compound(t_list *parsed)
-{
-	return ((t_compound *)(parsed->node));
-}
+int	malloc_wrapper(size_t size, void **ptr);
+#endif

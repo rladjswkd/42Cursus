@@ -10,6 +10,9 @@
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "parser_simple.h"
+#include "parser_compound.h"
+
 int	parser(t_list *token_list, t_list *parsed_header)
 {
 	if (!parse_simple(token_list, parsed_header))

@@ -10,6 +10,10 @@
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "structure_linked_list.h"
+#include "command_simple.h"
+#include "command.h"
+
 int	find_lbracket(t_list *parsed, t_list *rbracket, t_list **lbracket)
 {
 	int	type;

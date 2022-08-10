@@ -1,23 +1,22 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   command_compound.c                                 :+:      :+:    :+:   */
+/*   extractor.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/08/08 19:53:08 by gyepark           #+#    #+#             */
-/*   Updated: 2022/08/08 19:53:09 by gyepark          ###   ########.kr       */
+/*   Created: 2022/08/10 12:53:20 by gyepark           #+#    #+#             */
+/*   Updated: 2022/08/10 12:53:22 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "structure_compound.h"
+#ifndef EXTRACTOR_H
+# define EXTRACTOR_H
+# include "lexer_util.h"
 
-int	get_compound_type(t_list *parsed)
-{
-	return (((t_compound *)(parsed->node))->type);
-}
-
-t_compound	*get_compound(t_list *parsed)
-{
-	return ((t_compound *)(parsed->node));
-}
+int	extract_normal(char *str, int *types);
+int	extract_redir(char *str, int *types);
+int	extract_quote(char *str, int *types);
+int	extract_bracket(char *str, int *types);
+int	extract_logical_pipe(char *str, int *types);
+#endif

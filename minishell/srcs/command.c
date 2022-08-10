@@ -10,8 +10,9 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "structure_linked_list.h"
-
+#include "structure_command.h"
+#include "type_command.h"
+#include "construct.h"
 
 t_command	*get_command(t_list *parsed)
 {

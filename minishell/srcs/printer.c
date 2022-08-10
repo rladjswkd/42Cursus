@@ -10,10 +10,12 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "structure_linked_list.h"
-#include "structure_token.h"
-#include "type_command.h"
+#include <stdio.h>
+#include "command_compound.h"
 #include "command.h"
+#include "token.h"
+
+void	print_command_content(t_list *command);
 
 void	print_token_content(t_list *token_list, char *tab)
 {
@@ -80,7 +82,7 @@ void	print_compound_content(t_list *command)
 		printf("\033[0;31m%s \033[m\n", "COMPOUND_PIPELINE::START");
 	else
 		printf("\033[0;31m%s \033[m\n", "COMPOUND_SUBSHELL::START");
-	print_command_content(get_compound(command)->list);
+	print_command_content(get_command(command)->l1);
 	printf("\033[0;31m::END \033[m\n");
 }
 

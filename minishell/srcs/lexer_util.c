@@ -10,6 +10,9 @@
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "constants.h"
+#include "type_token.h"
+
 int	is_delimiter(char *s)
 {
 	char	c;

@@ -1,23 +1,23 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   command_compound.c                                 :+:      :+:    :+:   */
+/*   structure_command.h                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/08/08 19:53:08 by gyepark           #+#    #+#             */
-/*   Updated: 2022/08/08 19:53:09 by gyepark          ###   ########.kr       */
+/*   Created: 2022/08/10 12:53:35 by gyepark           #+#    #+#             */
+/*   Updated: 2022/08/10 12:53:37 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "structure_compound.h"
+#ifndef STRUCTURE_COMMAND_H
+# define STRUCTURE_COMMAND_H
+# include "structure_linked_list.h"
 
-int	get_compound_type(t_list *parsed)
+typedef struct s_command
 {
-	return (((t_compound *)(parsed->node))->type);
-}
-
-t_compound	*get_compound(t_list *parsed)
-{
-	return ((t_compound *)(parsed->node));
-}
+	t_list	*l1;
+	t_list	*l2;
+	int		type;
+}	t_command;
+#endif

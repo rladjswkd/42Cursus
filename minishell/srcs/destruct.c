@@ -10,6 +10,10 @@
 /*                                                                            */
 /* ************************************************************************** */
 
+#include <stdlib.h>
+#include "token.h"
+#include "command.h"
+
 void	free_token(t_list *list)
 {
 	free(get_token(list)->data);
@@ -17,7 +21,7 @@ void	free_token(t_list *list)
 	free(list);
 }
 
-void	free_token_list(t_list *list)
+static void	free_token_list(t_list *list)
 {
 	t_list	*next;
 

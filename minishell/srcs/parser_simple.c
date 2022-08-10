@@ -10,7 +10,12 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-int	find_simple_type(t_list *token_list)
+#include "constants.h"
+#include "linked_list.h"
+#include "command_simple.h"
+#include "destruct.h"
+//#include heredoc blahblah
+static int	find_simple_type(t_list *token_list)
 {
 	int	type;
 
@@ -34,7 +39,7 @@ int	find_simple_type(t_list *token_list)
 	return (0);
 }
 
-void	parse_args_redirs(t_list *parsed, t_list **list)
+static void	parse_args_redirs(t_list *parsed, t_list **list)
 {
 	t_simple	*simple;
 	t_list		*next;

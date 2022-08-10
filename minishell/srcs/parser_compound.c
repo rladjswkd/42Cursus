@@ -10,14 +10,19 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-void	rearrange_subshell(t_list **parsed, t_list *l, t_list *r, t_list *neu)
+#include "linked_list.h"
+#include "command_compound.h"
+#include "destruct.h"
+#include "finder_compound.h"
+
+static void	rearrange_subshell(t_list **c, t_list *l, t_list *r, t_list *neu)
 {
 	t_list	*prev_l;
 	t_list	*prev_r;
 
-	get_prev_command(*parsed, l, &prev_l);
-	if (*parsed == l)
-		*parsed = neu;
+	get_prev_command(*c, l, &prev_l);
+	if (*c == l)
+		*c = neu;
 	else
 		prev_l->next = neu;
 	get_compound(neu)->list = l->next;
@@ -32,7 +37,7 @@ void	rearrange_subshell(t_list **parsed, t_list *l, t_list *r, t_list *neu)
 	free_command(r);
 }
 
-void	rearrange_pipeline(t_list *s, t_list *e, t_list *neu)
+static void	rearrange_pipeline(t_list *s, t_list *e, t_list *neu)
 {
 	t_list	*next;
 	int		type;
@@ -60,7 +65,7 @@ void	rearrange_pipeline(t_list *s, t_list *e, t_list *neu)
 	e->next = 0;
 }
 
-int	process_subshell(t_list **parsed, t_list *r)
+static int	process_subshell(t_list **parsed, t_list *r)
 {
 	t_list	*l;
 	t_list	*neu;
@@ -75,7 +80,7 @@ int	process_subshell(t_list **parsed, t_list *r)
 	return (1);
 }
 
-int	process_pipeline(t_list **parsed)
+static int	process_pipeline(t_list **parsed)
 {
 	t_list	*start;
 	t_list	*end;

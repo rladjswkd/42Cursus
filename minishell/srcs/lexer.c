@@ -6,9 +6,14 @@
 /*   By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/08 19:53:22 by gyepark           #+#    #+#             */
-/*   Updated: 2022/08/08 19:53:23 by gyepark          ###   ########.kr       */
+/*   Updated: 2022/08/10 11:52:18 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
+#include "constants.h"
+#include "token.h"
+#include "extractor.h"
+#include "syntax.h"
 
 static int	get_index(char c1, char c2)
 {

@@ -1,23 +1,25 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   command_compound.c                                 :+:      :+:    :+:   */
+/*   constants.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/08/08 19:53:08 by gyepark           #+#    #+#             */
-/*   Updated: 2022/08/08 19:53:09 by gyepark          ###   ########.kr       */
+/*   Created: 2022/08/10 12:53:15 by gyepark           #+#    #+#             */
+/*   Updated: 2022/08/10 12:53:16 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "structure_compound.h"
-
-int	get_compound_type(t_list *parsed)
-{
-	return (((t_compound *)(parsed->node))->type);
-}
-
-t_compound	*get_compound(t_list *parsed)
-{
-	return ((t_compound *)(parsed->node));
-}
+#ifndef CONSTANTS_H
+# define CONSTANTS_H
+# define CHAR_SPACE	' '
+# define CHAR_TAB	'\t'
+# define CHAR_LREDIR	'<'
+# define CHAR_RREDIR	'>'
+# define CHAR_SQUOTE	'\''
+# define CHAR_DQUOTE	'\"'
+# define CHAR_VERBAR	'|'
+# define CHAR_LBRACKET	'('
+# define CHAR_RBRACKET	')'
+# define CHAR_AMPERSAND	'&'
+#endif
