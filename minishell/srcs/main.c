@@ -16,14 +16,14 @@ int	main(void)
 	{
 		input = readline(">");
 		if (!input[0])
-			continue;
+			continue ;
 		if (!lexer(input, &token_header))
 		{
-			printf("%s\n", "syntax error");
-			continue;
+			printf("%s\n", "syntax error");// this line should be replaced with error printer function
+			continue ;
 		}
 		if (!parser(token_header.next, &parsed_header))
-			printf("%s\n", "parser error");
+			printf("%s\n", "parser error");// this line should be replaced with error printer function
 	}
 	free(input);
 	free_command_list(parsed_header.next);
