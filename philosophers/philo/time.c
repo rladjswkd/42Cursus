@@ -1,0 +1,62 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   time.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/08/10 23:27:14 by gyepark           #+#    #+#             */
+/*   Updated: 2022/08/10 23:27:15 by gyepark          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include <sys/time.h>
+#include <unistd.h>
+#include "constants.h"
+
+struct timeval	access_init_time(int flag)
+{
+	static struct timeval	init;
+
+	if (flag)
+		gettimeofday(&init, (struct timezone *)0);
+	return (init);
+}
+
+static int	convert_to_ms(struct timeval t)
+{
+	return (t.tv_sec * 1000 + t.tv_usec / 1000);
+}
+
+static struct timeval	get_time_now(void)
+{
+	struct timeval	t;
+
+	gettimeofday(&t, (struct timezone *)0);
+	return (t);
+}
+
+int	get_init_interval(void)
+{
+	return (convert_to_ms(get_time_now()) - SYNC_TIME
+		- convert_to_ms(access_init_time(GET)));
+}
+
+void	usleep_splitted(int time)
+{
+	int	from;
+	int	usec;
+	int	current;
+
+	from = convert_to_ms(get_time_now());
+	usec = time * WEIGHT;
+	while (1)
+	{
+		current = convert_to_ms(get_time_now());
+		if (current - from >= time)
+			return ;
+		if (time - (current - from) <= usec)
+			usec /= 2;
+		usleep(usec);
+	}
+}
