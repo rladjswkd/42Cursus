@@ -6,7 +6,7 @@
 /*   By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/08 19:53:36 by gyepark           #+#    #+#             */
-/*   Updated: 2022/08/08 19:53:37 by gyepark          ###   ########.kr       */
+/*   Updated: 2022/08/11 19:11:21 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,8 +66,8 @@ void	print_simple_content(t_list *command, char *tab)
 			print_token_content(get_command(command)->l2, "\t");
 		}
 	}
-	i = -1;
-	while (++i < 5)
+	i = 0;
+	while (++i < 6)
 		if (types >> i & 1)
 			printf("\033[0;35m%s \033[m\n", simple_names[i]);
 }
