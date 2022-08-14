@@ -1,55 +1,31 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   construct.c                                        :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/08/10 23:23:46 by gyepark           #+#    #+#             */
-/*   Updated: 2022/08/10 23:23:54 by gyepark          ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
-#include <pthread.h>
-#include <stdlib.h>
-#include "constants.h"
-#include "shared.h"
-#include "mutexes.h"
-#include "destruct.h"
-
-static int	init_mutex(pthread_mutex_t **mutex, int n)
+int	open_new_sem(sem_t **sem, char *name, int value)
 {
-	int	i;
-
-	*mutex = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t) * n);
-	if (!(*mutex))
+	*sem = sem_open(name, O_CREAT | O_EXCL, 0666, value);
+	if (sem == SEM_FAILED)
 		return (0);
-	i = -1;
-	while (++i < n)
-		if (pthread_mutex_init(&((*mutex)[i]), 0))
-			return (destroy_mutex((*mutex), i));
 	return (1);
 }
 
-int	init_mutex_all(void)
+int	init_sem_all(void)
 {
-	pthread_mutex_t	*fork;
-	pthread_mutex_t	*rights;
-	pthread_mutex_t	*last_eat;
-	pthread_mutex_t	*flag;
-	pthread_mutex_t	*n_eat;
+	sem_t	*fork;
+	sem_t	*rights;
+	sem_t	*last_eat;
+	sem_t	*n_eat;
+	sem_t	*flag;
+	
 
-	if (!init_mutex(&fork, access_args(GET).n_philo)
-		|| !init_mutex(&rights, 1)
-		|| !init_mutex(&last_eat, access_args(GET).n_philo)
-		|| !init_mutex(&flag, 1)
-		|| !init_mutex(&n_eat, access_args(GET).n_philo))
+	if (!open_new_sem(&fork, FORK_NAME, access_args(GET).n_philo)
+		|| !open_new_sem(&rights, RIGHTS_NAME, 1)
+		|| !open_new_sem(&rights, LAST_EAT_NAME, 1)
+		|| !open_new_sem(&rights, N_EAT_NAME, 1)
+		|| !open_new_sem(&rights, FLAG_NAME, 1))
 		return (0);
-	access_fork_mutex(fork, NO_INDEX);
-	access_rights_mutex(rights);
-	access_last_eat_mutex(last_eat, NO_INDEX);
-	access_flag_mutex(flag);
-	access_n_eat_mutex(n_eat, NO_INDEX);
+	access_fork_sem(fork);
+	access_rights_sem(rights);
+	access_last_eat_sem(last_eat);
+	access_n_eat_sem(n_eat);
+	access_flag_sem(flag);
 	return (1);
 }
 

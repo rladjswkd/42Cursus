@@ -7,18 +7,6 @@
 #define ANSI_COLOR_CYAN     "\x1b[36m"
 #define ANSI_COLOR_RESET    "\x1b[0m"
 
-int	is_flag_set(void)
-{
-	int	res;
-
-	res = 0;
-	sem_wait(access_flag_sem(GET));
-	if (access_flag(GET))
-		res = 1;
-	sem_post(access_flag_sem(GET));
-	return (res);
-}
-
 void	print_log(int idx, char *str)
 {
 	if (!is_flag_set())
@@ -189,65 +177,4 @@ void	free_all(int is_error)
 		free(access_n_eat(GET, 0));
 	if (is_error)
 		exit(EXIT_FAILURE);
-}
-
-int	open_new_sem(sem_t **sem, char *name, int value)
-{
-	*sem = sem_open(name, O_CREAT | O_EXCL, 0666, value);
-	if (sem == SEM_FAILED)
-		return (0);
-	return (1);
-}
-
-int	init_sem_all(void)
-{
-	sem_t	*fork;
-	sem_t	*flag;
-	sem_t	*program_flag;
-
-	if (!open_new_sem(&fork, FORK_NAME, access_args(GET).n_philo))
-		return (0);
-	if (!open_new_sem(&flag, FLAG_NAME, 1))
-		return (0);
-	if (!open_new_sem(&program_flag, PROG_NAME, 1))
-		return (0);
-	access_fork_sem(fork);
-	access_flag_sem(flag);
-	access_program_flag_sem(program_flag);
-	return (1);
-}
-
-int	parse_arguments(int argc, char **argv)
-{
-	t_args	args;
-
-	if (argc != 5 && argc != 6)
-		return (0);
-	if (!get_int(argv[1], &(args.n_philo)))
-		return (0);
-	if (!get_int(argv[2], &(args.time_die)))
-		return (0);	
-	if (!get_int(argv[3], &(args.time_eat)))
-		return (0);
-	if (!get_int(argv[4], &(args.time_sleep)))
-		return (0);
-	if (argc == 5)
-		args.n_eat = MAX_INT;
-	else if (argc == 6 && !get_int(argv[5], &(args.n_eat)))
-		return (0);
-	access_args(&args);
-	return (1);
-}
-
-int	main(int argc, char **argv)
-{
-	// access_program_flag_sem에 대해 sem_wait을 main process의 monitor를 생성하기 전에 수행해야 한다.
-	if (!parse_arguments(argc, argv))
-		return (EXIT_FAILURE);
-	if (!init_sem_all())
-		free_all(1);
-	if (!manage_subprocess())
-		free_all(1);
-	free_all(0);
-	return (0);
 }
