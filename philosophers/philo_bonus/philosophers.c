@@ -15,32 +15,7 @@ t_args	access_args(t_args *initializer)
 	return (args);
 }
 
-sem_t	*access_program_flag_sem(sem_t *initializer)
-{
-	static sem_t *sem;
 
-	if (initializer)
-		sem = initializer;
-	return (sem);
-}
-
-sem_t	*access_fork_sem(sem_t *initializer)
-{
-	static sem_t	*sem;
-
-	if (initializer)
-		sem = initializer;
-	return (sem);
-}
-
-sem_t	*access_flag_sem(sem_t *initalizer)
-{
-	static sem_t	*sem;
-
-	if (initializer)
-		sem = initializer;
-	return (sem);
-}
 
 int	access_flag(int initializer)
 {

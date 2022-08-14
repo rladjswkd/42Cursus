@@ -1,0 +1,27 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   constants.h                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/08/10 23:23:44 by gyepark           #+#    #+#             */
+/*   Updated: 2022/08/10 23:23:45 by gyepark          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#ifndef CONSTANTS_H
+# define CONSTANTS_H
+# define FORMAT 	"%d %d %s\n"
+# define STR_FORK	"has taken a fork"
+# define STR_EAT	"is eating"
+# define STR_SLEEP	"is sleeping"
+# define STR_THINK	"is thinking"
+# define STR_DIED	"died"
+# define GET		0
+# define SET		1
+# define NO_INDEX	0
+# define SYNC_TIME	10
+# define SYNC_USEC	100
+# define WEIGHT		333
+#endif
