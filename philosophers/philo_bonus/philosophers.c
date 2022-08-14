@@ -6,75 +6,7 @@
 #define ANSI_COLOR_MAGENTA  "\x1b[35m"
 #define ANSI_COLOR_CYAN     "\x1b[36m"
 #define ANSI_COLOR_RESET    "\x1b[0m"
-t_args	access_args(t_args *initializer)
-{
-	static t_args args;
 
-	if (initializer)
-		args = *initializer;
-	return (args);
-}
-
-
-
-int	access_flag(int initializer)
-{
-	static int	flag;
-
-	if (initializer)
-		flag = 1;
-	return (flag);
-}
-
-int	*access_last_eat(int *initializer)
-{
-	static int	*last;
-
-	if (initializer)
-		last = initializer;
-	return (last);
-}
-
-int	*access_n_eat(int *initializer)
-{
-	static int	*count;
-
-	if (initializer)
-		count = initializer;
-	return (&(count[index]));
-}
-
-/*****************************************************************************/
-/*************************************time************************************/
-struct timeval	access_init_time(int flag)
-{
-	static struct timeval	init;
-
-	if (flag)
-		gettimeofday(&init, (struct timezone *)0);
-	return (init);
-}
-
-int	convert_to_usec(struct timeval t)
-{
-	return (t.tv_sec * 1000 + t.tv_usec / 1000);
-}
-
-struct timeval	get_time_now(void)
-{
-	struct timeval	t;
-
-	gettimeofday(&t, (struct timezone *)0);
-	return (t);
-}
-
-int	get_init_interval()
-{
-	return (convert_to_usec(get_time_now()) - SYNC_TIME
-			- convert_to_usec(access_init_time(GET)));
-}
-
-/*****************************************************************************/
 int	is_flag_set(void)
 {
 	int	res;
@@ -91,25 +23,6 @@ void	print_log(int idx, char *str)
 {
 	if (!is_flag_set())
 		printf(FORMAT, get_init_interval(), idx + 1, str);
-}
-
-void	usleep_splitted(int time)
-{
-	int	from;
-	int	usec;
-	int	current;
-
-	from = convert_to_usec(get_time_now());
-	usec = time * WEIGHT;
-	while (1)
-	{
-		current = convert_to_usec(get_time_now());
-		if (current - from >= time)
-			return ;
-		if (time - (current - from) <= usec)
-			usec /= 2;
-		usleep(usec);
-	}
 }
 
 void	set_flag(int idx)
