@@ -5,13 +5,13 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/08/10 23:26:50 by gyepark           #+#    #+#             */
-/*   Updated: 2022/08/10 23:26:51 by gyepark          ###   ########.fr       */
+/*   Created: 2022/08/15 17:18:59 by gyepark           #+#    #+#             */
+/*   Updated: 2022/08/15 17:19:00 by gyepark          ###   ########.kr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef CYCLE_H
 # define CYCLE_H
 
-int	philo_cycle(int fork1, int fork2, int idx);
+void	philo_cycle(int idx);
 #endif

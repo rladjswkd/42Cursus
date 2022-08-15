@@ -5,62 +5,45 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/08/10 23:26:59 by gyepark           #+#    #+#             */
-/*   Updated: 2022/08/10 23:27:00 by gyepark          ###   ########.fr       */
+/*   Created: 2022/08/15 17:19:08 by gyepark           #+#    #+#             */
+/*   Updated: 2022/08/15 17:19:09 by gyepark          ###   ########.kr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "mutexes.h"
-#include "time.h"
+#include <semaphore.h>
+#include <stdlib.h>
+#include "philo_semaphore.h"
 #include "shared.h"
-#include "state.h"
+#include "time.h"
 #include "handle.h"
 #include "constants.h"
+#include "state.h"
 
-static int	check_if_died(int idx, int limit)
+static int	check_if_died(int limit)
 {
-	int	now;
-
-	now = get_init_interval();
-	if (now - get_last_eat(idx) > limit)
-	{
-		set_flag();
-		print_state(idx, STR_DIED, DEAD);
-		return (1);
-	}
-	return (0);
+	return (get_init_interval() - get_last_eat() > limit);
 }
 
-static int	check_if_done(int idx)
+static int	check_if_done(void)
 {
 	int	res;
 
-	pthread_mutex_lock(access_n_eat_mutex(GET, idx));
-	res = *access_n_eat(GET, idx);
-	pthread_mutex_unlock(access_n_eat_mutex(GET, idx));
-	return (res < 1);
+	sem_wait(access_n_eat_sem(GET));
+	res = *access_n_eat(GET) < 1;
+	sem_post(access_n_eat_sem(GET));
+	return (res);
 }
 
-void	monitor_threads(int n, int limit)
+void	monitor_threads(int idx, int limit)
 {
-	int	i;
-	int	done_cnt;
-
 	while (1)
 	{
-		done_cnt = 0;
-		i = -1;
-		while (++i < n)
+		if (check_if_died(limit))
 		{
-			if (check_if_died(i, limit))
-				return ;
-			if (check_if_done(i))
-				done_cnt++;
+			print_state(idx, STR_DIED, DEAD);
+			sem_post(access_flag_sem(GET)); // sem_wait in main process before philosophers being forked.
 		}
-		if (done_cnt == access_args(GET).n_philo)
-		{
-			set_flag();
-			return ;
-		}
+		if (check_if_done())
+			exit(EXIT_SUCCESS);
 	}
 }

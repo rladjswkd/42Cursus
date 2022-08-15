@@ -5,81 +5,61 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/08/10 23:26:49 by gyepark           #+#    #+#             */
-/*   Updated: 2022/08/10 23:26:49 by gyepark          ###   ########.fr       */
+/*   Created: 2022/08/15 17:18:57 by gyepark           #+#    #+#             */
+/*   Updated: 2022/08/15 17:18:58 by gyepark          ###   ########.kr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include <semaphore.h>
 #include <unistd.h>
-#include "mutexes.h"
-#include "time.h"
-#include "shared.h"
+#include "philo_semaphore.h"
 #include "handle.h"
-#include "state.h"
 #include "constants.h"
+#include "state.h"
+#include "shared.h"
+#include "time.h"
 
-static int	philo_pickup(int fork, int idx)
+static void	philo_pickup(int idx)
 {
-	if (is_flag_set())
-		return (0);
-	pthread_mutex_lock(access_fork_mutex(GET, fork));
+	sem_wait(access_fork_sem(GET));
 	print_state(idx, STR_FORK, ALIVE);
-	return (1);
 }
 
-static int	philo_eat_sleep(int idx, int time, int flag)
+static void	philo_eat_sleep(int idx, int time, int flag)
 {
-	if (is_flag_set())
-		return (0);
 	if (flag == EAT)
 	{
 		print_state(idx, STR_EAT, ALIVE);
-		pthread_mutex_lock(access_last_eat_mutex(GET, idx));
-		*access_last_eat(GET, idx) = get_init_interval();
-		pthread_mutex_unlock(access_last_eat_mutex(GET, idx));
-		pthread_mutex_lock(access_n_eat_mutex(GET, idx));
-		(*access_n_eat(GET, idx))--;
-		pthread_mutex_unlock(access_n_eat_mutex(GET, idx));
+		sem_wait(access_last_eat_sem(GET));
+		*access_last_eat(GET) = get_init_interval();
+		sem_post(access_last_eat_sem(GET));
+		sem_wait(access_n_eat_sem(GET));
+		(*access_n_eat(GET))--;
+		sem_post(access_n_eat_sem(GET));
 	}
 	else
 		print_state(idx, STR_SLEEP, ALIVE);
 	usleep_splitted(time);
-	return (1);
 }
 
-static void	philo_putdown(int fork)
+static void	philo_putdown(void)
 {
-	pthread_mutex_unlock(access_fork_mutex(GET, fork));
+	sem_post(access_fork_sem(GET));
 }
 
-static int	philo_think(int idx)
+static void	philo_think(int idx)
 {
-	if (is_flag_set())
-		return (0);
 	print_state(idx, STR_THINK, ALIVE);
-	usleep(access_args(GET).time_eat);
-	return (1);
+	usleep(SYNC_USEC);
 }
 
-int	philo_cycle(int fork1, int fork2, int idx)
+void	philo_cycle(int idx)
 {
-	int	state;
-
-	if (!philo_pickup(fork1, idx))
-		return (0);
-	if (fork1 == fork2 || !philo_pickup(fork2, idx))
-	{
-		philo_putdown(fork1);
-		return (0);
-	}
-	state = philo_eat_sleep(idx, access_args(GET).time_eat, EAT);
-	philo_putdown(fork2);
-	philo_putdown(fork1);
-	if (!state)
-		return (0);
-	if (!philo_eat_sleep(idx, access_args(GET).time_sleep, SLEEP))
-		return (0);
-	if (!philo_think(idx))
-		return (0);
-	return (1);
+	philo_pickup(idx);
+	philo_pickup(idx);
+	philo_eat_sleep(idx, access_args(GET).time_eat, EAT);
+	philo_putdown();
+	philo_putdown();
+	philo_eat_sleep(idx, access_args(GET).time_sleep, SLEEP);
+	philo_think(idx);
 }

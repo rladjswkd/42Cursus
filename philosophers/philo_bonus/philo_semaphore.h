@@ -1,18 +1,22 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   destruct.h                                         :+:      :+:    :+:   */
+/*   semaphore.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/08/10 23:26:53 by gyepark           #+#    #+#             */
-/*   Updated: 2022/08/10 23:26:54 by gyepark          ###   ########.fr       */
+/*   Created: 2022/08/15 17:19:14 by gyepark           #+#    #+#             */
+/*   Updated: 2022/08/15 17:19:15 by gyepark          ###   ########.kr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef DESTRUCT_H
-# define DESTRUCT_H
+#ifndef PHILO_SEMAPHORE_H
+# define PHILO_SEMAPOHRE_H
+# include <semaphore.h>
 
-int		destroy_mutex(pthread_mutex_t *mutexes, int error_idx);
-void	free_all(pthread_t *threads, int is_error);
+sem_t	*access_fork_sem(sem_t *initializer);
+sem_t	*access_rights_sem(sem_t *initializer);
+sem_t	*access_last_eat_sem(sem_t *initializer);
+sem_t	*access_n_eat_sem(sem_t *initializer);
+sem_t	*access_flag_sem(sem_t *initializer);
 #endif

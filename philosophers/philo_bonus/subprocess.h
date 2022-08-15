@@ -1,17 +1,17 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   routine.h                                          :+:      :+:    :+:   */
+/*   subprocess.h                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/08/10 23:27:06 by gyepark           #+#    #+#             */
-/*   Updated: 2022/08/10 23:27:07 by gyepark          ###   ########.fr       */
+/*   Created: 2022/08/15 17:19:29 by gyepark           #+#    #+#             */
+/*   Updated: 2022/08/15 17:19:30 by gyepark          ###   ########.kr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef ROUTINE_H
 # define ROUTINE_H
 
-void	*routine(void *param);
+void	func_philo(int idx);
 #endif
