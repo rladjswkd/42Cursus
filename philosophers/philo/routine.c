@@ -16,9 +16,9 @@
 #include "time.h"
 #include "cycle.h"
 
-static void	synchronize_start_time(void)
+void	synchronize_start_time(void)
 {
-	while (get_init_interval() < 0)
+	while (get_init_interval() < SYNC_TIME)
 		usleep(SYNC_USEC);
 }
 

@@ -47,6 +47,6 @@ void	print_state(int idx, char *str, int state)
 {
 	pthread_mutex_lock(access_rights_mutex(GET));
 	if (!is_flag_set() || state)
-		printf(FORMAT, get_init_interval(), idx + 1, str);
+		printf(FORMAT, get_init_interval() - SYNC_TIME, idx + 1, str);
 	pthread_mutex_unlock(access_rights_mutex(GET));
 }

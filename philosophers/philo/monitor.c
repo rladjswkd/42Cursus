@@ -16,6 +16,7 @@
 #include "state.h"
 #include "handle.h"
 #include "constants.h"
+#include "routine.h"
 
 static int	check_if_died(int idx, int limit)
 {
@@ -46,6 +47,7 @@ void	monitor_threads(int n, int limit)
 	int	i;
 	int	done_cnt;
 
+	synchronize_start_time();
 	while (1)
 	{
 		done_cnt = 0;

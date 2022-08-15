@@ -13,5 +13,6 @@
 #ifndef ROUTINE_H
 # define ROUTINE_H
 
+void	synchronize_start_time(void);
 void	*routine(void *param);
 #endif
