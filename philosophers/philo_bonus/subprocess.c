@@ -22,7 +22,6 @@
 #include "state.h"
 #include "cycle.h"
 
-#include <stdio.h> //
 static int	check_if_died(void)
 { 
 	return (get_init_interval() - get_last_eat() > access_args(GET).time_die);
@@ -38,8 +37,15 @@ static int	check_if_done(void)
 	return (flag < 1);
 }
 
+static void	synchronize_start_time(void)
+{
+	while (get_init_interval() < 0)  // set SYNC_TIME value enough to create all philosophers and their monitor threads
+		usleep(SYNC_USEC);
+}
+
 static void	*monitor_subprocess(void *param)
 {
+	synchronize_start_time();
 	while (1)
 	{
 		if (check_if_died())
@@ -47,21 +53,15 @@ static void	*monitor_subprocess(void *param)
 			print_state(*((int *)param), STR_DIED, DEAD);
 			sem_post(access_flag_sem(GET));
 			pthread_detach(access_monitor_thread(GET));
-			break ;
+			sem_wait(access_rights_sem(GET));
 		}
 		if (check_if_done())
 		{
-			pthread_detach(*((pthread_t *)param));
+			pthread_detach(access_monitor_thread(GET));
 			exit(EXIT_SUCCESS);
 		}
 	}
 	return (0);
-}
-
-static void	synchronize_start_time(void)
-{
-	while (get_init_interval() < 0)  // set SYNC_TIME value enough to create all philosophers and their monitor threads
-		usleep(SYNC_USEC);
 }
 
 void	func_philo(int idx)
@@ -77,5 +77,4 @@ void	func_philo(int idx)
 		usleep_splitted(access_args(GET).time_eat / 2);
 	while (1)
 		philo_cycle(idx);
-	exit(EXIT_SUCCESS);
 }
