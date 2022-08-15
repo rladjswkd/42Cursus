@@ -12,6 +12,7 @@
 
 #include <semaphore.h>
 #include <stdio.h>
+#include <unistd.h>
 #include "philo_semaphore.h"
 #include "constants.h"
 #include "shared.h"
@@ -28,10 +29,16 @@ int	get_last_eat(void)
 	return (res);
 }
 
+void	synchronize_start_time(void)
+{
+	while (get_init_interval() < SYNC_TIME)
+		usleep(SYNC_USEC);
+}
+
 void	print_state(int idx, char *str, int state)
 {
 	sem_wait(access_rights_sem(GET));
-	printf(FORMAT, get_init_interval(), idx + 1, str);
+	printf(FORMAT, get_init_interval() - SYNC_TIME, idx + 1, str);
 	if (state == ALIVE)
 		sem_post(access_rights_sem(GET));
 }

@@ -37,12 +37,6 @@ static int	check_if_done(void)
 	return (flag < 1);
 }
 
-static void	synchronize_start_time(void)
-{
-	while (get_init_interval() < 0)
-		usleep(SYNC_USEC);
-}
-
 static void	*monitor_subprocess(void *param)
 {
 	synchronize_start_time();

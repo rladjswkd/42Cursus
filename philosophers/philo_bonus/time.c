@@ -38,7 +38,7 @@ static struct timeval	get_time_now(void)
 
 int	get_init_interval(void)
 {
-	return (convert_to_ms(get_time_now()) - SYNC_TIME
+	return (convert_to_ms(get_time_now())
 		- convert_to_ms(access_init_time(GET)));
 }
 

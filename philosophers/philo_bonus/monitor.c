@@ -36,6 +36,7 @@ static int	check_if_done(void)
 
 void	monitor_threads(int idx, int limit)
 {
+	synchronize_start_time();
 	while (1)
 	{
 		if (check_if_died(limit))
