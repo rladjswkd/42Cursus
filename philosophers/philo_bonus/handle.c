@@ -32,6 +32,6 @@ void	print_state(int idx, char *str, int state) // replace idx with philo (not i
 {
 	sem_wait(access_rights_sem(GET));
 	printf(FORMAT, get_init_interval(), idx + 1, str);
-	if (state == DEAD)
+	if (state == ALIVE)
 		sem_post(access_rights_sem(GET));
 }

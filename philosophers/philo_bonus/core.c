@@ -21,6 +21,7 @@
 #include "constants.h"
 #include "shared.h"
 #include "subprocess.h"
+#include "time.h"
 
 static void	close_sem_all(void)
 {
@@ -50,6 +51,13 @@ static void	*monitor_main(void *param)
 	exit(EXIT_SUCCESS);
 }
 
+static void	set_environments(void)
+{
+	access_init_time(SET);
+	access_last_eat(get_init_interval() + SYNC_TIME);
+	access_n_eat(access_args(GET).n_eat);
+}
+
 int	manage_subprocess(void)
 {
 	int			i;
@@ -61,6 +69,7 @@ int	manage_subprocess(void)
 	sem_wait(access_flag_sem(GET));
 	// 2. n_philo만큼 반복문 돌며 fork
 	// 2.1. pid가 0이면 operate_subprocess 호출
+	set_environments();
 	n = access_args(GET).n_philo;
 	pid_list = (pid_t *)malloc(sizeof(pid_t) * n);
 	if (!pid_list)

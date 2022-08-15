@@ -22,6 +22,7 @@
 #include "state.h"
 #include "cycle.h"
 
+#include <stdio.h> //
 static int	check_if_died(void)
 { 
 	return (get_init_interval() - get_last_eat() > access_args(GET).time_die);
@@ -32,9 +33,9 @@ static int	check_if_done(void)
 	int	flag;
 
 	sem_wait(access_n_eat_sem(GET));
-	flag = *access_n_eat(GET) < 1;
+	flag = *access_n_eat(GET);
 	sem_post(access_n_eat_sem(GET));
-	return (flag);
+	return (flag < 1);
 }
 
 static void	*monitor_subprocess(void *param)
@@ -68,7 +69,7 @@ void	func_philo(int idx)
 	pthread_t	sub_monitor;
 	// create monitor thread.
 
-	if (pthread_create(&sub_monitor, 0, &monitor_subprocess, &sub_monitor))
+	if (pthread_create(&sub_monitor, 0, &monitor_subprocess, &idx))
 		sem_post(access_flag_sem(GET)); // exit program using main process' monitor
 	access_monitor_thread(sub_monitor);
 	synchronize_start_time();

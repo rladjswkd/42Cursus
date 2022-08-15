@@ -15,7 +15,7 @@
 
 t_args	access_args(t_args *initializer)
 {
-	static t_args args;
+	static t_args	args;
 
 	if (initializer)
 		args = *initializer;
@@ -24,7 +24,7 @@ t_args	access_args(t_args *initializer)
 
 pthread_t	access_monitor_thread(pthread_t initializer)
 {
-	static	pthread_t	tid;
+	static pthread_t	tid;
 
 	if (initializer)
 		tid = initializer;
