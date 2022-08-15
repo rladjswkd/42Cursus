@@ -55,7 +55,7 @@ void	usleep_splitted(int time)
 		current = convert_to_ms(get_time_now());
 		if (current >= bound)
 			return ;
-		if (current - bound <= usec)
+		if (bound - current <= usec)
 			usec /= 2;
 		usleep(usec);
 	}
