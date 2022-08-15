@@ -13,6 +13,6 @@
 #ifndef HANDLE_H
 # define HANDLE_H
 
-int	    get_last_eat();
-void    print_state(int idx, char *str, int state);
+int		get_last_eat(void);
+void	print_state(int idx, char *str, int state);
 #endif

@@ -6,29 +6,28 @@
 #    By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/08/10 23:19:26 by gyepark           #+#    #+#              #
-#    Updated: 2022/08/10 23:22:46 by gyepark          ###   ########.fr        #
+#    Updated: 2022/08/16 00:34:06 by gyepark          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
-NAME 	= philo
+NAME 	= 	philo
 
-CC 		= cc
-CFLAGS 	= -Wall -Wextra -Werror
-LIB		= -pthread
-RM		= rm -f
+CC 		= 	cc
+CFLAGS 	= 	-Wall -Wextra -Werror
+LIB		= 	-pthread
+RM		= 	rm -f
 
-SRCS 	= arguments.c\
-		  construct.c\
-		  core.c\
-		  cycle.c\
-		  destruct.c\
-		  handle.c\
-		  main.c\
-		  monitor.c\
-		  mutexes.c\
-		  routine.c\
-		  shared.c\
-		  time.c
+SRCS 	=	arguments.c\
+			construct.c\
+			core.c\
+			cycle.c\
+			handle.c\
+			main.c\
+			monitor.c\
+			philo_semaphore.c\
+			shared.c\
+			subprocess.c\
+			time.c
 OBJS 	= $(SRCS:.c=.o)
 
 all : $(NAME)

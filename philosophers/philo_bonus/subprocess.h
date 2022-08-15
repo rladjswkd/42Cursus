@@ -10,8 +10,8 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef ROUTINE_H
-# define ROUTINE_H
+#ifndef SUBPROCESS_H
+# define SUBPROCESS_H
 
 void	func_philo(int idx);
 #endif

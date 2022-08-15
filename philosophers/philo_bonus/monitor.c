@@ -41,7 +41,7 @@ void	monitor_threads(int idx, int limit)
 		if (check_if_died(limit))
 		{
 			print_state(idx, STR_DIED, DEAD);
-			sem_post(access_flag_sem(GET)); // sem_wait in main process before philosophers being forked.
+			sem_post(access_flag_sem(GET));
 		}
 		if (check_if_done())
 			exit(EXIT_SUCCESS);

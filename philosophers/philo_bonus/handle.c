@@ -18,7 +18,7 @@
 #include "state.h"
 #include "time.h"
 
-int	get_last_eat()
+int	get_last_eat(void)
 {
 	int	res;
 
@@ -28,7 +28,7 @@ int	get_last_eat()
 	return (res);
 }
 
-void	print_state(int idx, char *str, int state) // replace idx with philo (not index) (manage_process - i)
+void	print_state(int idx, char *str, int state)
 {
 	sem_wait(access_rights_sem(GET));
 	printf(FORMAT, get_init_interval(), idx + 1, str);

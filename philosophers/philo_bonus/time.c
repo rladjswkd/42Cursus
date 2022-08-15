@@ -44,18 +44,18 @@ int	get_init_interval(void)
 
 void	usleep_splitted(int time)
 {
-	int	from;
+	int	bound;
 	int	usec;
 	int	current;
 
-	from = convert_to_ms(get_time_now());
+	bound = convert_to_ms(get_time_now()) + time;
 	usec = time * WEIGHT;
 	while (1)
 	{
 		current = convert_to_ms(get_time_now());
-		if (current - from >= time)
+		if (current >= bound)
 			return ;
-		if (time - (current - from) <= usec)
+		if (current - bound <= usec)
 			usec /= 2;
 		usleep(usec);
 	}

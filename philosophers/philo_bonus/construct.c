@@ -32,7 +32,6 @@ int	init_sem_all(void)
 	sem_t	*last_eat;
 	sem_t	*n_eat;
 	sem_t	*flag;
-	
 
 	if (!open_new_sem(&fork, FORK_NAME, access_args(GET).n_philo)
 		|| !open_new_sem(&rights, RIGHTS_NAME, 1)

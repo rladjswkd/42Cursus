@@ -23,7 +23,7 @@
 #include "cycle.h"
 
 static int	check_if_died(void)
-{ 
+{
 	return (get_init_interval() - get_last_eat() > access_args(GET).time_die);
 }
 
@@ -39,7 +39,7 @@ static int	check_if_done(void)
 
 static void	synchronize_start_time(void)
 {
-	while (get_init_interval() < 0)  // set SYNC_TIME value enough to create all philosophers and their monitor threads
+	while (get_init_interval() < 0)
 		usleep(SYNC_USEC);
 }
 
@@ -67,10 +67,9 @@ static void	*monitor_subprocess(void *param)
 void	func_philo(int idx)
 {
 	pthread_t	sub_monitor;
-	// create monitor thread.
 
 	if (pthread_create(&sub_monitor, 0, &monitor_subprocess, &idx))
-		sem_post(access_flag_sem(GET)); // exit program using main process' monitor
+		sem_post(access_flag_sem(GET));
 	access_monitor_thread(sub_monitor);
 	synchronize_start_time();
 	if (idx & 1)
