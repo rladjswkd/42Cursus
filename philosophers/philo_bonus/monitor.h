@@ -13,5 +13,6 @@
 #ifndef MONITOR_H
 # define MONITOR_H
 
-void	monitor_threads(int idx, int limit)
+int	check_if_died(void);
+int	check_if_done(void);
 #endif

@@ -19,12 +19,12 @@
 #include "constants.h"
 #include "state.h"
 
-static int	check_if_died(int limit)
+int	check_if_died(void)
 {
-	return (get_init_interval() - get_last_eat() > limit);
+	return (get_init_interval() - get_last_eat() > access_args(GET).time_die);
 }
 
-static int	check_if_done(void)
+int	check_if_done(void)
 {
 	int	res;
 
@@ -32,19 +32,4 @@ static int	check_if_done(void)
 	res = *access_n_eat(GET) < 1;
 	sem_post(access_n_eat_sem(GET));
 	return (res);
-}
-
-void	monitor_threads(int idx, int limit)
-{
-	synchronize_start_time();
-	while (1)
-	{
-		if (check_if_died(limit))
-		{
-			print_state(idx, STR_DIED, DEAD);
-			sem_post(access_flag_sem(GET));
-		}
-		if (check_if_done())
-			exit(EXIT_SUCCESS);
-	}
 }

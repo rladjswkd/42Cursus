@@ -42,7 +42,7 @@ static void	philo_eat(int idx)
 static void philo_sleep(int idx)
 {
 	print_state(idx, STR_SLEEP, ALIVE);
-	usleep_splitted(access_args(GET).time_die);
+	usleep_splitted(access_args(GET).time_sleep);
 }
 
 static void	philo_think(int idx)

@@ -21,21 +21,7 @@
 #include "constants.h"
 #include "state.h"
 #include "cycle.h"
-
-static int	check_if_died(void)
-{
-	return (get_init_interval() - get_last_eat() > access_args(GET).time_die);
-}
-
-static int	check_if_done(void)
-{
-	int	flag;
-
-	sem_wait(access_n_eat_sem(GET));
-	flag = *access_n_eat(GET);
-	sem_post(access_n_eat_sem(GET));
-	return (flag < 1);
-}
+#include "monitor.h"
 
 static void	*monitor_subprocess(void *param)
 {
@@ -45,14 +31,14 @@ static void	*monitor_subprocess(void *param)
 		if (check_if_died())
 		{
 			print_state(*((int *)param), STR_DIED, DEAD);
-			sem_post(access_flag_sem(GET));
-			pthread_detach(access_monitor_thread(GET));
-			sem_wait(access_rights_sem(GET));
+//			sem_post(access_flag_sem(GET));
+//			pthread_detach(access_monitor_thread(GET));
+//			sem_wait(access_rights_sem(GET));
 		}
 		if (check_if_done())
 		{
-			pthread_detach(access_monitor_thread(GET));
-			exit(EXIT_SUCCESS);
+//			pthread_detach(access_monitor_thread(GET));
+//			exit(EXIT_SUCCESS);
 		}
 	}
 	return (0);
