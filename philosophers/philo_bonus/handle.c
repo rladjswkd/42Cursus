@@ -44,3 +44,12 @@ void	print_state(int idx, char *str, int state, int time)
 	if (state == ALIVE)
 		sem_post(access_rights_sem(GET));
 }
+
+void	close_sem_all(void)
+{
+	sem_close(access_fork_sem(GET));
+	sem_close(access_rights_sem(GET));
+	sem_close(access_last_eat_sem(GET));
+	sem_close(access_n_eat_sem(GET));
+	sem_close(access_flag_sem(GET));
+}

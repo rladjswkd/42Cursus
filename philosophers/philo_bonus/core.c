@@ -21,15 +21,7 @@
 #include "shared.h"
 #include "subprocess.h"
 #include "time.h"
-
-static void	close_sem_all(void)
-{
-	sem_close(access_fork_sem(GET));
-	sem_close(access_rights_sem(GET));
-	sem_close(access_last_eat_sem(GET));
-	sem_close(access_n_eat_sem(GET));
-	sem_close(access_flag_sem(GET));
-}
+#include "handle.h"
 
 static void	set_environments(void)
 {
@@ -55,7 +47,7 @@ int	manage_subprocess(void)
 	{
 		pid_list[i] = fork();
 		if (pid_list[i] == 0) // free pid_list for child processes.
-			func_philo(i);
+			func_philo(i, pid_list);
 	}
 	while (n--)
 		waitpid(-1, 0, 0);

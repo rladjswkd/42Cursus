@@ -42,14 +42,10 @@ static void	*monitor_checker(void *param)
 			sem_post(access_rights_sem(GET));
 			sem_post(access_flag_sem(GET));
 			sem_post(access_fork_sem(GET));
-			pthread_detach(access_primary_monitor(GET));
 			break ;
 		}
 		if (check_n_eat() < 1)
-		{
-			pthread_detach(access_primary_monitor(GET));
 			break ;
-		}
 	}
 	return (0);
 }
@@ -61,25 +57,26 @@ static void	*monitor_terminator(void *param)
 	sem_wait(access_flag_sem(GET));
 	set_n_eat(0);
 	sem_post(access_flag_sem(GET));
-	pthread_detach(access_secondary_monitor(GET));
 	return (0);
 }
 
-void	func_philo(int idx)
+void	func_philo(int idx, pid_t *pid_list)
 {
 	pthread_t	primary_monitor;
 	pthread_t	secondary_monitor;
 
+	free(pid_list);
 	if (pthread_create(&primary_monitor, 0, &monitor_checker, &idx))
 		sem_post(access_flag_sem(GET));
-	access_primary_monitor(primary_monitor);
 	if (pthread_create(&secondary_monitor, 0, &monitor_terminator, 0))
 		sem_post(access_flag_sem(GET));
-	access_secondary_monitor(secondary_monitor);
 	synchronize_start_time();
 	if (idx & 1)
 		usleep_splitted(access_args(GET).time_eat / 2);
 	while (check_n_eat() > 0)
 		philo_cycle(idx);
+	pthread_join(primary_monitor, 0);
+	pthread_join(secondary_monitor, 0);
+	close_sem_all();
 	exit(EXIT_SUCCESS);
 }

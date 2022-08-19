@@ -16,4 +16,5 @@
 void	synchronize_start_time(void);
 int		get_last_eat(void);
 void	print_state(int idx, char *str, int state, int time);
+void	close_sem_all(void);
 #endif
