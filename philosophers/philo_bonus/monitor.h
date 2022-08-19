@@ -14,5 +14,5 @@
 # define MONITOR_H
 
 int	check_if_died(void);
-int	check_if_done(void);
+int	check_n_eat(void);
 #endif

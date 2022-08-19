@@ -10,7 +10,7 @@
 #                                                                              #
 # **************************************************************************** #
 
-NAME 	= 	philo
+NAME 	= 	philo_bonus
 
 CC 		= 	cc
 CFLAGS 	= 	-Wall -Wextra -Werror

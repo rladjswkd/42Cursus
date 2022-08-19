@@ -22,7 +22,16 @@ t_args	access_args(t_args *initializer)
 	return (args);
 }
 
-pthread_t	access_monitor_thread(pthread_t initializer)
+pthread_t	access_primary_monitor(pthread_t initializer)
+{
+	static pthread_t	tid;
+
+	if (initializer)
+		tid = initializer;
+	return (tid);
+}
+
+pthread_t	access_secondary_monitor(pthread_t initializer)
 {
 	static pthread_t	tid;
 

@@ -23,37 +23,63 @@
 #include "cycle.h"
 #include "monitor.h"
 
-static void	*monitor_subprocess(void *param)
+static void	set_n_eat(int val)
+{
+	sem_wait(access_n_eat_sem(GET));
+	*(access_n_eat(GET)) = val;
+	sem_post(access_n_eat_sem(GET));
+}
+
+static void	*monitor_checker(void *param)
 {
 	synchronize_start_time();
 	while (1)
 	{
 		if (check_if_died())
 		{
-			print_state(*((int *)param), STR_DIED, DEAD);
-//			sem_post(access_flag_sem(GET));
-//			pthread_detach(access_monitor_thread(GET));
-//			sem_wait(access_rights_sem(GET));
+			print_state(*((int *)param), STR_DIED, DEAD, get_init_interval());
+			set_n_eat(0);
+			sem_post(access_rights_sem(GET));
+			sem_post(access_flag_sem(GET));
+			sem_post(access_fork_sem(GET));
+			pthread_detach(access_primary_monitor(GET));
+			break ;
 		}
-		if (check_if_done())
+		if (check_n_eat() < 1)
 		{
-//			pthread_detach(access_monitor_thread(GET));
-//			exit(EXIT_SUCCESS);
+			pthread_detach(access_primary_monitor(GET));
+			break ;
 		}
 	}
 	return (0);
 }
 
+static void	*monitor_terminator(void *param)
+{
+	(void)param;
+	synchronize_start_time();
+	sem_wait(access_flag_sem(GET));
+	set_n_eat(0);
+	sem_post(access_flag_sem(GET));
+	pthread_detach(access_secondary_monitor(GET));
+	return (0);
+}
+
 void	func_philo(int idx)
 {
-	pthread_t	sub_monitor;
+	pthread_t	primary_monitor;
+	pthread_t	secondary_monitor;
 
-	if (pthread_create(&sub_monitor, 0, &monitor_subprocess, &idx))
+	if (pthread_create(&primary_monitor, 0, &monitor_checker, &idx))
 		sem_post(access_flag_sem(GET));
-	access_monitor_thread(sub_monitor);
+	access_primary_monitor(primary_monitor);
+	if (pthread_create(&secondary_monitor, 0, &monitor_terminator, 0))
+		sem_post(access_flag_sem(GET));
+	access_secondary_monitor(secondary_monitor);
 	synchronize_start_time();
 	if (idx & 1)
 		usleep_splitted(access_args(GET).time_eat / 2);
-	while (1)
+	while (check_n_eat() > 0)
 		philo_cycle(idx);
+	exit(EXIT_SUCCESS);
 }

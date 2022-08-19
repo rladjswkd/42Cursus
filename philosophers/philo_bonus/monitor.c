@@ -24,12 +24,12 @@ int	check_if_died(void)
 	return (get_init_interval() - get_last_eat() > access_args(GET).time_die);
 }
 
-int	check_if_done(void)
+int	check_n_eat(void)
 {
 	int	res;
 
 	sem_wait(access_n_eat_sem(GET));
-	res = *access_n_eat(GET) < 1;
+	res = *access_n_eat(GET);
 	sem_post(access_n_eat_sem(GET));
 	return (res);
 }

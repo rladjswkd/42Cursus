@@ -31,18 +31,6 @@ static void	close_sem_all(void)
 	sem_close(access_flag_sem(GET));
 }
 
-static void	monitor_main(pid_t *pid_list)
-{
-	int		i;
-	int		n;
-
-	i = -1;
-	n = access_args(GET).n_philo;
-	sem_wait(access_flag_sem(GET));
-	while (++i < n)
-		kill(pid_list[i], SIGTERM);
-}
-
 static void	set_environments(void)
 {
 	access_init_time(SET);
@@ -66,12 +54,10 @@ int	manage_subprocess(void)
 	while (++i < n)
 	{
 		pid_list[i] = fork();
-		if (pid_list[i] == 0)
+		if (pid_list[i] == 0) // free pid_list for child processes.
 			func_philo(i);
 	}
-	monitor_main(pid_list);
-	i = -1;
-	while (++i < n)
+	while (n--)
 		waitpid(-1, 0, 0);
 	free(pid_list);
 	close_sem_all();

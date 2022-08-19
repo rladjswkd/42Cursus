@@ -18,6 +18,7 @@
 #include "shared.h"
 #include "state.h"
 #include "time.h"
+#include "monitor.h"
 
 int	get_last_eat(void)
 {
@@ -35,10 +36,11 @@ void	synchronize_start_time(void)
 		usleep(SYNC_USEC);
 }
 
-void	print_state(int idx, char *str, int state)
+void	print_state(int idx, char *str, int state, int time)
 {
 	sem_wait(access_rights_sem(GET));
-	printf(FORMAT, get_init_interval() - SYNC_TIME, idx + 1, str);
+	if (check_n_eat() > 0 || state == DEAD)
+		printf(FORMAT, time - SYNC_TIME, idx + 1, str);
 	if (state == ALIVE)
 		sem_post(access_rights_sem(GET));
 }

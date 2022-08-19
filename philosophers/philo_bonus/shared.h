@@ -16,7 +16,8 @@
 # include "struct_args.h"
 
 t_args		access_args(t_args *initializer);
-pthread_t	access_monitor_thread(pthread_t initializer);
+pthread_t	access_primary_monitor(pthread_t initializer);
+pthread_t	access_secondary_monitor(pthread_t initializer);
 int			*access_last_eat(int initializer);
 int			*access_n_eat(int initializer);
 
