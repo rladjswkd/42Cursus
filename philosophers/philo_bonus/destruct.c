@@ -22,10 +22,13 @@ int	destruct_all(void)
 
 	n = access_args(GET).n_philo;
 	close_sem_all();
-	while (n--)
+	if (access_flag_names(GET) && access_finish_names(GET))
 	{
-		free(access_flag_names(GET)[n]);
-		free(access_finish_names(GET)[n]);
+		while (n--)
+		{
+			free(access_flag_names(GET)[n]);
+			free(access_finish_names(GET)[n]);
+		}
 	}
 	free(access_flag_names(GET));
 	free(access_finish_names(GET));
