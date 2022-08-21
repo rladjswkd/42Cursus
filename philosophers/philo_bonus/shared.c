@@ -39,3 +39,21 @@ int	*access_n_eat(int initializer)
 		count = initializer;
 	return (&count);
 }
+
+char	**access_flag_names(char **initializer)
+{
+	static char	**names;
+
+	if (initializer)
+		names = initializer;
+	return (names);
+}
+
+char	**access_finish_names(char **initializer)
+{
+	static char	**names;
+
+	if (initializer)
+		names = initializer;
+	return (names);
+}

@@ -12,21 +12,27 @@
 
 #ifndef CONSTANTS_H
 # define CONSTANTS_H
-# define FORMAT 	    "%d %d %s\n"
-# define STR_FORK	    "has taken a fork"
-# define STR_EAT	    "is eating"
-# define STR_SLEEP	    "is sleeping"
-# define STR_THINK	    "is thinking"
-# define STR_DIED	    "died"
-# define GET	    	0
-# define SET	    	1
-# define NO_INDEX   	0
-# define SYNC_TIME	    1000
-# define SYNC_USEC	    100
-# define WEIGHT		    333
-# define FORK_NAME      "/fork"
-# define RIGHTS_NAME    "/rights"
-# define LAST_EAT_NAME  "/last_eat"
-# define N_EAT_NAME     "/n_eat"
-# define FLAG_NAME	    "/flag"
+# define FORMAT 	    	"%d %d %s\n"
+# define STR_FORK	    	"has taken a fork"
+# define STR_EAT	    	"is eating"
+# define STR_SLEEP	    	"is sleeping"
+# define STR_THINK	    	"is thinking"
+# define STR_DIED	    	"died"
+# define GET	    		0
+# define SET	    		1
+# define NO_INDEX   		0
+# define SYNC_TIME	    	2500
+# define SYNC_USEC	    	100
+# define WEIGHT		    	333
+# define PHILO_DIED			-1
+# define PHILO_DONE			0
+# define FORK_NAME      	"/fork"
+# define RIGHTS_NAME    	"/rights"
+# define LAST_EAT_NAME  	"/last_eat"
+# define N_EAT_NAME     	"/n_eat"
+# define FLAG_NAME	    	"/flag"
+# define FINISH_NAME		"/finish"
+# define DIED_NAME			"/died"
+# define FLAG_NAME_LEN		5
+# define FINISH_NAME_LEN	7
 #endif

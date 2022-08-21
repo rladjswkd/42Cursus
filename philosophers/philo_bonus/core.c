@@ -17,17 +17,30 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include "philo_semaphore.h"
+#include "monitor_semaphore.h"
 #include "constants.h"
 #include "shared.h"
 #include "subprocess.h"
 #include "time.h"
 #include "handle.h"
 
-static void	set_environments(void)
+static int	set_environments(pid_t **pid_list)
 {
+	int	n;
+
+	n = access_args(GET).n_philo;
+	*pid_list = (pid_t *)malloc(sizeof(pid_t) * n);
+	if (!(*pid_list))
+		return (0);
+	while (n--)
+	{
+		sem_wait(access_flag_sem(GET, n));
+		sem_wait(access_finish_sem(GET, n));
+	}
 	access_init_time(SET);
 	access_last_eat(get_init_interval() + SYNC_TIME);
 	access_n_eat(access_args(GET).n_eat);
+	return (1);
 }
 
 int	manage_subprocess(void)
@@ -36,22 +49,18 @@ int	manage_subprocess(void)
 	int			n;
 	pid_t		*pid_list;
 
-	sem_wait(access_flag_sem(GET));
-	set_environments();
 	n = access_args(GET).n_philo;
-	pid_list = (pid_t *)malloc(sizeof(pid_t) * n);
-	if (!pid_list)
+	if (!set_environments(&pid_list))
 		return (0);
 	i = -1;
 	while (++i < n)
 	{
 		pid_list[i] = fork();
-		if (pid_list[i] == 0) // free pid_list for child processes.
+		if (pid_list[i] == 0)
 			func_philo(i, pid_list);
 	}
 	while (n--)
 		waitpid(-1, 0, 0);
 	free(pid_list);
-	close_sem_all();
 	return (1);
 }

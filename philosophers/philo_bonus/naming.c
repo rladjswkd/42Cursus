@@ -1,33 +1,40 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.c                                             :+:      :+:    :+:   */
+/*   naming.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/08/15 17:19:06 by gyepark           #+#    #+#             */
-/*   Updated: 2022/08/15 17:19:08 by gyepark          ###   ########.kr       */
+/*   Created: 2022/08/21 12:13:02 by gyepark           #+#    #+#             */
+/*   Updated: 2022/08/21 12:13:02 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <semaphore.h>
 #include <stdlib.h>
-#include "arguments.h"
 #include "constants.h"
-#include "construct.h"
-#include "core.h"
-#include "shared.h"
-#include "monitor_semaphore.h"
-#include "handle.h"
-#include "destruct.h"
 
-int	main(int argc, char **argv)
+int	get_sem_name(int i, const char *base, int len, char **name)
 {
-	if (!parse_arguments(argc, argv))
+	int		temp;
+	char	*res;
+
+	temp = i;
+	while (temp)
+	{
+		temp /= 10;
+		len++;
+	}
+	res = (char *)malloc(sizeof(char) * (len + 1));
+	if (!res)
 		return (0);
-	if (!init_sem_all())
-		return (destruct_all());
-	manage_subprocess();
-	destruct_all();
-	return (0);
+	res[len] = '\0';
+	while (i)
+	{
+		res[--len] = i % 10 + 48;
+		i /= 10;
+	}
+	while (--len > -1)
+		res[len] = base[len];
+	*name = res;
+	return (1);
 }

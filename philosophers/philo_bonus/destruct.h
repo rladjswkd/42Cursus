@@ -1,23 +1,17 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   shared.h                                           :+:      :+:    :+:   */
+/*   destruct.h                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/08/15 17:19:17 by gyepark           #+#    #+#             */
-/*   Updated: 2022/08/15 17:19:18 by gyepark          ###   ########.kr       */
+/*   Created: 2022/08/21 16:02:43 by gyepark           #+#    #+#             */
+/*   Updated: 2022/08/21 16:02:44 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef SHARED_H
-# define SHARED_H
-# include <pthread.h>
-# include "struct_args.h"
+#ifndef DESTRUCT_H
+# define DESTRUCT_H
 
-t_args	access_args(t_args *initializer);
-int		*access_last_eat(int initializer);
-int		*access_n_eat(int initializer);
-char	**access_flag_names(char **initializer);
-char	**access_finish_names(char **initializer);
+int	destruct_all(void);
 #endif

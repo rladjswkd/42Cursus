@@ -22,12 +22,12 @@
 static void	philo_pickup(int idx)
 {
 	sem_wait(access_fork_sem(GET));
-	print_state(idx, STR_FORK, ALIVE, get_init_interval());
+	print_state(idx, STR_FORK, ALIVE);
 }
 
 static void	philo_eat(int idx)
 {
-	print_state(idx, STR_EAT, ALIVE, get_init_interval());
+	print_state(idx, STR_EAT, ALIVE);
 	sem_wait(access_last_eat_sem(GET));
 	*access_last_eat(GET) = get_init_interval();
 	sem_post(access_last_eat_sem(GET));
@@ -39,15 +39,15 @@ static void	philo_eat(int idx)
 	sem_post(access_fork_sem(GET));
 }
 
-static void philo_sleep(int idx)
+static void	philo_sleep(int idx)
 {
-	print_state(idx, STR_SLEEP, ALIVE, get_init_interval());
+	print_state(idx, STR_SLEEP, ALIVE);
 	usleep_splitted(access_args(GET).time_sleep);
 }
 
 static void	philo_think(int idx)
 {
-	print_state(idx, STR_THINK, ALIVE, get_init_interval());
+	print_state(idx, STR_THINK, ALIVE);
 	usleep(SYNC_USEC);
 }
 

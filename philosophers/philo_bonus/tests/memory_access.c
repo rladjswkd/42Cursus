@@ -18,7 +18,7 @@ int	main(void)
 	else
 	{
 		sleep(1);
-		printf("%d\n", *val) // 5가 출력됨.
+		printf("%d\n", *val); // 5가 출력됨.
 	}
 	return (0);
 }

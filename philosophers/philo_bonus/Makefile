@@ -13,7 +13,7 @@
 NAME 	= 	philo_bonus
 
 CC 		= 	cc
-CFLAGS 	= 	-Wall -Wextra -Werror
+CFLAGS 	= 	-Wall -Wextra -Werror -g
 LIB		= 	-pthread
 RM		= 	rm -f
 
@@ -21,9 +21,12 @@ SRCS 	=	arguments.c\
 			construct.c\
 			core.c\
 			cycle.c\
+			destruct.c\
 			handle.c\
 			main.c\
 			monitor.c\
+			monitor_semaphore.c\
+			naming.c\
 			philo_semaphore.c\
 			shared.c\
 			subprocess.c\
