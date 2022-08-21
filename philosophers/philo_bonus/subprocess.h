@@ -13,5 +13,5 @@
 #ifndef SUBPROCESS_H
 # define SUBPROCESS_H
 
-void	func_philo(int idx, pid_t *pid_list);
+void	func_philo(int idx);
 #endif

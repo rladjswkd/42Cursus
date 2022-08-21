@@ -13,5 +13,5 @@
 #ifndef CORE_H
 # define CORE_H
 
-int	manage_subprocess(void);
+void	manage_subprocess(void);
 #endif

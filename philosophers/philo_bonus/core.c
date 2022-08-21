@@ -23,6 +23,7 @@
 #include "subprocess.h"
 #include "time.h"
 #include "handle.h"
+#include "destruct.h"
 
 static int	set_environments(pid_t **pid_list)
 {
@@ -43,7 +44,34 @@ static int	set_environments(pid_t **pid_list)
 	return (1);
 }
 
-int	manage_subprocess(void)
+static int	fork_and_work(int current, pid_t *pid_list)
+{
+	int	i;
+
+	pid_list[current] = fork();
+	if (pid_list[current] == 0)
+	{
+		func_philo(current);
+		free(pid_list);
+		destruct_all();
+		exit(EXIT_SUCCESS);
+	}
+	else if (pid_list[current] == -1)
+	{
+		i = -1;
+		while (++i < current)
+		{
+			sem_post(access_flag_sem(GET, i));
+			waitpid(pid_list[i], 0, 0);
+		}
+		free(pid_list);
+		destruct_all();
+		return (0);
+	}
+	return (1);
+}
+
+void	manage_subprocess(void)
 {
 	int			i;
 	int			n;
@@ -51,16 +79,12 @@ int	manage_subprocess(void)
 
 	n = access_args(GET).n_philo;
 	if (!set_environments(&pid_list))
-		return (0);
+		return ;
 	i = -1;
 	while (++i < n)
-	{
-		pid_list[i] = fork();
-		if (pid_list[i] == 0)
-			func_philo(i, pid_list);
-	}
+		if (!fork_and_work(i, pid_list))
+			exit(EXIT_FAILURE);
 	while (n--)
 		waitpid(-1, 0, 0);
 	free(pid_list);
-	return (1);
 }

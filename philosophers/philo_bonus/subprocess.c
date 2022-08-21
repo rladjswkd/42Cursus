@@ -78,13 +78,15 @@ static void	*routine_terminator(void *param)
 	return (0);
 }
 
-void	func_philo(int idx, pid_t *pid_list)
+void	func_philo(int idx)
 {
 	pthread_t	primary_monitor;
 	pthread_t	secondary_monitor;
 
-	pthread_create(&primary_monitor, 0, &routine_checker, &idx);
-	pthread_create(&secondary_monitor, 0, &routine_terminator, &idx);
+	if (pthread_create(&primary_monitor, 0, &routine_checker, &idx))
+		return ;
+	if (pthread_create(&secondary_monitor, 0, &routine_terminator, &idx))
+		return ;
 	synchronize_start_time();
 	if (idx & 1)
 		usleep_splitted(access_args(GET).time_eat / 2);
@@ -92,7 +94,4 @@ void	func_philo(int idx, pid_t *pid_list)
 		philo_cycle(idx);
 	pthread_join(primary_monitor, 0);
 	pthread_join(secondary_monitor, 0);
-	free(pid_list);
-	destruct_all();
-	exit(EXIT_SUCCESS);
 }
