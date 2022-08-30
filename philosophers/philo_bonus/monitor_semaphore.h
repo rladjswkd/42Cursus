@@ -11,7 +11,7 @@
 /* ************************************************************************** */
 
 #ifndef MONITOR_SEMAPHORE_H
-# define MONITOR_SEMAPOHRE_H
+# define MONITOR_SEMAPHORE_H
 # include <semaphore.h>
 
 sem_t	**access_flag_addr(sem_t **initializer);

@@ -11,7 +11,7 @@
 /* ************************************************************************** */
 
 #ifndef PHILO_SEMAPHORE_H
-# define PHILO_SEMAPOHRE_H
+# define PHILO_SEMAPHORE_H
 # include <semaphore.h>
 
 sem_t	*access_fork_sem(sem_t *initializer);
