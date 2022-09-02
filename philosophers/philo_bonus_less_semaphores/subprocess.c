@@ -31,7 +31,7 @@ static void	*routine_checker(void *param)
 		if (check_if_died())
 		{
 			print_state(*((int *)param), STR_DIED, DEAD);
-			sem_post(access_flag_sem(GET));			
+			sem_post(access_flag_sem(GET));
 			break ;
 		}
 		if (check_n_eat() < 1)
