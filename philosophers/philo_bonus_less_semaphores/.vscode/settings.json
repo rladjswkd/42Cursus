@@ -1,0 +1,6 @@
+{
+	"files.associations": {
+		"philo_semaphore.h": "c",
+		"monitor_semaphore.h": "c"
+	}
+}
