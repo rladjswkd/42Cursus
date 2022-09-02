@@ -49,17 +49,18 @@ void	usleep_splitted(int time)
 	int	usec;
 	int	current;
 
-	if (check_n_eat() < 1)
-		return ;
-	bound = convert_to_ms(get_time_now()) + time;
-	usec = time * WEIGHT;
-	while (1)
+	if (check_n_eat() > 0)
 	{
-		current = convert_to_ms(get_time_now());
-		if (current >= bound)
-			return ;
-		if (bound - current <= usec)
-			usec /= 2;
-		usleep(usec);
+		bound = convert_to_ms(get_time_now()) + time;
+		usec = time * WEIGHT;
+		while (1)
+		{
+			current = convert_to_ms(get_time_now());
+			if (current >= bound)
+				return ;
+			if (bound - current <= usec)
+				usec /= 2;
+			usleep(usec);
+		}
 	}
 }

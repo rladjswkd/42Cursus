@@ -24,8 +24,7 @@ SRCS 	=	arguments.c\
 			handle.c\
 			main.c\
 			monitor.c\
-			monitor_semaphore.c\
-			philo_semaphore.c\
+			semaphore.c\
 			shared.c\
 			subprocess.c\
 			time.c

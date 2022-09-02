@@ -12,7 +12,7 @@
 
 #include <semaphore.h>
 #include <unistd.h>
-#include "philo_semaphore.h"
+#include "semaphore.h"
 #include "handle.h"
 #include "constants.h"
 #include "state.h"

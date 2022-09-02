@@ -17,15 +17,14 @@
 #include "construct.h"
 #include "core.h"
 #include "shared.h"
-#include "monitor_semaphore.h"
 #include "handle.h"
 
 int	main(int argc, char **argv)
 {
 	if (!parse_arguments(argc, argv))
-		return (0);
+		return (1);
 	if (!init_sem_all())
-		return (close_sem_all());
+		return (close_sem_all() + 1);
 	manage_subprocess();
 	return (close_sem_all());
 }

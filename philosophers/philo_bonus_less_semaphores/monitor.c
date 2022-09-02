@@ -12,7 +12,7 @@
 
 #include <semaphore.h>
 #include <stdlib.h>
-#include "philo_semaphore.h"
+#include "semaphore.h"
 #include "shared.h"
 #include "time.h"
 #include "handle.h"

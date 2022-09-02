@@ -18,6 +18,4 @@
 t_args	access_args(t_args *initializer);
 int		*access_last_eat(int initializer);
 int		*access_n_eat(int initializer);
-char	**access_flag_names(char **initializer);
-char	**access_finish_names(char **initializer);
 #endif
