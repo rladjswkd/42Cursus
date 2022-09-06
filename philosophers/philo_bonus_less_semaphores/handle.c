@@ -46,7 +46,8 @@ void	synchronize_start_time(void)
 void	print_state(int idx, char *str, int state)
 {
 	sem_wait(access_rights_sem(GET));
-	printf(FORMAT, get_init_interval() - SYNC_TIME, idx + 1, str);
+	if (check_n_eat() > 0)
+		printf(FORMAT, get_init_interval() - SYNC_TIME, idx + 1, str);
 	if (state == ALIVE)
 		sem_post(access_rights_sem(GET));
 }
