@@ -33,6 +33,7 @@
 # define FLAG_NAME	    	"/flag"
 # define FINISH_NAME		"/finish"
 # define DIED_NAME			"/died"
+# define CONDITION_NAME     "/condition"
 # define FLAG_NAME_LEN		5
 # define FINISH_NAME_LEN	7
 #endif

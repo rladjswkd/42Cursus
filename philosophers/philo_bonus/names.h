@@ -10,8 +10,10 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef NAMING_H
-# define NAMING_H
+#ifndef NAMES_H
+# define NAMES_H
 
-int	get_sem_name(int i, const char *base, int len, char **name);
+char	**access_flag_names(char **initializer);
+char	**access_finish_names(char **initializer);
+char    **access_condition_names(char **initializer);
 #endif

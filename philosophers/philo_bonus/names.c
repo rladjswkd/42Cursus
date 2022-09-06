@@ -13,28 +13,29 @@
 #include <stdlib.h>
 #include "constants.h"
 
-int	get_sem_name(int i, const char *base, int len, char **name)
+char	**access_flag_names(char **initializer)
 {
-	int		temp;
-	char	*res;
+	static char	**names;
 
-	temp = i;
-	while (temp)
-	{
-		temp /= 10;
-		len++;
-	}
-	res = (char *)malloc(sizeof(char) * (len + 1));
-	if (!res)
-		return (0);
-	res[len] = '\0';
-	while (i)
-	{
-		res[--len] = i % 10 + 48;
-		i /= 10;
-	}
-	while (--len > -1)
-		res[len] = base[len];
-	*name = res;
-	return (1);
+	if (initializer)
+		names = initializer;
+	return (names);
+}
+
+char	**access_finish_names(char **initializer)
+{
+	static char	**names;
+
+	if (initializer)
+		names = initializer;
+	return (names);
+}
+
+char	**access_condition_names(char **initializer)
+{
+	static char	**names;
+
+	if (initializer)
+		names = initializer;
+	return (names);
 }

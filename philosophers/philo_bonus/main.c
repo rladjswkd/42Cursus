@@ -23,6 +23,11 @@
 
 int	main(int argc, char **argv)
 {
+	sem_unlink(FORK_NAME);
+	sem_unlink(RIGHTS_NAME);
+	sem_unlink(LAST_EAT_NAME);
+	sem_unlink(N_EAT_NAME);
+	sem_unlink(DIED_NAME);
 	if (!parse_arguments(argc, argv))
 		return (0);
 	if (!init_sem_all())

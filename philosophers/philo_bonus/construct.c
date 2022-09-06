@@ -18,7 +18,7 @@
 #include "monitor_semaphore.h"
 #include "constants.h"
 #include "shared.h"
-#include "naming.h"
+#include "names.h"
 
 static void	unlink_sem_all(void)
 {
@@ -45,7 +45,34 @@ static int	open_new_sem(sem_t **sem, char *name, int value)
 	return (1);
 }
 
-static int	init_monitor_sems(char *base, int len, int cond)
+static int	get_sem_name(int i, const char *base, int len, char **name)
+{
+	int		temp;
+	char	*res;
+
+	temp = i;
+	while (temp)
+	{
+		temp /= 10;
+		len++;
+	}
+	res = (char *)malloc(sizeof(char) * (len + 1));
+	if (!res)
+		return (0);
+	res[len] = '\0';
+	while (i)
+	{
+		res[--len] = i % 10 + 48;
+		i /= 10;
+	}
+	while (--len > -1)
+		res[len] = base[len];
+	*name = res;
+	return (1);
+}
+
+static int	init_monitor_sems(char *base, int len, char **(*fn)(char **),
+sem_t *(*fs)(sem_t **, int))
 {
 	sem_t	**sem;
 	char	**names;
@@ -57,19 +84,11 @@ static int	init_monitor_sems(char *base, int len, int cond)
 		return (0);
 	i = -1;
 	while (++i < access_args(GET).n_philo)
-		if (!get_sem_name(i + 1, base, len, &(names[i])))
+		if (!get_sem_name(i + 1, base, len, &(names[i]))
+			|| !open_new_sem(&(sem[i]), names[i], 1))
 			return (0);
-	while (i--)
-		if (!open_new_sem(&(sem[i]), names[i], 1))
-			return (0);
-	if (cond)
-		access_flag_names(names);
-	else
-		access_finish_names(names);
-	if (cond)
-		access_flag_sem(sem, NO_INDEX);
-	else
-		access_finish_sem(sem, NO_INDEX);
+	(*fn)(names);
+	(*fs)(sem, NO_INDEX);
 	return (1);
 }
 
@@ -92,8 +111,11 @@ int	init_sem_all(void)
 	access_last_eat_sem(last_eat);
 	access_n_eat_sem(n_eat);
 	access_died_sem(died);
-	if (!init_monitor_sems(FLAG_NAME, 5, 1)
-		|| !init_monitor_sems(FINISH_NAME, 7, 0))
+	if (!init_monitor_sems(FLAG_NAME, 5, access_flag_names, access_flag_sem)
+		|| !init_monitor_sems(FINISH_NAME, 7, access_finish_names, 
+			access_finish_sem)
+		|| !init_monitor_sems(CONDITION_NAME, 5, access_condition_names,
+			access_condition_sem))
 		return (0);
 	unlink_sem_all();
 	return (1);
