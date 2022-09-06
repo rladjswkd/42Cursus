@@ -19,8 +19,18 @@
 #include "shared.h"
 #include "handle.h"
 
+static void	unlink_sem_all(void)
+{
+	sem_unlink(FORK_NAME);
+	sem_unlink(RIGHTS_NAME);
+	sem_unlink(LAST_EAT_NAME);
+	sem_unlink(N_EAT_NAME);
+	sem_unlink(FLAG_NAME);
+}
+
 int	main(int argc, char **argv)
 {
+	unlink_sem_all();
 	if (!parse_arguments(argc, argv))
 		return (1);
 	if (!init_sem_all())

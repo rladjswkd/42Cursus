@@ -23,7 +23,6 @@ SRCS 	=	arguments.c\
 			cycle.c\
 			handle.c\
 			main.c\
-			monitor.c\
 			semaphore.c\
 			shared.c\
 			subprocess.c\

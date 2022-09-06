@@ -18,15 +18,6 @@
 #include "constants.h"
 #include "shared.h"
 
-static void	unlink_sem_all(void)
-{
-	sem_unlink(FORK_NAME);
-	sem_unlink(RIGHTS_NAME);
-	sem_unlink(LAST_EAT_NAME);
-	sem_unlink(N_EAT_NAME);
-	sem_unlink(FLAG_NAME);
-}
-
 static int	open_new_sem(char *name, int value, sem_t *(*fp)(sem_t *))
 {
 	sem_t	*sem;
@@ -49,6 +40,5 @@ int	init_sem_all(void)
 		|| !open_new_sem(N_EAT_NAME, 1, access_n_eat_sem)
 		|| !open_new_sem(FLAG_NAME, 1, access_flag_sem))
 		return (0);
-	unlink_sem_all();
 	return (1);
 }

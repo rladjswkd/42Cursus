@@ -13,7 +13,6 @@
 #include <sys/time.h>
 #include <unistd.h>
 #include "constants.h"
-#include "monitor.h"
 
 struct timeval	access_init_time(int flag)
 {
@@ -49,18 +48,15 @@ void	usleep_splitted(int time)
 	int	usec;
 	int	current;
 
-	if (check_n_eat() > 0)
+	bound = convert_to_ms(get_time_now()) + time;
+	usec = time * WEIGHT;
+	while (1)
 	{
-		bound = convert_to_ms(get_time_now()) + time;
-		usec = time * WEIGHT;
-		while (1)
-		{
-			current = convert_to_ms(get_time_now());
-			if (current >= bound)
-				return ;
-			if (bound - current <= usec)
-				usec /= 2;
-			usleep(usec);
-		}
+		current = convert_to_ms(get_time_now());
+		if (current >= bound)
+			return ;
+		if (bound - current <= usec)
+			usec /= 2;
+		usleep(usec);
 	}
 }
