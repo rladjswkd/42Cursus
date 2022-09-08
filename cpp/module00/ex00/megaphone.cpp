@@ -14,10 +14,13 @@
 #include <string>
 #include <cctype>
 
-void	print_uppercase(char *input)
+void	print_uppercase(std::string input)
 {
-	while (*input)
-		std::cout << (unsigned char)(std::toupper(*(input++)));
+	std::size_t	i = 0;
+	std::size_t	len = input.length();
+
+	while (i < len)
+		std::cout << (unsigned char)(std::toupper(input.at(i++)));
 }
 
 int	main(int argc, char **argv)
@@ -28,7 +31,7 @@ int	main(int argc, char **argv)
 		std::cout << "* LOUD AND UNBEARABLE FEEDBACK NOISE *";
 	else
 		while (++i < argc)
-			print_uppercase(argv[i]);
+			print_uppercase(std::string(argv[i]));
 	std::cout << std::endl;
 	return (0);
 }
