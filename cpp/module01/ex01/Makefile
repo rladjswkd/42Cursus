@@ -10,13 +10,15 @@
 #                                                                              #
 # **************************************************************************** #
 
-NAME	= megaphone
+NAME	= zombie_horde
 
 CC		= c++
 CFLAGS	= -Wall -Wextra -Werror -std=c++98
 RM		= rm -f
 
-SRCS	= megaphone.cpp
+SRCS	= Zombie.cpp\
+		  zombieHorde.cpp\
+		  main.cpp
 OBJS	= $(SRCS:.cpp=.o)
 
 all		: $(NAME)

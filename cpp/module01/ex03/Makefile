@@ -10,13 +10,16 @@
 #                                                                              #
 # **************************************************************************** #
 
-NAME	= megaphone
+NAME	= program
 
 CC		= c++
 CFLAGS	= -Wall -Wextra -Werror -std=c++98
 RM		= rm -f
 
-SRCS	= megaphone.cpp
+SRCS	= Weapon.cpp\
+		  HumanA.cpp\
+		  HumanB.cpp\
+		  main.cpp
 OBJS	= $(SRCS:.cpp=.o)
 
 all		: $(NAME)

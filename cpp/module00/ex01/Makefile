@@ -12,11 +12,11 @@
 
 NAME	= phonebook
 
-CC		= g++
+CC		= c++
 CFLAGS	= -Wall -Wextra -Werror -std=c++98
 RM		= rm -f
 
-SRCS 	= Contact.cpp\
+SRCS	= Contact.cpp\
 		  PhoneBook.cpp\
 		  main.cpp
 OBJS	= $(SRCS:.cpp=.o)

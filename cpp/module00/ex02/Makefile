@@ -10,13 +10,13 @@
 #                                                                              #
 # **************************************************************************** #
 
-NAME	= phonebook
+NAME	= account
 
-CC		= g++
+CC		= c++
 CFLAGS	= -Wall -Wextra -Werror -std=c++98
 RM		= rm -f
 
-SRCS 	= Account.cpp\
+SRCS	= Account.cpp\
 		  tests.cpp
 OBJS	= $(SRCS:.cpp=.o)
 
