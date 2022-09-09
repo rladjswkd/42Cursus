@@ -1,28 +1,32 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   Weapon.hpp                                         :+:      :+:    :+:   */
+/*   Harl.hpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/09/10 03:46:14 by gyepark           #+#    #+#             */
-/*   Updated: 2022/09/10 03:46:15 by gyepark          ###   ########.fr       */
+/*   Created: 2022/09/10 03:46:46 by gyepark           #+#    #+#             */
+/*   Updated: 2022/09/10 03:46:47 by gyepark          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef WEAPON_HPP
-#define WEAPON_HPP
+#ifndef	HARL_HPP
+#define HARL_HPP
 #include <string>
 
-class Weapon
+class Harl
 {
 private:
-	std::string	type;
-public:
-	Weapon(void);
-	Weapon(std::string);
+	void		(Harl::*fp[5])(void);
+	std::string	funcNames[4];
 
-	const std::string	&getType(void);
-	void				setType(std::string);
+	void		debug(void);
+	void		info(void);
+	void		warning(void);
+	void		error(void);
+	void		fail(void);
+public:
+				Harl(void);
+	void		complain(std::string);
 };
 #endif
