@@ -11,7 +11,7 @@
 /* ************************************************************************** */
 
 #include "Fixed.hpp"
-#include <math.h>
+#include <cmath>
 
 Fixed::Fixed(void){
 	std::cout << "Default constructor called" << std::endl;
@@ -43,7 +43,7 @@ void	Fixed::setRawBits(int const rawBits){
 
 Fixed::Fixed(const int rhs){
 	std::cout << "Int constructor called" << std::endl;
-	rawBits = rhs << fracBits;
+	rawBits = IntToFixed(rhs);
 }
 
 Fixed::Fixed(const float rhs){
@@ -52,11 +52,11 @@ Fixed::Fixed(const float rhs){
 }
 
 float 	Fixed::toFloat(void) const{
-	return ((float)rawBits / (1 << fracBits));
+	return (FixedToFloat(rawBits));
 }
 
 int 	Fixed::toInt(void) const{
-	return (rawBits >> 8);
+	return (FixedToInt(rawBits));
 }
 
 std::ostream	&operator<<(std::ostream &oStream, const Fixed &fixed){

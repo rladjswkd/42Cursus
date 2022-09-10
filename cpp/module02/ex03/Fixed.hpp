@@ -14,11 +14,16 @@
 #define FIXED_HPP
 #include <iostream>
 #include <fstream>
+#define SCALE 8
+#define FloatToFixed(x)	((x) * (float)(1 << SCALE))
+#define FixedToFloat(x)	((float)(x) / (float)(1 << SCALE))
+#define IntToFixed(x)	((x) << SCALE)
+#define FixedToInt(x)	((x) >> SCALE)
 class Fixed
 {
 private:
 	int					rawBits;
-	static const int	fracBits = 8;
+	static const int	fracBits = SCALE;
 public:
 	Fixed(void);
 	Fixed(const Fixed &);

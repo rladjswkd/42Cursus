@@ -43,7 +43,7 @@ void	Fixed::setRawBits(int const rawBits){
 
 Fixed::Fixed(const int rhs){
 	std::cout << "Int constructor called" << std::endl;
-	rawBits = rhs << fracBits;
+	rawBits = IntToFixed(rhs);
 }
 
 Fixed::Fixed(const float rhs){
@@ -52,11 +52,11 @@ Fixed::Fixed(const float rhs){
 }
 
 float 	Fixed::toFloat(void) const{
-	return ((float)rawBits / (1 << fracBits));
+	return (FixedToFloat(rawBits));
 }
 
 int 	Fixed::toInt(void) const{
-	return (rawBits >> 8);
+	return (FixedToInt(rawBits));
 }
 
 std::ostream	&operator<<(std::ostream &oStream, const Fixed &fixed){
@@ -89,23 +89,27 @@ bool	Fixed::operator!=(const Fixed &v) const{
 }
 
 Fixed	Fixed::operator+(const Fixed &v){
-	return (Fixed(this->toFloat() + v.toFloat()));
+	return (Fixed(FixedToFloat(getRawBits() + v.getRawBits())));
 }
 
 Fixed	Fixed::operator-(const Fixed &v){
-	return (Fixed(this->toFloat() - v.toFloat()));
+	return (Fixed(FixedToFloat(getRawBits() - v.getRawBits())));
 }
 
 Fixed	Fixed::operator-(void){
-	return (Fixed(-rawBits));
+	return (Fixed(FixedToFloat(-rawBits)));
 }
 
 Fixed	Fixed::operator*(const Fixed &v){
-	return (Fixed(this->toFloat() * v.toFloat()));
+	return (Fixed(FixedToFloat(((int64_t)rawBits * (int64_t)v.getRawBits()) >> fracBits)));
 }
 
 Fixed	Fixed::operator/(const Fixed &v){
-	return (Fixed(this->toFloat() / v.toFloat()));
+	if (v.getRawBits() == 0){
+		std::cout << "Zero division is not allowed!" << std::endl;
+		exit(EXIT_FAILURE);
+	}
+	return (Fixed(FixedToFloat(((int64_t)rawBits << fracBits) / v.getRawBits())));
 }
 
 Fixed	&Fixed::operator++(void){
