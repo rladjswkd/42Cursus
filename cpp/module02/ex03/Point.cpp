@@ -26,14 +26,3 @@ Fixed	Point::getX(void) const{
 Fixed	Point::getY(void) const{
 	return (y);
 }
-
-Fixed	Point::getArea(const Point p1, const Point p2, const Point p3){
-	Fixed	area = ((p1.getX() * (p2.getY() - p3.getY()))
-				+ (p2.getX() * (p3.getY() - p1.getY()))
-				+ (p3.getX() * (p1.getY() - p2.getY()))) / 2.0f;
-
-	if (area < 0)
-		area = -area;
-	return (area);
-}
-

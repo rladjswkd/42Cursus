@@ -14,7 +14,5 @@ public:
 
 	Fixed	getX(void) const;
 	Fixed	getY(void) const;
-
-	static Fixed	getArea(const Point, const Point, const Point);
 };
 #endif
