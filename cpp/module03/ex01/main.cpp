@@ -1,17 +1,26 @@
-#include "ClapTrap.hpp"
+#include "ScavTrap.hpp"
 
 int	main(void){
 	ClapTrap	ct1;
-	ClapTrap	ct2(ct1);
-	ClapTrap	ct3("CT3");
-	ClapTrap	ct4 = ct3;
-	ClapTrap	ct5("CT5");
+	ScavTrap	ct2("CT2");
+	ScavTrap	ct3("CT3");
 
-	ct1.attack("CT5");
-	std::cout << "CT5's hit point : " << ct5.getHitPoint() << std::endl;
-	ct5.takeDamage(ct1.getAttackDamage());
-	std::cout << "CT5's hit point : " << ct5.getHitPoint() << std::endl;
-	ct5.beRepaired(42);
-	std::cout << "CT5's hit point : " << ct5.getHitPoint() << std::endl;
+	std::cout << "Example message of ClapTrap class' attack : ";
+	ct1.attack("nobody");
+	
+	std::cout << "CT3's hit point : " << ct3.getHitPoint() << std::endl;
+	ct2.attack("CT3");
+	ct3.takeDamage(ct2.getAttackDamage());
+	std::cout << "CT3's hit point : " << ct3.getHitPoint() << std::endl;
+	ct3.beRepaired(42);
+	std::cout << "CT3's hit point : " << ct3.getHitPoint() << std::endl;
+	
+	ScavTrap	copiedCt3(ct3);
+	std::cout << "CT3's name :  " << ct3.getName() << std::endl;
+	std::cout << "CT3's hit point : " << ct3.getHitPoint() << std::endl;
+	std::cout << "CT3's energy point : " << ct3.getEnergyPoint() << std::endl;
+	std::cout << "CT3's attack damage : " << ct3.getAttackDamage() << std::endl;
+	std::cout << "CT3's class name : " << ct3.getClassName() << std::endl;
+
 	return (0);
 }

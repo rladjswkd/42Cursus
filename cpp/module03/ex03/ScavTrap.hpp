@@ -1,8 +1,10 @@
 #ifndef SCAVTRAP_HPP
 #define SCAVTRAP_HPP
 #include "ClapTrap.hpp"
-class ScavTrap : public ClapTrap
+class ScavTrap : virtual public ClapTrap
 {
+private:
+	const int	STEnergyPoint;
 public:
 	ScavTrap(void);
 	ScavTrap(ScavTrap &);
@@ -11,5 +13,6 @@ public:
 	ScavTrap	&operator=(ScavTrap &);
 	void	attack(const std::string &);
 	void	guardGate(void);
+	int		getSTEnergyPoint(void);
 };
 #endif

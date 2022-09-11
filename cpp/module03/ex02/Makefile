@@ -16,9 +16,9 @@ CC		= c++
 CFLAGS	= -Wall -Wextra -Werror -std=c++98
 RM		= rm -f
 
-SRCS	= Fixed.cpp\
-		  Point.cpp\
-		  bsp.cpp\
+SRCS	= ClapTrap.cpp\
+		  ScavTrap.cpp\
+		  FragTrap.cpp\
 		  main.cpp
 OBJS	= $(SRCS:.cpp=.o)
 

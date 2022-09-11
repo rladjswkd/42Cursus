@@ -1,11 +1,8 @@
 #include "ClapTrap.hpp"
 
 ClapTrap::ClapTrap(void){
-	static int	i = 0;
-
 	std::cout << "Default constructor called" << std::endl;
 	name = "Noname";
-	name.append(1, i + 48);
 	hitPoint = 10;
 	energyPoint = 10;
 	attackDamage = 0;
@@ -37,8 +34,10 @@ ClapTrap::ClapTrap(std::string name){
 }
 
 void	ClapTrap::attack(const std::string& target){
-	if (energyPoint > 0)
+	if (energyPoint > 0){
 		std::cout << "ClapTrap " << name << " attacks " << target << " causing " << attackDamage << " points of damage!" << std::endl;
+		energyPoint--;
+	}
 	else
 		std::cout << "Zero Energy points!" << std::endl;
 }
@@ -46,7 +45,6 @@ void	ClapTrap::attack(const std::string& target){
 void	ClapTrap::takeDamage(unsigned int amount){
 	std::cout << "ClapTrap " << name << " takes " << amount << " points of damage!" << std::endl;
 	hitPoint -= amount;
-	energyPoint--;
 }
 
 void	ClapTrap::beRepaired(unsigned int amount){

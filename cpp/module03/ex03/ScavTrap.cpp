@@ -1,21 +1,22 @@
 #include "ScavTrap.hpp"
 
-ScavTrap::ScavTrap(void){
+ScavTrap::ScavTrap(void) : STEnergyPoint(50){
 	hitPoint = 100;
-	energyPoint = 50;
+	energyPoint = STEnergyPoint;
 	attackDamage = 20;
 	className = "ScavTrap";
 	std::cout << this->className << " default constructor called." << std::endl;
 }
 
-ScavTrap::ScavTrap(ScavTrap &other) : ClapTrap(other){
+ScavTrap::ScavTrap(ScavTrap &other) : ClapTrap(other), STEnergyPoint(50){
 	className = "ScavTrap";
 	std::cout << this->className << " copy constructor called." << std::endl;
 }
 
-ScavTrap::ScavTrap(std::string name) : ClapTrap(name){
+ScavTrap::ScavTrap(std::string name) : ClapTrap(name), STEnergyPoint(50){
+	this->name = name;
 	hitPoint = 100;
-	energyPoint = 50;
+	energyPoint = STEnergyPoint;
 	attackDamage = 20;
 	className = "ScavTrap";
 	std::cout << this->className << " string constructor called." << std::endl;
@@ -46,4 +47,8 @@ void	ScavTrap::attack(const std::string &target){
 
 void	ScavTrap::guardGate(void){
 	std::cout << this->className << " " << name << " is now in Gatekeeper mode." << std::endl;
+}
+
+int	ScavTrap::getSTEnergyPoint(void){
+	return (STEnergyPoint);
 }
