@@ -16,10 +16,11 @@ CC		= c++
 CFLAGS	= -Wall -Wextra -Werror -std=c++98
 RM		= rm -f
 
-SRCS	= ClapTrap.cpp\
-		  ScavTrap.cpp\
-		  FragTrap.cpp\
-		  DiamondTrap.cpp\
+SRCS	= Animal.cpp\
+		  Dog.cpp\
+		  Cat.cpp\
+		  WrongAnimal.cpp\
+		  WrongCat.cpp\
 		  main.cpp
 OBJS	= $(SRCS:.cpp=.o)
 
