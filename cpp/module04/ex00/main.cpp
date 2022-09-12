@@ -21,5 +21,11 @@ int main()
 	std::cout << wrongCat->getType() << " " << std::endl;
 	wrongCat->makeSound(); //will output the cat sound!
 	wrongMeta->makeSound();
+
+	delete (meta);
+	delete (i);
+	delete (j);
+	delete (wrongMeta);
+	delete (wrongCat);
 	return 0;
 }

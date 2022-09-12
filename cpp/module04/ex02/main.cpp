@@ -5,6 +5,7 @@
 #include "WrongCat.hpp"
 int main()
 {
+	// Animal animal;
 	const Animal* j = new Dog();
 	const Animal* i = new Cat();
 	delete j;//should not create a leak

@@ -9,7 +9,7 @@ protected:
 public:
 	WrongAnimal(void);
 	WrongAnimal(WrongAnimal &);
-	~WrongAnimal(void);
+	virtual ~WrongAnimal(void);
 	WrongAnimal &operator=(WrongAnimal &);
 
 	void	makeSound(void) const;
