@@ -4,7 +4,8 @@
 class Point
 {
 private:
-	Fixed	x, y;
+	Fixed const	x;
+	Fixed const	y;
 public:
 	Point(void);
 	Point(const Point &);

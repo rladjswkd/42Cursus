@@ -12,7 +12,8 @@ public:
 	~Cat(void);
 	Cat &operator=(Cat &);
 
-	void	makeSound(void) const;
+	virtual void	makeSound(void) const;
+	void			printIdea(int);
 };
 #endif
 

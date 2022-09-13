@@ -28,10 +28,10 @@ std::string	PhoneBook::modifyString(std::string str){
 void	PhoneBook::printInfoOf(int index){
 	Contact current = phoneBook[index - 1];
 
-	std::cout << std::setw(10) << index << "|";
-	std::cout << std::setw(10) << modifyString(current.getFirstName()) << "|";
-	std::cout << std::setw(10) << modifyString(current.getLastName()) << "|";
-	std::cout << std::setw(10) << modifyString(current.getNickName()) << std::endl;
+	std::cout << "|" << std::setw(10) << index << "|" << std::endl;
+	std::cout << "|" << std::setw(10) << modifyString(current.getFirstName()) << "|" << std::endl;
+	std::cout << "|" << std::setw(10) << modifyString(current.getLastName()) << "|" << std::endl;
+	std::cout << "|" << std::setw(10) << modifyString(current.getNickName()) << "|" << std::endl;
 }
 
 void	PhoneBook::ADD(void){

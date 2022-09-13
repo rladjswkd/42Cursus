@@ -24,5 +24,4 @@ int main(void) {
 	else
 		std::cout << "this point is NOT in the triangle." << std::endl;
 	return 0;
-	return 0; 
 }

@@ -30,8 +30,8 @@ Character	&Character::operator=(Character &other){
 	for (int i = 0; i < 4; i++){
 		delete (slot[i]);
 		slot[i] = 0;
-		if (other.getSlotItem(i))
-			slot[i] = other.getSlotItem(i)->clone();
+		if (other.slot[i])
+			slot[i] = (other.slot[i])->clone();
 	}
 	return (*this);
 }
@@ -59,8 +59,3 @@ void	Character::use(int idx, ICharacter& target){
 	if (-1 < idx && idx < 5 && slot[idx])
 		slot[idx]->use(target);
 }
-
-AMateria	*Character::getSlotItem(int index){
-	return (slot[index]);
-}
-

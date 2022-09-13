@@ -29,7 +29,7 @@ Fixed::Fixed(const Fixed &rhs){
 	operator=(rhs);
 }
 
-Fixed::~Fixed(){
+Fixed::~Fixed(void){
 	std::cout << "Destructor called" << std::endl;
 }
 
@@ -91,19 +91,19 @@ bool	Fixed::operator!=(const Fixed &v) const{
 Fixed	Fixed::operator+(const Fixed &v){
 	return (Fixed(FixedToFloat(getRawBits() + v.getRawBits())));
 }
-
+// binary
 Fixed	Fixed::operator-(const Fixed &v){
 	return (Fixed(FixedToFloat(getRawBits() - v.getRawBits())));
 }
-
+// unary
 Fixed	Fixed::operator-(void){
 	return (Fixed(FixedToFloat(-rawBits)));
 }
-
+// two "<< fracBits" are applied for on multiplication, so ">> fracBits" are needed.
 Fixed	Fixed::operator*(const Fixed &v){
 	return (Fixed(FixedToFloat(((int64_t)rawBits * (int64_t)v.getRawBits()) >> fracBits)));
 }
-
+// two ">> fracBits" are applied for on multiplication, so "<< fracBits" are needed.
 Fixed	Fixed::operator/(const Fixed &v){
 	if (v.getRawBits() == 0){
 		std::cout << "Zero division is not allowed!" << std::endl;

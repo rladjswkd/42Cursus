@@ -40,5 +40,8 @@ int	main(void){
 
 	dt2.whoAmI();
 	copiedDt2.whoAmI();
+
+	dt2.guardGate();
+	dt2.highFivesGuys();
 	return (0);
 }

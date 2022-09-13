@@ -30,7 +30,7 @@ public:
 	Fixed(const int);
 	Fixed(const float);
 
-	~Fixed();
+	~Fixed(void);
 
 	int 	getRawBits(void) const;
 	void	setRawBits(int const);

@@ -29,7 +29,7 @@ Fixed::Fixed(const Fixed &rhs){
 	operator=(rhs);
 }
 
-Fixed::~Fixed(){
+Fixed::~Fixed(void){
 	std::cout << "Destructor called" << std::endl;
 }
 

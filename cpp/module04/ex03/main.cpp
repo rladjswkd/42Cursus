@@ -70,5 +70,12 @@ int main()
 	delete tmp4;
 	delete tmp5;
 	delete tmp6;
+
+	Character	*c1 = new Character("c1");
+	c1->equip(new Cure);
+	Character	*c2 = new Character("c2");
+	*c2 = *c1;
+	delete (c1);
+	delete (c2);
 	return 0;
 }

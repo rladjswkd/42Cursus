@@ -17,15 +17,18 @@ int main()
 
 	const WrongAnimal* wrongMeta = new WrongAnimal();
 	const WrongAnimal* wrongCat = new WrongCat();
+	const WrongCat		*wrongCatWrongCat = new WrongCat();
 
 	std::cout << wrongCat->getType() << " " << std::endl;
-	wrongCat->makeSound(); //will output the cat sound!
+	wrongCat->makeSound();
 	wrongMeta->makeSound();
+	wrongCatWrongCat->makeSound();
 
 	delete (meta);
 	delete (i);
 	delete (j);
 	delete (wrongMeta);
 	delete (wrongCat);
+	delete (wrongCatWrongCat);
 	return 0;
 }

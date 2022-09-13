@@ -2,6 +2,8 @@
 
 Brain::Brain(void){
 	std::cout << "Brain default constructor" << std::endl;
+	for (int i = 0; i < 100; i++)
+		(this->ideas)[i] = "idea base";
 }
 
 Brain::Brain(Brain &other){

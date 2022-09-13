@@ -50,11 +50,27 @@ int	Harl::isInFuncNames(std::string level){
 void	Harl::complain(std::string level){
 	size_t	i = isInFuncNames(level);
 	
-	if (i == 4)
-		std::cout << "[ Probably complaining about insignificant problems ]" << std::endl;
-	for (; i < 4; i++){
-		std::cout << "[ " << funcNames[i] << " ]" << std::endl;
-		(this->*(fp[i]))();
-		std::cout << std::endl;
+	switch (i){
+		case (0):
+			std::cout << "[ " << funcNames[0] << " ]" << std::endl;
+			(this->*(fp[0]))();
+			std::cout << std::endl;			
+		case (1):
+			std::cout << "[ " << funcNames[1] << " ]" << std::endl;
+			(this->*(fp[1]))();
+			std::cout << std::endl;
+		case (2):
+			std::cout << "[ " << funcNames[2] << " ]" << std::endl;
+			(this->*(fp[2]))();
+			std::cout << std::endl;
+		case (3):
+			std::cout << "[ " << funcNames[3] << " ]" << std::endl;
+			(this->*(fp[3]))();
+			std::cout << std::endl;
+			break ;
+		default :
+			std::cout << "[ Probably complaining about insignificant problems ]" << std::endl;
+			break ;
+
 	}
 }

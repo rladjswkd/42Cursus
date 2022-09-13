@@ -1,8 +1,5 @@
 #include "Point.hpp"
-
-/* ************************************************************************** */
-/*                                area method                                 */
-/* ************************************************************************** */
+//area method
 Fixed	getArea(const Point p1, const Point p2, const Point p3){
 	Fixed	denominator(2.0f);
 	Fixed	area(((p1.getX() * (p2.getY() - p3.getY()))
@@ -26,9 +23,7 @@ bool bsp(Point const a, Point const b, Point const c, Point const point){
 	return (false);
 }
 
-/* ************************************************************************** */
-/*                               vector method                                */
-/* ************************************************************************** */
+//vector method
 // bool	bsp(Point const a, Point const b, Point const c, Point const point)
 // {
 // 	Fixed	w1Nominator((a.getX() * (c.getY() - a.getY())) + (point.getY() - a.getY()) * (c.getX() - a.getX()) - point.getX() * (c.getY() - a.getY()));

@@ -11,11 +11,12 @@
 /* ************************************************************************** */
 
 #ifndef CONTACT_HPP
-#define CONTACK_HPP
+#define CONTACT_HPP
 #include <string>
 
 class Contact
 {
+private:
 	std::string FirstName, LastName, NickName, PhoneNumber, DarkestSecret;
 public:
 	Contact();
