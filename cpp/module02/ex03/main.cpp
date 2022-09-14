@@ -17,7 +17,7 @@ int main(void) {
 	Point const	a = Point(0.2345f, 0.465f);
 	Point const	b = Point(19.564f, 0.1134f);
 	Point const	c = Point(10.6844f, 30.3434f);
-	Point const	point = Point(10.6844f, 30.3434f);
+	Point const	point = Point(10.6844f, 29.3434f);
 
 	if (bsp(a, b, c, point))
 		std::cout << "this point is in the triangle." << std::endl;
