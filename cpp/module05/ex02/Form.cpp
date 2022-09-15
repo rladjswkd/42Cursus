@@ -49,7 +49,7 @@ void	Form::beSigned(const Bureaucrat &bureaucrat){
 	isSigned = 1;
 }
 
-void	Form::checkCondition(Bureaucrat const & executor){
+void	Form::checkCondition(Bureaucrat const & executor) const{
 	if (this->isSigned)
 		throw AlreadySignedException();
 	if (executor.getGrade() > this->gradeExec)
