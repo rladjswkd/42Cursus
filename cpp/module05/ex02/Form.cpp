@@ -2,11 +2,11 @@
 
 std::ostream	&operator<<(std::ostream &os, const Form &form);
 
-Form::Form(void) : name("Noname"), isSigned(0), gradeSign(1), gradeExec(1){}
+Form::Form(void) : name("Form"), isSigned(0), gradeSign(1), gradeExec(1){}
 
 Form::Form(Form &form) : name(form.name), isSigned(form.isSigned), gradeSign(form.gradeSign), gradeExec(form.gradeExec){}
 
-Form::Form(int gradeSign) : name("Noname"), isSigned(0), gradeSign(gradeSign), gradeExec(1){}
+Form::Form(int gradeSign, int gradeExec) : name("Noname"), isSigned(0), gradeSign(gradeSign), gradeExec(gradeExec){}
 
 Form::~Form(void){}
 
@@ -49,10 +49,21 @@ void	Form::beSigned(const Bureaucrat &bureaucrat){
 	isSigned = 1;
 }
 
+void	Form::checkCondition(Bureaucrat const & executor){
+	if (this->isSigned)
+		throw AlreadySignedException();
+	if (executor.getGrade() > this->gradeExec)
+		throw GradeTooLowException();
+}
+
 const char	*Form::GradeTooHighException::what(void) const throw(){
 	return ("This grade is too high!");
 }
 
 const char	*Form::GradeTooLowException::what(void) const throw(){
 	return ("This grade is too low!");
+}
+
+const char	*Form::AlreadySignedException::what(void) const throw(){
+	return ("This form is aleady signed!");
 }

@@ -1,18 +1,38 @@
 #include "Bureaucrat.hpp"
 
 int	main(void){
-	Bureaucrat	b1(0);
-	Bureaucrat	b2(151);
-	Bureaucrat	b3(50);
-	Bureaucrat	b4(150);
-	Bureaucrat	b5(1);
+	try {
+		Bureaucrat	b1(0);
+	} catch (std::exception &ex){
+		std::cout << ex.what() << std::endl;
+	}
+	
+	try {
+		Bureaucrat	b2(151);
+	} catch (std::exception &ex){
+		std::cout << ex.what() << std::endl;
+	}
+	
+	try {
+		Bureaucrat	b3(50);
+		b3.incGrade();
+		b3.setName("Bu");
+	} catch (std::exception &ex){
+		std::cout << ex.what() << std::endl;
+	}
+	
+	try {
+		Bureaucrat	b4(150);
+		b4.decGrade();
+	} catch (std::exception &ex){
+		std::cout << ex.what() << std::endl;
+	}
 
-	b3.incGrade();
-	// b3.decGrade();
-	b4.decGrade();
-	b5.incGrade();
-
-	b3.setName("Bu");
-	std::cout << b3 << std::endl;
+	try {
+		Bureaucrat	b5(1);
+		b5.incGrade();
+	} catch (std::exception &ex){
+		std::cout << ex.what() << std::endl;
+	}
 	return (0);
 }

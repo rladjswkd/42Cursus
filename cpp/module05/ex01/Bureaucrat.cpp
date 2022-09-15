@@ -6,15 +6,11 @@ Bureaucrat::Bureaucrat(Bureaucrat &other) : name(other.name), grade(other.grade)
 
 Bureaucrat::Bureaucrat(const int inGrade) : name("Noname"){
 	std::cout << "grade constructor called" << std::endl;
-	try{
-		if (inGrade < 1)
-			throw GradeTooHighException();
-		if (inGrade > 150)
-			throw GradeTooLowException();
-		grade = inGrade;
-	} catch (std::exception &ex){
-		std::cout << ex.what() << std::endl;
-	}
+	if (inGrade < 1)
+		throw GradeTooHighException();
+	if (inGrade > 150)
+		throw GradeTooLowException();
+	grade = inGrade;
 }
 
 Bureaucrat::~Bureaucrat(void){
@@ -40,22 +36,25 @@ int		Bureaucrat::getGrade(void) const{
 }
 
 void	Bureaucrat::incGrade(void){
-	try{
-		if (grade < 2)
-			throw GradeTooHighException();
-		this->grade--;
-	} catch (std::exception &ex){
-		std::cout << ex.what() << std::endl;
-	}
+	std::cout << "incGrade called" << std::endl;
+	if (grade < 2)
+		throw GradeTooHighException();
+	this->grade--;
 }
 
 void	Bureaucrat::decGrade(void){
+	std::cout << "decGrade called" << std::endl;
+	if (grade > 149)
+		throw GradeTooLowException();
+	this->grade++;
+}
+
+void	Bureaucrat::signForm(Form &form){
 	try{
-		if (grade > 149)
-			throw GradeTooLowException();
-		this->grade++;
+		form.beSigned(*this);
+		std::cout << this->getName() << " signed " << form.getName() << std::endl;
 	} catch (std::exception &ex){
-		std::cout << ex.what() << std::endl;
+		std::cout << this->getName() << " couldn't sign " << form.getName() << " because " << ex.what() << std::endl;
 	}
 }
 

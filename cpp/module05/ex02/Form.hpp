@@ -22,11 +22,16 @@ private:
 	public:
 		virtual const char	*what(void) const throw();
 	};
+	class AlreadySignedException : public std::exception
+	{
+	public:
+		virtual const char	*what(void) const throw();
+	};
 public:
 
 	Form(void);
 	Form(Form &);
-	Form(int gradeSign);
+	Form(int gradeSign, int gradeExec);
 	~Form(void);
 	Form	&operator=(Form &);
 
@@ -36,5 +41,10 @@ public:
 	int			getGradeExec(void) const;
 
 	void		beSigned(const Bureaucrat &bureaucrat);
+
+	void	checkCondition(Bureaucrat const & executor) const;
+	virtual void	execute(Bureaucrat const & executor) const = 0;
 };
+
+std::ostream	&operator<<(std::ostream &os, Form const &form);
 #endif
