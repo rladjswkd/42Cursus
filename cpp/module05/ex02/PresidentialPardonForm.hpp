@@ -8,28 +8,11 @@ private:
 public:
 
 	PresidentialPardonForm(void);
-	PresidentialPardonForm(PresidentialPardonForm &);
+	PresidentialPardonForm(PresidentialPardonForm &other);
+	PresidentialPardonForm(std::string target);
 	~PresidentialPardonForm(void);
-	PresidentialPardonForm	&operator=(PresidentialPardonForm &);
+	PresidentialPardonForm	&operator=(PresidentialPardonForm &other);
+
+	void	execute(Bureaucrat const & executor) const;
 };
-
-PresidentialPardonForm::PresidentialPardonForm(void){
-
-}
-
-PresidentialPardonForm::PresidentialPardonForm(PresidentialPardonForm &){
-
-}
-
-PresidentialPardonForm::~PresidentialPardonForm(void){
-
-}
-
-PresidentialPardonForm	&PresidentialPardonForm::operator=(PresidentialPardonForm &){
-	try{
-		checkCondition(executor);
-	} catch (std::exception &ex) {
-		throw ex;
-	}
-}
 #endif

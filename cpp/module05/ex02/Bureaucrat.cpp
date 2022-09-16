@@ -5,7 +5,7 @@ Bureaucrat::Bureaucrat(void) : name("Noname"), grade(150){}
 Bureaucrat::Bureaucrat(Bureaucrat &other) : name(other.name), grade(other.grade){}
 
 Bureaucrat::Bureaucrat(std::string name, const int inGrade) : name(name){
-	std::cout << "grade constructor called" << std::endl;
+	std::cout << "Bureaucrat constructor called" << std::endl;
 	if (inGrade < 1){
 		grade = 150;
 		throw GradeTooHighException();

@@ -40,7 +40,7 @@ public:
 	Form(void);
 	Form(Form &);
 	Form(std::string name, int gradeSign, int gradeExec);
-	~Form(void);
+	virtual ~Form(void);
 	Form	&operator=(Form &);
 
 	std::string	getName(void) const;

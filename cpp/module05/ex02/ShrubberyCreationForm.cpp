@@ -1,9 +1,8 @@
 #include "ShrubberyCreationForm.hpp"
 
-
 ShrubberyCreationForm::ShrubberyCreationForm(void) : Form("ShrubberyCreationForm", 145, 137), target("NoTarget") {}
 
-ShrubberyCreationForm::ShrubberyCreationForm(ShrubberyCreationForm &other) { *this = other; }
+ShrubberyCreationForm::ShrubberyCreationForm(ShrubberyCreationForm &other) : Form(other) { *this = other; }
 
 ShrubberyCreationForm::ShrubberyCreationForm(std::string target) : Form("ShrubberyCreationForm", 145, 137), target(target) {}
 
@@ -22,7 +21,7 @@ void	ShrubberyCreationForm::execute(Bureaucrat const & executor) const{
 	} catch (std::exception &ex) {
 		throw ex;
 	}
-	file.open(target + "_shrubbery");
+	file.open((target + "_shrubbery").c_str());
 	if (!file.is_open())
 		throw FileNotOpenException();
 	file << "                                                      .\n"
