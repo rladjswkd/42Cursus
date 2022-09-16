@@ -26,7 +26,7 @@ public:
 
 	Form(void);
 	Form(Form &);
-	Form(int gradeSign);
+	Form(std::string name, int gradeSign, int gradeExec);
 	~Form(void);
 	Form	&operator=(Form &);
 

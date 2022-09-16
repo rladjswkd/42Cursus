@@ -4,28 +4,37 @@
 class RobotomyRequestForm : public Form
 {
 private:
-
+	std::string		target;
+	
 public:
 
 	RobotomyRequestForm(void);
-	RobotomyRequestForm(RobotomyRequestForm &);
+	RobotomyRequestForm(RobotomyRequestForm &other);
+	RobotomyRequestForm(std::string target);
 	~RobotomyRequestForm(void);
-	RobotomyRequestForm	&operator=(RobotomyRequestForm &);
+	RobotomyRequestForm	&operator=(RobotomyRequestForm &other);
+
+	void	execute(Bureaucrat const & executor) const;
 };
 
-RobotomyRequestForm::RobotomyRequestForm(void){
+RobotomyRequestForm::RobotomyRequestForm(void) : Form("RobotomyRequsetForm", 72, 45), target("NoTarget") {}
 
+RobotomyRequestForm::RobotomyRequestForm(RobotomyRequestForm &other){ *this = other; }
+
+RobotomyRequestForm::~RobotomyRequestForm(void){}
+
+RobotomyRequestForm	&RobotomyRequestForm::operator=(RobotomyRequestForm &other){
+	target = other.target;
+	return (*this);
 }
 
-RobotomyRequestForm::RobotomyRequestForm(RobotomyRequestForm &){
-
-}
-
-RobotomyRequestForm::~RobotomyRequestForm(void){
-
-}
-
-RobotomyRequestForm	&RobotomyRequestForm::operator=(RobotomyRequestForm &){
-
+void	RobotomyRequestForm::execute(Bureaucrat const & executor) const{
+	try{
+		checkCondition(executor);
+	} catch (std::exception &ex) {
+		throw ex;
+	}
+	std::cout << "[ DU DUDU DUDUDUDUDUDU ]" << std::endl;
+	
 }
 #endif

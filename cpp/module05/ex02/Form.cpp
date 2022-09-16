@@ -6,7 +6,7 @@ Form::Form(void) : name("Form"), isSigned(0), gradeSign(1), gradeExec(1){}
 
 Form::Form(Form &form) : name(form.name), isSigned(form.isSigned), gradeSign(form.gradeSign), gradeExec(form.gradeExec){}
 
-Form::Form(int gradeSign, int gradeExec) : name("Noname"), isSigned(0), gradeSign(gradeSign), gradeExec(gradeExec){}
+Form::Form(std::string name, int gradeSign, int gradeExec) : name(name), isSigned(0), gradeSign(gradeSign), gradeExec(gradeExec){}
 
 Form::~Form(void){}
 
@@ -50,9 +50,9 @@ void	Form::beSigned(const Bureaucrat &bureaucrat){
 }
 
 void	Form::checkCondition(Bureaucrat const & executor) const{
-	if (this->isSigned)
-		throw AlreadySignedException();
-	if (executor.getGrade() > this->gradeExec)
+	if (!isSigned)
+		throw NotSignedException();
+	if (executor.getGrade() > gradeExec)
 		throw GradeTooLowException();
 }
 
@@ -64,6 +64,10 @@ const char	*Form::GradeTooLowException::what(void) const throw(){
 	return ("This grade is too low!");
 }
 
-const char	*Form::AlreadySignedException::what(void) const throw(){
-	return ("This form is aleady signed!");
+const char	*Form::NotSignedException::what(void) const throw(){
+	return ("You can't execute this form. It's not signed!");
+}
+
+const char	*Form::FileNotOpenException::what(void) const throw(){
+	return ("File is not open!");
 }

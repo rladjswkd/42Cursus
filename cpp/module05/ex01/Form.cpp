@@ -6,7 +6,7 @@ Form::Form(void) : name("Noname"), isSigned(0), gradeSign(1), gradeExec(1){}
 
 Form::Form(Form &form) : name(form.name), isSigned(form.isSigned), gradeSign(form.gradeSign), gradeExec(form.gradeExec){}
 
-Form::Form(int gradeSign) : name("Noname"), isSigned(0), gradeSign(gradeSign), gradeExec(1){}
+Form::Form(std::string name, int gradeSign, int gradeExec) : name(name), isSigned(0), gradeSign(gradeSign), gradeExec(gradeExec){}
 
 Form::~Form(void){}
 
@@ -22,7 +22,7 @@ std::string	Form::getName(void) const{
 	return (name);
 }
 
-bool		Form::getIsSigned(void) const{
+bool	Form::getIsSigned(void) const{
 	return (isSigned);
 }
 

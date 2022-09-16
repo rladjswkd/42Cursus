@@ -4,7 +4,7 @@
 class PresidentialPardonForm : public Form
 {
 private:
-
+	std::string		target;
 public:
 
 	PresidentialPardonForm(void);
@@ -26,6 +26,10 @@ PresidentialPardonForm::~PresidentialPardonForm(void){
 }
 
 PresidentialPardonForm	&PresidentialPardonForm::operator=(PresidentialPardonForm &){
-
+	try{
+		checkCondition(executor);
+	} catch (std::exception &ex) {
+		throw ex;
+	}
 }
 #endif

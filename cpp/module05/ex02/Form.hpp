@@ -12,6 +12,8 @@ private:
 	bool				isSigned;
 	const int			gradeSign;
 	const int			gradeExec;
+
+protected:
 	class GradeTooHighException : public std::exception
 	{
 	public:
@@ -22,16 +24,22 @@ private:
 	public:
 		virtual const char	*what(void) const throw();
 	};
-	class AlreadySignedException : public std::exception
+	class NotSignedException : public std::exception
 	{
 	public:
 		virtual const char	*what(void) const throw();
 	};
+	class FileNotOpenException : public std::exception
+	{
+	public:
+		virtual const char	*what(void) const throw();
+	};
+
 public:
 
 	Form(void);
 	Form(Form &);
-	Form(int gradeSign, int gradeExec);
+	Form(std::string name, int gradeSign, int gradeExec);
 	~Form(void);
 	Form	&operator=(Form &);
 
