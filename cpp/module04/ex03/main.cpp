@@ -77,5 +77,6 @@ int main()
 	*c2 = *c1;
 	delete (c1);
 	delete (c2);
+	system("leaks program");
 	return 0;
 }

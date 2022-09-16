@@ -25,5 +25,18 @@ int main()
 		delete (animals[i]);
 	}
 
+	Cat	*a = new Cat;
+	Cat	*a2 = new Cat;
+	
+	a->setIdea(0, "hello");
+	*a2 = *a;
+	delete (a);
+	a2->printIdea(0);
+	delete (a2);
+	Dog basic;
+	{
+		Dog temp = basic;
+	}
+	system("leaks program");
 	return 0;
 }

@@ -6,7 +6,7 @@
 #    By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/09/08 01:45:03 by gyepark           #+#    #+#              #
-#    Updated: 2022/09/14 20:11:57 by gyepark          ###   ########.fr        #
+#    Updated: 2022/09/14 20:10:46 by gyepark          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -16,11 +16,11 @@ CXX		= c++
 CXXFLAGS	= -Wall -Wextra -Werror -std=c++98
 RM		= rm -f
 
-SRCS	= AMateria.cpp\
-		  Character.cpp\
-		  Cure.cpp\
-		  Ice.cpp\
-		  MateriaSource.cpp\
+SRCS	= Bureaucrat.cpp\
+		  Form.cpp\
+		  ShrubberyCreationForm.cpp\
+		  RobotomyRequestForm.cpp\
+		  PresidentialPardonForm.cpp\
 		  main.cpp
 OBJS	= $(SRCS:.cpp=.o)
 

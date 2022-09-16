@@ -25,3 +25,7 @@ Brain	&Brain::operator=(Brain &other){
 std::string	Brain::getIdea(int index){
 	return (ideas[index]);
 }
+
+void	Brain::setIdea(int index, std::string idea){
+	ideas[index] = idea;
+}

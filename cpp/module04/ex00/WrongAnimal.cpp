@@ -19,7 +19,7 @@ WrongAnimal	&WrongAnimal::operator=(WrongAnimal &other){
 }
 
 void	WrongAnimal::makeSound(void) const{
-	std::cout << "WrongAnimal is has no generic sound." << std::endl;
+	std::cout << "WrongAnimal has no generic sound." << std::endl;
 }
 
 std::string	WrongAnimal::getType(void) const{

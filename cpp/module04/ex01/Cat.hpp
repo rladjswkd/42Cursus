@@ -13,7 +13,8 @@ public:
 	Cat &operator=(Cat &);
 
 	virtual void	makeSound(void) const;
-	void			printIdea(int);
+	void			printIdea(int index);
+	void			setIdea(int index, std::string idea);
 };
 #endif
 

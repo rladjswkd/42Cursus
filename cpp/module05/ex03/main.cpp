@@ -15,7 +15,6 @@ int	main(void){
 	std::cout << *shrub << std::endl;
 	std::cout << b1 << std::endl;
 	b2.executeForm(*shrub);
-	b1.executeForm(*shrub);
 	delete shrub;
 
 

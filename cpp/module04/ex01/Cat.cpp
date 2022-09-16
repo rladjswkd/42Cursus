@@ -28,3 +28,7 @@ void	Cat::makeSound(void) const{
 void	Cat::printIdea(int index){
 	std::cout << brain->getIdea(index) << std::endl;
 }
+
+void	Cat::setIdea(int index, std::string idea){
+	brain->setIdea(index, idea);
+}
