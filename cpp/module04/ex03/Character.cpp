@@ -51,7 +51,7 @@ void	Character::equip(AMateria* m){
 }
 
 void	Character::unequip(int idx){
-	if (-1 < idx && idx < 5)
+	if (-1 < idx && idx < 4)
 		slot[idx] = 0;	
 }
 
