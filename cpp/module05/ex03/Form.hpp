@@ -13,7 +13,8 @@ private:
 	const int			gradeSign;
 	const int			gradeExec;
 
-protected:
+public:
+
 	class GradeTooHighException : public std::exception
 	{
 	public:
@@ -34,8 +35,6 @@ protected:
 	public:
 		virtual const char	*what(void) const throw();
 	};
-
-public:
 
 	Form(void);
 	Form(Form &);
