@@ -8,15 +8,15 @@
 
 void identify(Base* p){
 	if (dynamic_cast<A*>(p) != 0){
-		std::cout << "Actual type : A" << std::endl;
+		std::cout << "Actual type of the object of this pointer: A" << std::endl;
 		return ;
 	}
 	if (dynamic_cast<B*>(p) != 0){
-		std::cout << "Actual type : B" << std::endl;
+		std::cout << "Actual type of the object of this pointer: B" << std::endl;
 		return ;
 	}
 	if (dynamic_cast<C*>(p) != 0){
-		std::cout << "Actual type : C" << std::endl;
+		std::cout << "Actual type of the object of this pointer: C" << std::endl;
 		return ;
 	}
 }
@@ -24,15 +24,15 @@ void identify(Base* p){
 void identify(Base& p){
 	try{
 		(void)dynamic_cast<A&>(p);
-		std::cout << "Actual type : A" << std::endl;
+		std::cout << "Actual type of this reference: A" << std::endl;
 	} catch (std::exception &ex){
 		try{
 			(void)dynamic_cast<B&>(p);
-			std::cout << "Actual type : B" << std::endl;
+			std::cout << "Actual type of this reference: B" << std::endl;
 		} catch (std::exception &ex){
 			try{
 				(void)dynamic_cast<C&>(p);
-				std::cout << "Actual type : C" << std::endl;
+				std::cout << "Actual type of this reference: C" << std::endl;
 			} catch (std::exception &ex){
 				std::cout << "Wrong object!" << std::endl;
 			}
