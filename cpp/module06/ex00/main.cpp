@@ -1,8 +1,6 @@
-#include <iostream>
-#include <limits>
+#include "Converter.hpp"
 
 int	main(int argc, char **argv){
-	float	f = std::numeric_limits<float>::infinity();
-	std::cout << f << std::endl;
+	std::cout << strtof("-inff", 0) << std::endl;
 	return (0);
 }
