@@ -1,6 +1,8 @@
 #include "Converter.hpp"
 
 int	main(int argc, char **argv){
-	std::cout << strtof("-inff", 0) << std::endl;
-	return (0);
+	if (argc != 2)
+		return (0);
+	Converter c(argv[1]);
+	c.convert();
 }
