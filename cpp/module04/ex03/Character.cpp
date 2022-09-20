@@ -68,6 +68,6 @@ void	Character::unequip(int idx){
 }
 
 void	Character::use(int idx, ICharacter& target){
-	if (-1 < idx && idx < 5 && slot[idx])
+	if (-1 < idx && idx < 4 && slot[idx])
 		slot[idx]->use(target);
 }

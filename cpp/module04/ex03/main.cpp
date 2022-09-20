@@ -57,13 +57,13 @@ int main()
 	me->use(0, *bob);
 	me->use(1, *bob);
 	me->use(-1, *bob);
-	me->use(9999, *bob);
+	me->use(4, *bob);
 
 	me->unequip(-1);
 	me->unequip(9999);
 	me->unequip(0);
 	me->unequip(1);
-	me->unequip(9999);
+	me->unequip(4);
 	me->unequip(3);
 	me->unequip(2);
 	me->unequip(-1);
@@ -89,6 +89,5 @@ int main()
 	*c2 = *c1;
 	delete (c1);
 	delete (c2);
-	system("leaks program");
 	return 0;
 }
