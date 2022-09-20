@@ -54,5 +54,4 @@ int	main(void){
 	delete presidential;
 
 	return (0);
-	return (0);
 }

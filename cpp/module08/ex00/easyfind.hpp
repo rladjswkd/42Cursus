@@ -11,17 +11,14 @@
 /* ************************************************************************** */
 #ifndef EASYFIND_HPP
 #define EASYFIND_HPP
-#include <deque>
-#include <list>
-#include <map>
-#include <queue>
-#include <set>
-#include <stack>
-#include <vector>
 #include <algorithm>
-#include <exception>
+#include <stdexcept>
 template <class T>
-typename T::iterator	easyfind(T &container, int val){
-	return (std::find(container.begin(), container.end(), val));
+typename T::iterator	easyfind(T container, int val){
+	typename T::iterator	it = std::find(container.begin(), container.end(), val);
+
+	if (it == container.end())
+		throw std::invalid_argument("Can't find!");
+	return (it);
 }
 #endif

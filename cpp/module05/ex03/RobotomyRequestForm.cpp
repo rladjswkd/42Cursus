@@ -17,7 +17,7 @@ RobotomyRequestForm::RobotomyRequestForm(void) : Form("RobotomyRequsetForm", 72,
 
 RobotomyRequestForm::RobotomyRequestForm(RobotomyRequestForm &other) : Form(other) { *this = other; }
 
-RobotomyRequestForm::RobotomyRequestForm(std::string target) : Form("RobotomyRequsetForm", 72, 45), target(target) {}
+RobotomyRequestForm::RobotomyRequestForm(const std::string target) : Form("RobotomyRequsetForm", 72, 45), target(target) {}
 
 RobotomyRequestForm::~RobotomyRequestForm(void){}
 

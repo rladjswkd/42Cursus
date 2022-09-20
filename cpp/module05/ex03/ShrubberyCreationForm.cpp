@@ -16,7 +16,7 @@ ShrubberyCreationForm::ShrubberyCreationForm(void) : Form("ShrubberyCreationForm
 
 ShrubberyCreationForm::ShrubberyCreationForm(ShrubberyCreationForm &other) : Form(other) { *this = other; }
 
-ShrubberyCreationForm::ShrubberyCreationForm(std::string target) : Form("ShrubberyCreationForm", 145, 137), target(target) {}
+ShrubberyCreationForm::ShrubberyCreationForm(const std::string target) : Form("ShrubberyCreationForm", 145, 137), target(target) {}
 
 ShrubberyCreationForm::~ShrubberyCreationForm(void){}
 

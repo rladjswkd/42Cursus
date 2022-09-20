@@ -79,6 +79,7 @@ int		Span::longestSpan(void){
 
 void	Span::fill(const vecIter &begin, const vecIter &end){
 	try{
+		// vector.insert(vector.end(), begin, end);
 		for (vecIter it = begin; it != end; it++)
 			addNumber(*it);
 	} catch (VectorFullException &ex){

@@ -23,7 +23,7 @@ public:
 
 	ShrubberyCreationForm(void);
 	ShrubberyCreationForm(ShrubberyCreationForm &other);
-	ShrubberyCreationForm(std::string target);
+	ShrubberyCreationForm(const std::string target);
 	~ShrubberyCreationForm(void);
 	ShrubberyCreationForm	&operator=(ShrubberyCreationForm &other);
 

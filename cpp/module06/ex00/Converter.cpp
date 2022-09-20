@@ -45,7 +45,7 @@ Converter::Converter(std::string source) : source(source){
 }
 
 bool	Converter::isChar(void){
-	if (source.length() == 3 && source.at(0) == '\'' && source.at(2) == '\'')
+	if (source.length() == 1 && !isNumber(source.at(0)))
 		return (true);
 	return (false);
 }
@@ -106,7 +106,8 @@ void	Converter::setVals(void){
 	std::stringstream	stream;
 
 	if (isChar()){
-		charVal = source.at(1);
+		charVal = source.at(0);
+		tempVal = static_cast<int>(charVal);
 		intVal = static_cast<int>(charVal);
 		floatVal = static_cast<float>(charVal);
 		doubleVal = static_cast<double>(charVal);

@@ -16,7 +16,7 @@ PresidentialPardonForm::PresidentialPardonForm(void) : Form("PresidentialPardonF
 
 PresidentialPardonForm::PresidentialPardonForm(PresidentialPardonForm &other) : Form(other) { *this = other; }
 
-PresidentialPardonForm::PresidentialPardonForm(std::string target) : Form("PresidentialPardonForm", 25, 5), target(target) {}
+PresidentialPardonForm::PresidentialPardonForm(const std::string target) : Form("PresidentialPardonForm", 25, 5), target(target) {}
 
 PresidentialPardonForm::~PresidentialPardonForm(void){}
 

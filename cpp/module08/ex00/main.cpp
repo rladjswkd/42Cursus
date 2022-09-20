@@ -11,6 +11,9 @@
 /* ************************************************************************** */
 
 #include <iostream>
+#include <deque>
+#include <list>
+#include <vector>
 #include "easyfind.hpp"
 #define	SIZE	10
 int	main(void){
@@ -28,26 +31,47 @@ int	main(void){
 	std::deque<int>		deque(arr, arr + SIZE);
 	// std::queue<int>		queue(deque);
 	// std::stack<int>		stack(deque);
+	try{
+		it1 = easyfind(vector, SIZE / 2);
+		std::cout << *it1 << std::endl;
+	} catch(std::exception &ex){
+		std::cout << ex.what() << std::endl;
+	}
+	std::cout << std::endl;
+	try{
+		it1 = easyfind(vector, -2);
+		std::cout << *it1 << std::endl;
+	} catch(std::exception &ex){
+		std::cout << ex.what() << std::endl;
+	}
+	std::cout << std::endl;
+	try{
+		it2 = easyfind(list, SIZE / 2);
+		std::cout << *it2 << std::endl;
+	} catch(std::exception &ex){
+		std::cout << ex.what() << std::endl;
+	}
+	std::cout << std::endl;
+	try{
+		it2 = easyfind(list, -2);
+		std::cout << *it2 << std::endl;
+	} catch(std::exception &ex){
+		std::cout << ex.what() << std::endl;
+	}
+	std::cout << std::endl;
+	try{
+		it3 = easyfind(deque, SIZE / 2);
+		std::cout << *it3 << std::endl;
+	} catch(std::exception &ex){
+		std::cout << ex.what() << std::endl;
+	}
+	std::cout << std::endl;
+	try{
+		it3 = easyfind(deque, -2);
+		std::cout << *it3 << std::endl;
+	} catch(std::exception &ex){
+		std::cout << ex.what() << std::endl;
+	}
 
-	it1 = easyfind(vector, SIZE / 2);
-	if (it1 != vector.end())
-		std::cout << *it1 << std::endl << std::endl;
-	it1 = easyfind(vector, -2);
-	if (it1 != vector.end())
-		std::cout << *it1 << std::endl << std::endl;
-
-	it2 = easyfind(list, SIZE / 2);
-	if (it2 != list.end())
-		std::cout << *it2 << std::endl << std::endl;
-	it2 = easyfind(list, -2);
-	if (it2 != list.end())
-		std::cout << *it2 << std::endl << std::endl;
-
-	it3 = easyfind(deque, SIZE / 2);
-	if (it3 != deque.end())
-		std::cout << *it3 << std::endl << std::endl;
-	it3 = easyfind(deque, -2);
-	if (it3 != deque.end())
-		std::cout << *it3 << std::endl << std::endl;
 	return (0);
 }

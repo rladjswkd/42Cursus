@@ -12,9 +12,10 @@
 
 #ifndef ITER_HPP
 #define ITER_HPP
-template <class T, class U, class V>
-void	iter(T *array, U len, V fp(T &)){
+// no return type for fp because iter returns nothing.
+template <class T, class U> 
+void	iter(T *array, U len, void (*fp)(const T &)){
 	for (U i = 0; i < len; i++)
-		fp(array[i]);	
+		(*fp)(array[i]);
 }
 #endif

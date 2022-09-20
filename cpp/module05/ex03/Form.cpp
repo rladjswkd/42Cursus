@@ -14,11 +14,25 @@
 
 std::ostream	&operator<<(std::ostream &os, const Form &form);
 
-Form::Form(void) : name("Form"), isSigned(0), gradeSign(1), gradeExec(1){}
+Form::Form(void) : name("Noname"), isSigned(0), gradeSign(1), gradeExec(1){}
 
 Form::Form(Form &form) : name(form.name), isSigned(form.isSigned), gradeSign(form.gradeSign), gradeExec(form.gradeExec){}
 
-Form::Form(std::string name, int gradeSign, int gradeExec) : name(name), isSigned(0), gradeSign(gradeSign), gradeExec(gradeExec){}
+Form::Form(std::string name, int gradeSign, int gradeExec) : name(name), isSigned(0), gradeSign(150), gradeExec(150){
+	if (gradeSign < 1 || gradeExec < 1){
+		gradeSign = 150;
+		gradeExec = 150;
+		throw GradeTooHighException();
+	}
+	if (gradeSign > 150 || gradeExec > 150)
+	{
+		gradeSign = 150;
+		gradeExec = 150;
+		throw GradeTooLowException();
+	}
+	const_cast<int&>(this->gradeSign) = gradeSign;
+	const_cast<int&>(this->gradeExec) = gradeExec;
+}
 
 Form::~Form(void){}
 
@@ -34,7 +48,7 @@ std::string	Form::getName(void) const{
 	return (name);
 }
 
-bool		Form::getIsSigned(void) const{
+bool	Form::getIsSigned(void) const{
 	return (isSigned);
 }
 

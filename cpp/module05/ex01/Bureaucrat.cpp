@@ -16,7 +16,7 @@ Bureaucrat::Bureaucrat(void) : name("Noname"), grade(150){}
 
 Bureaucrat::Bureaucrat(Bureaucrat &other) : name(other.name), grade(other.grade){}
 
-Bureaucrat::Bureaucrat(std::string name, const int inGrade) : name(name){
+Bureaucrat::Bureaucrat(const std::string name, const int inGrade) : name(name){
 	std::cout << "grade constructor called" << std::endl;
 	if (inGrade < 1){
 		grade = 150;
@@ -35,17 +35,13 @@ Bureaucrat::~Bureaucrat(void){
 }
 
 Bureaucrat	&Bureaucrat::operator=(Bureaucrat &other){
-	name = other.name;
+	const_cast<std::string&>(name) = other.name;
 	grade = other.grade;
 	return (*this);
 }
 
 std::string	Bureaucrat::getName(void) const{
 	return (name);
-}
-
-void		Bureaucrat::setName(std::string name){
-	this->name = name;
 }
 
 int		Bureaucrat::getGrade(void) const{

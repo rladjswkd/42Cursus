@@ -22,7 +22,7 @@ public:
 
 	RobotomyRequestForm(void);
 	RobotomyRequestForm(RobotomyRequestForm &other);
-	RobotomyRequestForm(std::string target);
+	RobotomyRequestForm(const std::string target);
 	~RobotomyRequestForm(void);
 	RobotomyRequestForm	&operator=(RobotomyRequestForm &other);
 

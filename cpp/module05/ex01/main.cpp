@@ -15,19 +15,16 @@
 
 int	main(void){
 
-	Bureaucrat	b1(50);
-	b1.setName("B1");
-	Form		f1(49);
+	Bureaucrat	b1("B1", 50);
+	Form		f1("F1", 49, 150);
 	b1.signForm(f1);
 
-	Bureaucrat	b2(50);
-	b2.setName("B2");
-	Form		f2(50);
+	Bureaucrat	b2("B2", 50);
+	Form		f2("F2", 50, 150);
 	b2.signForm(f2);
 
-	Bureaucrat	b3(50);
-	b3.setName("B3");
-	Form		f3(51);
+	Bureaucrat	b3("B3", 50);
+	Form		f3("F3", 51, 150);
 	b3.signForm(f3);
 	return (0);
 }
