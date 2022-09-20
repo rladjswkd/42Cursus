@@ -16,5 +16,9 @@ int	main(int argc, char **argv){
 	if (argc != 2)
 		return (0);
 	Converter c(argv[1]);
-	c.convert();
+	try{
+		c.convert();
+	} catch(std::exception &ex){
+		std::cout << ex.what() << std::endl;
+	}
 }

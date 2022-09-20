@@ -45,5 +45,5 @@ int main()
 	} catch (Span::NoSpanException &ex){
 		std::cout << ex.what() << std::endl;
 	}
-return 0;
+	return 0;
 }

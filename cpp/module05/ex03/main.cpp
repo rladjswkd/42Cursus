@@ -17,8 +17,9 @@
 int	main(void){
 	Intern	someRandomIntern;
 	Form	*rrf;
-	rrf = someRandomIntern.makeForm("ShrubberyCreationForm", "Bender");
-	
+	// rrf = someRandomIntern.makeForm("ShrubberyCreationForm", "Bender");
+	// rrf = someRandomIntern.makeForm("RobotomyRequestForm", "Blah");
+	rrf = someRandomIntern.makeForm("PresidentialPardonForm", "Blah");
 	Bureaucrat	b("Someone", 1);
 	b.signForm(*rrf);
 	b.executeForm(*rrf);
