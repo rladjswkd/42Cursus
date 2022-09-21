@@ -49,4 +49,6 @@ public:
 
 	void		beSigned(const Bureaucrat &bureaucrat);
 };
+
+std::ostream	&operator<<(std::ostream &os, Form const &);
 #endif
