@@ -121,6 +121,7 @@ void	Converter::setVals(void){
 		if (intVal != tempVal) // int overflows. so it isn't correct value for float or double.
 			isNaN = true;
 	} else if (isFloat()){
+		source.resize(source.length() - 1); // stringstream with mac, g++ doesn't work for the case "[numbers].[number]f"
 		stream << source;
 		stream >> floatVal;
 		charVal = static_cast<char>(floatVal);
