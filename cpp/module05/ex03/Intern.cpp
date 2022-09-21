@@ -58,6 +58,7 @@ Form	*Intern::makeForm(std::string formName, std::string formTarget){
 		std::cout << "Intern creates " << formName << std::endl;
 	} catch (std::exception &ex) {
 		std::cout << "This Form(name) does NOT exist" << std::endl;
+		return (0);
 	}
 	return (ret);
 }

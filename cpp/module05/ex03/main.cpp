@@ -19,9 +19,12 @@ int	main(void){
 	Form	*rrf;
 	// rrf = someRandomIntern.makeForm("ShrubberyCreationForm", "Bender");
 	// rrf = someRandomIntern.makeForm("RobotomyRequestForm", "Blah");
-	rrf = someRandomIntern.makeForm("PresidentialPardonForm", "Blah");
-	Bureaucrat	b("Someone", 1);
-	b.signForm(*rrf);
-	b.executeForm(*rrf);
+	// rrf = someRandomIntern.makeForm("PresidentialPardonForm", "Blah");
+	rrf = someRandomIntern.makeForm("blah", "blah");
+	if (rrf != 0){
+		Bureaucrat	b("Someone", 1);
+		b.signForm(*rrf);
+		b.executeForm(*rrf);
+	}
 	return (0);
 }
