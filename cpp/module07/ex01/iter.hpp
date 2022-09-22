@@ -14,6 +14,12 @@
 #define ITER_HPP
 // no return type for fp because iter returns nothing.
 template <class T, class U> 
+void	iter(T *array, U len, void (*fp)(T &)){
+	for (U i = 0; i < len; i++)
+		(*fp)(array[i]);
+}
+
+template <class T, class U>
 void	iter(T *array, U len, void (*fp)(const T &)){
 	for (U i = 0; i < len; i++)
 		(*fp)(array[i]);
