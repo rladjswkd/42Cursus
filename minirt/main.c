@@ -1,19 +1,637 @@
 #include <stdio.h>
 #include <fcntl.h>
 #include "get_next_line.h"
-int	main(void)
+#include "string_utils.h"
+#include "parser_util_split.h"
+#include <math.h>
+#include "converter.h"
+#include "checker.h"
+#include <float.h>
+/*
+추가
+t_ray 구조체
+t_inter 구조체
+t_circle 구조체
+vec_proj 함수
+*/
+typedef struct s_rgb
 {
-	int		fd;
-	char	*p;
+	int	r;
+	int	g;
+	int	b;
+}	t_rgb;
 
-	fd = open("minimalist.rt", O_RDONLY);
-	if (fd < 0)
-		return (0); // 에러 문자열 출력하고 처리해주기
-	while (1) // 개행문자만 나오면 넘기기
+typedef struct s_coordinate
+{
+	double	x;
+	double	y;
+	double	z;
+}	t_coord;
+
+typedef	t_coord	t_vec;
+
+typedef struct s_ambient
+{
+	double	intensity;
+	t_rgb	rgb;
+}	t_ambient;
+
+typedef struct s_light
+{
+	t_coord	coordinate;
+	double			intensity;
+	t_rgb			rgb;
+}	t_light;
+
+
+typedef struct s_camera
+{
+	t_coord	coordinate;
+	t_vec		normalized;
+	int				fov;
+}	t_camera;
+
+typedef struct s_sphere
+{
+	t_coord	coordinate;
+	double			diameter;
+	t_rgb			rgb;
+}	t_sp;
+
+typedef struct s_plane
+{
+	t_coord	coordinate;
+	t_vec		normalized;
+	t_rgb			rgb;
+}	t_pl;
+
+typedef struct s_cylinder
+{
+	t_coord	coordinate;
+	t_vec		normalized;
+	double			diameter;
+	double			height;
+	t_rgb			rgb;
+}	t_cy;
+
+typedef struct s_node
+{
+	void			*data;
+	struct s_node	*next;
+}	t_node;
+
+typedef struct s_rt_info
+{
+	t_ambient	a;
+	t_camera	c;
+	t_light		l;
+	t_node		*sp;
+	t_node		*cy;
+	t_node		*pl;
+}	t_rt_info;
+
+typedef struct s_object
+{
+	int		type;
+	void	*object;
+}	t_obj;
+
+typedef struct s_ray
+{
+	t_vec	origin;
+	t_vec	direction;
+}	t_ray;
+
+typedef struct s_intersection
+{
+	double	t1;
+	double	t2;
+}	t_inter;
+
+typedef struct s_circle
+{
+	t_coord	center;
+	double	radius;
+}	t_circle;
+
+int	check_rgb(t_rgb rgb)
+{
+	int	r;
+	int	g;
+	int	b;
+
+	r = rgb.r;
+	g = rgb.g;
+	b = rgb.b;
+	return (-1 < r && r < 256 && -1 < g && g < 256 && -1 < b && b < 256);
+}
+
+int	check_normal(t_vec vec)
+{
+	double	x;
+	double	y;
+	double	z;
+
+	x = vec.x;
+	y = vec.y;
+	z = vec.z;
+	return (-1 <= x && x <= 1 && -1 <= y && y <= 1 && -1 <= z && z <= 1
+		&& sqrt(x * x + y * y + z * z) == 1);
+}
+
+int	free_splitted(char **splitted, int ret)
+{
+	int	i;
+
+	i = -1;
+	while (splitted[++i])
+		free(splitted[i]);
+	free(splitted);
+	return (ret);
+}
+
+int	set_rgb(char *rgb_str, t_rgb *rgb)
+{
+	char	**rgb_info;
+	int		rgb_info_cnt;
+
+	if (!check_comma_cnt(rgb_str))
+		return (0);
+	rgb_info = split_line(rgb_str, ',', &rgb_info_cnt);
+	if (rgb_info_cnt != 3
+		|| !get_int(rgb_info[0], &(rgb->r))
+		|| !get_int(rgb_info[1], &(rgb->g))
+		|| !get_int(rgb_info[2], &(rgb->b)))
+		return (free_splitted(rgb_info, 0));
+	if (!check_rgb(*rgb))
+		return (free_splitted(rgb_info, 0));
+	return (free_splitted(rgb_info, 1));
+}
+
+int	set_coordinate(char *coord_str, t_coord *coord)
+{
+	char	**coord_info;
+	int		coord_info_cnt;
+
+	if (!check_comma_cnt(coord_str))
+		return (0);
+	coord_info = split_line(coord_str, ',', &coord_info_cnt);
+	if (coord_info_cnt != 3
+		|| !get_double(coord_info[0], &(coord->x))
+		|| !get_double(coord_info[1], &(coord->y))
+		|| !get_double(coord_info[2], &(coord->z)))
+		return (free_splitted(coord_info, 0));
+	return (free_splitted(coord_info, 1));
+}
+
+int	set_ambient(char **info, int cnt, t_rt_info *rt_info)
+{
+	double		intensity;
+	t_ambient	*a;
+
+	if (cnt != 3)
+		return (0);
+	a = &(rt_info->a);
+	if (!get_double(info[1], &intensity) || intensity < 0 || 1 < intensity)
+		return (0);
+	if (!set_rgb(info[2], &(a->rgb)))
+		return (0);
+	a->intensity = intensity;
+	return (1);
+}
+
+int	set_light(char **info, int cnt, t_rt_info *rt_info)
+{
+	double	intensitiy;
+	t_light	*l;
+
+	if (cnt != 4)
+		return (0);
+	l = &(rt_info->l);
+	if (!set_coordinate(info[1], &(l->coordinate)))
+		return (0);
+	if (!get_double(info[2], &intensitiy) || intensitiy < 0 || 1 < intensitiy)
+		return (0);
+	if (!set_rgb(info[3], &(l->rgb)))
+		return (0);
+	l->intensity = intensitiy;
+	return (1);
+}
+
+int	set_camera(char **info, int cnt, t_rt_info *rt_info)
+{
+	int			fov;
+	t_camera	*c;
+
+	if (cnt != 4)
+		return (0);
+	c = &(rt_info->c);
+	if (!set_coordinate(info[1], &(c->coordinate)))
+		return (0);
+	if (!set_coordinate(info[2], &(c->normalized))
+		|| !check_normal(c->normalized))
+		return (0);
+	if (!get_int(info[3], &fov)	|| fov < 0 || 180 < fov) // 180 0
+		return (0);
+	c->fov = fov;
+	return (1);
+}
+
+t_node	*get_last_node(t_node *list) // this function is called after malloc, so list is non-null.
+{
+	while (list->next)
+		list = list->next;
+	return (list);
+}
+
+int	set_plane(char **info, int cnt, t_rt_info *rt_info)
+{
+	t_pl	*pl;
+
+	if (cnt != 4)
+		return (0);
+	pl = (t_pl *)(get_last_node(rt_info->pl)->data);
+	if (!set_coordinate(info[1], &(pl->coordinate)))
+		return (0);
+	if (!set_coordinate(info[2], &(pl->normalized))
+		|| !check_normal(pl->normalized))
+		return (0);
+	if (!set_rgb(info[3], &(pl->rgb)))
+		return (0);
+	return (1);
+}
+
+int	set_sphere(char **info, int cnt, t_rt_info *rt_info)
+{
+	double		diameter;
+	t_sp	*sp;
+
+	if (cnt != 4)
+		return (0);
+	sp = (t_sp *)(get_last_node(rt_info->sp)->data);
+	if (!set_coordinate(info[1], &(sp->coordinate)))
+		return (0);
+	if (!get_double(info[2], &diameter) || diameter < 0)
+		return (0);
+	if (!set_rgb(info[3], &(sp->rgb)))
+		return (0);
+	sp->diameter = diameter;
+	return (1);
+}
+
+int	set_cylinder(char **info, int cnt, t_rt_info *rt_info)
+{
+	double		diameter;
+	double		height;
+	t_cy	*cy;
+
+	if (cnt != 6)
+		return (0);
+	cy = (t_cy *)(get_last_node(rt_info->cy)->data);
+	if (!set_coordinate(info[1], &(cy->coordinate)))
+		return (0);
+	if (!set_coordinate(info[2], &(cy->normalized))
+		|| !check_normal(cy->normalized))
+		return (0);
+	if (!get_double(info[3], &diameter) || diameter < 0)
+		return (0);
+	if (!get_double(info[4], &height) || height < 0)
+		return (0);
+	if (!set_rgb(info[5], &(cy->rgb)))
+	cy->diameter = diameter;
+	cy->height = height;
+	return (1);
+}
+
+int	alloc_sphere(void **ptr){
+	t_sp	*sp;
+	
+	sp = (t_sp *)malloc(sizeof(t_sp));
+	if (!sp)
+		return (0);
+	*ptr = (void *)sp;
+	return (1);
+}
+
+int	alloc_plane(void **ptr){
+	t_pl	*pl;
+	
+	pl = (t_pl *)malloc(sizeof(t_pl));
+	if (!pl)
+		return (0);
+	*ptr = (void *)pl;
+	return (1);
+}
+
+int	alloc_cylinder(void **ptr){
+	t_cy	*cy;
+	
+	cy = (t_cy *)malloc(sizeof(t_cy));
+	if (!cy)
+		return (0);
+	*ptr = (void *)cy;
+	return (1);
+}
+
+int	alloc_new_node(t_node **node, int index)
+{
+	static int	(*allocator[3])(void **)
+		= {alloc_sphere, alloc_plane, alloc_cylinder};
+	
+	*node = (t_node *)malloc(sizeof(t_node));
+	if (!(*node))
+		return (0);
+	(*node)->next = 0;
+	if (!(*allocator[index - 3])(&((*node)->data)))
 	{
-		p = get_next_line(fd);
-		if (p[0] == '\n')
-			continue ;
+		free(*node);
+		return (0);
 	}
+	return (1);
+}
+
+void	append_node(t_node **lst, t_node *new)
+{
+	if (!(*lst))
+	{
+		*lst = new;
+		return ;
+	}
+	while ((*lst)->next)
+		lst = &((*lst)->next);
+	(*lst)->next = new;
+}
+
+void	clear_list(t_node **lst) // will be used in error handling function right before exit().
+{
+	t_node	*next;
+
+	while (*lst)
+	{
+		next = (*lst)->next;
+		free((*lst)->data);
+		free(*lst);
+		*lst = next;
+	}
+	*lst = 0;
+}
+
+int	set_object_list(t_rt_info *rt, int index)
+{
+	t_node	**objects;
+	t_node	*new_node;
+
+	if (!alloc_new_node(&new_node, index))
+		return (0);
+	objects = &(rt->sp);
+	if (index == 4)
+		objects = &(rt->pl);
+	else if (index == 5)
+		objects = &(rt->cy);
+	append_node(objects, new_node);
+	return (1);
+}
+
+/*
+splitted
+	1. 널 포인터 및 빈 문자열일 때 : 가드가 거름.
+	2. 내용은 있지만, 유효하지 않은 상태일 때 : 각 set_* 함수들이 걸러야 함.
+*/
+int	set_rt_info(char *line, t_rt_info *rt, int *mask)
+{
+	char		**splitted;
+	int			cnt;
+	int			index;
+	static int	(*fp[6])(char **, int, t_rt_info *) = {set_ambient, set_camera,
+		set_light, set_sphere, set_plane, set_cylinder};
+	
+	splitted = split_line(line, ' ', &cnt); // all split_lines need null-guard.
+	if (!(splitted && splitted[0]))
+		return (free_splitted(splitted, 0));
+	index = check_identifier(splitted[0]);
+	if (index == -1)
+		return (free_splitted(splitted, 0)); // caller must print error if set_rt_info returns 0.
+	if (index < 3 && (*mask & 1 << index || !(*fp[index])(splitted, cnt, rt))) // A, C, L shouldn't be on mutiple lines and don't need malloc.
+		return (free_splitted(splitted, 0));
+	*mask |= 1 << index;
+	if (2 < index
+		&& (!set_object_list(rt, index)	|| !(*fp[index])(splitted, cnt, rt)))
+		return (free_splitted(splitted, 0));
+	return (free_splitted(splitted, 1));
+}
+
+t_vec	vec_add(t_vec v1, t_vec v2)
+{
+	t_vec	ret;
+
+	ret.x = v1.x + v2.x;
+	ret.y = v1.y + v2.y;
+	ret.z = v1.z + v2.z;
+	return (ret);
+}
+
+t_vec	vec_sub(t_vec v1, t_vec v2)
+{
+	t_vec	ret;
+
+	ret.x = v1.x - v2.x;
+	ret.y = v1.y - v2.y;
+	ret.z = v1.z - v2.z;
+	return (ret);
+}
+
+t_vec	vec_scale(t_vec vec, double scalar)
+{
+	vec.x *= scalar;
+	vec.y *= scalar;
+	vec.z *= scalar;
+	return (vec);
+}
+
+double	vec_dot(t_vec v1, t_vec v2)
+{
+	return (v1.x * v2.x + v1.y * v2.y + v1.z * v2.z);
+}
+
+t_vec	vec_cross(t_vec v1, t_vec v2)
+{
+	t_vec	ret;
+
+	ret.x = v1.y * v2.z - v1.z * v2.y;
+	ret.y = v1.z * v2.x - v1.x * v2.z;
+	ret.z = v1.x * v2.y - v1.y * v2.x;
+	return (ret);
+}
+
+double	vec_magnitude(t_vec vec)
+{
+	return (sqrt(vec_dot(vec, vec)));
+}
+
+t_vec	vec_proj(t_vec v1, t_vec v2)
+{
+	t_vec	ret;
+	double	scalar;
+
+	scalar = vec_dot(v1, v2) / vec_magnitude(v2);
+	ret.x = v2.x * scalar;
+	ret.y = v2.y * scalar;
+	ret.z = v2.z * scalar;
+	return (ret);
+}
+
+int	intersect_circle(t_ray ray, t_circle cir, t_inter *inter)
+{
+	double		a;
+	double		b;
+	double		c;
+	double		discriminant;
+	t_vec		origin_to_center;
+
+	origin_to_center = vec_sub(ray.origin, cir.center);
+	a = vec_dot(ray.direction, ray.direction);
+	b = 2 * vec_dot(origin_to_center, ray.direction);
+	c = vec_dot(origin_to_center, origin_to_center) - pow(cir.radius, 2);
+	discriminant = b * b - 4 * a * c;
+	if (discriminant < 0)
+		return (0);
+	inter->t1 = (-b - sqrt(discriminant)) / (2 * a); // smaller
+	inter->t2 = (-b + sqrt(discriminant)) / (2 * a); // bigger
+	return (1);
+}
+
+int	get_min_intersection(double *ret, t_inter *i)
+{
+	if (i->t1 <= 1 && i->t2 <= 1)
+		return (0);
+	*ret = i->t2;
+	if (i->t1 > t_min)
+		*ret = i->t1;
+	return (1);
+}
+
+int	intersect_sphere(t_ray ray, t_sp sp, double	*t)
+{
+	t_inter		*i;
+	t_circle	p;
+
+	p.center = sp.coordinate;
+	p.radius = sp.diameter / 2;
+	return (intersect_circle(ray, p, i) && get_min_intersection(t, i));
+}
+
+int	intersect_cylinder(t_ray ray, t_cy cy, double *t)
+{
+	t_inter	inter1;
+	t_inter	inter2;
+	double			t1;
+	double			t2;
+
+
+
+}
+// unit vector check
+// cylinder is infinite.
+int	intersect_cylinder_(t_ray ray, t_cy cy, t_inter *inter)
+{
+	t_vec	center_par;
+	t_vec	center_perp;
+	t_ray		ray_par;
+	t_ray		ray_perp;
+	t_circle	projected;
+
+	center_par = vec_proj(cy.coordinate, cy.normalized);
+	center_perp = vec_sub(cy.coordinate, center_par);
+	ray_par.origin = vec_proj(ray.origin, cy.normalized);
+	ray_perp.origin = vec_sub(ray.origin, ray_par.origin);
+	ray_par.direction = vec_proj(ray.direction, cy.normalized);
+	ray_perp.direction = vec_sub(ray.direction, ray_par.direction);
+	projected.center = center_perp;
+	projected.radius = cy.diameter / 2;
+	if (!intersect_circle(ray_perp, projected, inter))
+		return (0);
+	return (1);
+}
+
+int	intersect_(t_ray ray, t_cy cy, t_inter t1t2, t_inter *inter)
+{
+	double	bottom;
+	double	top;
+	double	proj1;
+	double	proj2;
+
+	bottom = vec_magnitude(vec_proj(cy.coordinate, cy.normalized));
+	top = bottom + cy.height;
+	proj1 = vec_magnitude(vec_proj(vec_add(
+		ray.origin, vec_scale(ray.direction, inter.t1)), cy.normalized));
+	proj2 = vec_magnitude(vec_proj(vec_add(
+		ray.origin, vec_scale(ray.direction, inter.t2)), cy.normalized));
+	// if ((proj1 < bottom && proj2 < bottom) 
+	// 	|| (bottom <= proj1 && proj1 <= top && bottom <= proj2 && proj2 <= top)
+	// 	|| (top < proj1 && top < proj2))
+	// 	return (0);
+	if (proj1 < bottom && bottom < proj2)
+	{
+		inter->t1 = vec_magnitude(vec_proj())
+		return (1);
+	}
+	return (0);
+}
+
+int	open_file(char *path)
+{
+	int	fd;
+	int	len;
+
+	fd = -1;
+	len = ft_strlen(path);
+	if (path[len - 3] == '.' && path[len - 2] == 'r' && path[len - 1] == 't')
+		fd = open(path, O_RDONLY); // is read-only enough?
+	// call error handling function to exit.
+	return (fd);
+}
+
+int	read_file(int fd, t_rt_info *rt_info)
+{
+	char		*line;
+	int			flag;
+	static int	mask = 0; // bit-mask to check A, C, L should be declared only and at least once.
+
+	flag = 1;
+	while (flag)
+	{
+		line = get_next_line(fd);
+		if (line == 0)
+			break ;
+		if (line[0] != '\0')
+			flag = set_rt_info(line, rt_info, &mask);
+		free(line);
+	}
+	if (!flag || !(mask & 1 << 0 && mask & 1 << 1 && mask & 1 << 2))
+		return (0);
+	return (1);
+}
+
+int	main(int argc, char **argv)
+{
+	int			fd;
+	t_rt_info	rt_info;
+
+	if (argc != 2)
+		return (0); // call error handling function with proper error message.
+	fd = open_file(argv[1]);
+	if (fd < 0) // remove this when error handling function is completed.
+		return (0); // 에러 문자열 출력하고 처리해주기
+	rt_info.sp = 0;
+	rt_info.pl = 0;
+	rt_info.cy = 0;
+	if (read_file(fd, &rt_info))
+		printf("%s\n", "valid format");
+	else
+		printf("%s\n", "invalid format");
+	/* draw image */
+	clear_list(&(rt_info.sp));
+	clear_list(&(rt_info.pl));
+	clear_list(&(rt_info.cy));
 	return (0);
 }
