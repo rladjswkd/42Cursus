@@ -6,32 +6,38 @@
 #include <math.h>
 #include "converter.h"
 #include "checker.h"
+#include "mlx.h"
 
 #define SPHERE		1
 #define	CYLINDER	2
 #define	PLANE		3
+#define ESC_KEY		53
+#define LEFT		123
+#define UP			126
+#define RIGHT		124
+#define DOWN		125
+#define P_WID 		1280
+#define P_HEI		720
+
 //#define	INFINITY	1e500
-/*
-removed
-- t_circle structure
-- intersect_circle function
-- ray_pos function
-- intersect_body function
-- intersect_caps function
-- get_min_intersection function
+#define	S_EXP		32 // specular exponent
+// .rt 파일에서 비어있는 줄에 공백이 들어가면 모든 내용이 올바른 형식으로 들어와도 invalid format이라고 뜨고 종료한다. 처리하고싶으면 처리하자.
+typedef struct s_img
+{
+	void	*ptr;
+	char	*addr;
+	int		bits_per_pixel;
+	int		line_length;
+	int		endian;
+}	t_img;
 
-updated
-- intersect_sphere (intersect_circle is merged here.)
-- intersect_cylinder, cal_cy_body, cal_cy_caps (new algorithm.)
-- t_intersection sturcture members' name
+typedef struct s_vars
+{
+	void		*mlx;
+	void		*win;
+	t_img		img;
+}	t_vars;
 
-added
-- t_equation structure
-- solve_equation function
-- choose_smaller_t function
-- is_valid_t1, is_valid_t2, is_valid_t3, is_valid_t4 functions
-
-*/
 typedef struct s_rgb
 {
 	int	r;
@@ -98,7 +104,7 @@ typedef struct s_node
 	struct s_node	*next;
 }	t_node;
 
-typedef struct s_rt_info
+typedef struct s_world
 {
 	t_ambient	a;
 	t_camera	c;
@@ -106,7 +112,7 @@ typedef struct s_rt_info
 	t_node		*sp;
 	t_node		*cy;
 	t_node		*pl;
-}	t_rt_info;
+}	t_world;
 
 typedef struct s_object
 {
@@ -153,6 +159,24 @@ int	check_rgb(t_rgb rgb)
 	return (-1 < r && r < 256 && -1 < g && g < 256 && -1 < b && b < 256);
 }
 
+int	init_mlx_pointers(t_vars *vars)
+{
+	vars->mlx = mlx_init();
+	if (!vars->mlx)
+		return (0);
+	vars->win = mlx_new_window(vars->mlx, P_WID, P_HEI, "miniRT");
+	if (!vars->win)
+		return (0);
+	vars->img.ptr = mlx_new_image(vars->mlx, P_WID, P_HEI);
+	if (!vars->img.ptr)
+		return (0);
+	vars->img.addr = mlx_get_data_addr(vars->img.ptr, &vars->img.bits_per_pixel,
+			&vars->img.line_length, &vars->img.endian);
+	if (!vars->img.addr)
+		return (0);
+	return (1);
+}
+
 int	check_normal(t_vec vec)
 {
 	double	x;
@@ -163,7 +187,7 @@ int	check_normal(t_vec vec)
 	y = vec.y;
 	z = vec.z;
 	return (-1 <= x && x <= 1 && -1 <= y && y <= 1 && -1 <= z && z <= 1
-		&& sqrt(x * x + y * y + z * z) == 1);
+		&& fabs(sqrt(x * x + y * y + z * z) - 1) < 1e-6);
 }
 
 int	free_splitted(char **splitted, int ret)
@@ -211,14 +235,14 @@ int	set_coordinate(char *coord_str, t_coord *coord)
 	return (free_splitted(coord_info, 1));
 }
 
-int	set_ambient(char **info, int cnt, t_rt_info *rt_info)
+int	set_ambient(char **info, int cnt, t_world *world)
 {
 	double		intensity;
 	t_ambient	*a;
 
 	if (cnt != 3)
 		return (0);
-	a = &(rt_info->a);
+	a = &(world->a);
 	if (!get_double(info[1], &intensity) || intensity < 0 || 1 < intensity)
 		return (0);
 	if (!set_rgb(info[2], &(a->rgb)))
@@ -227,14 +251,14 @@ int	set_ambient(char **info, int cnt, t_rt_info *rt_info)
 	return (1);
 }
 
-int	set_light(char **info, int cnt, t_rt_info *rt_info)
+int	set_light(char **info, int cnt, t_world *world)
 {
 	double	intensitiy;
 	t_light	*l;
 
 	if (cnt != 4)
 		return (0);
-	l = &(rt_info->l);
+	l = &(world->l);
 	if (!set_coordinate(info[1], &(l->coord)))
 		return (0);
 	if (!get_double(info[2], &intensitiy) || intensitiy < 0 || 1 < intensitiy)
@@ -245,14 +269,14 @@ int	set_light(char **info, int cnt, t_rt_info *rt_info)
 	return (1);
 }
 
-int	set_camera(char **info, int cnt, t_rt_info *rt_info)
+int	set_camera(char **info, int cnt, t_world *world)
 {
 	int			fov;
 	t_camera	*c;
 
 	if (cnt != 4)
 		return (0);
-	c = &(rt_info->c);
+	c = &(world->c);
 	if (!set_coordinate(info[1], &(c->coord)))
 		return (0);
 	if (!set_coordinate(info[2], &(c->norm))
@@ -271,13 +295,13 @@ t_node	*get_last_node(t_node *list) // this function is called after malloc, so 
 	return (list);
 }
 
-int	set_plane(char **info, int cnt, t_rt_info *rt_info)
+int	set_plane(char **info, int cnt, t_world *world)
 {
 	t_pl	*pl;
 
 	if (cnt != 4)
 		return (0);
-	pl = (t_pl *)(get_last_node(rt_info->pl)->data);
+	pl = (t_pl *)(get_last_node(world->pl)->data);
 	if (!set_coordinate(info[1], &(pl->coord)))
 		return (0);
 	if (!set_coordinate(info[2], &(pl->norm))
@@ -288,14 +312,14 @@ int	set_plane(char **info, int cnt, t_rt_info *rt_info)
 	return (1);
 }
 
-int	set_sphere(char **info, int cnt, t_rt_info *rt_info)
+int	set_sphere(char **info, int cnt, t_world *world)
 {
 	double	diameter;
 	t_sp	*sp;
 
 	if (cnt != 4)
 		return (0);
-	sp = (t_sp *)(get_last_node(rt_info->sp)->data);
+	sp = (t_sp *)(get_last_node(world->sp)->data);
 	if (!set_coordinate(info[1], &(sp->coord)))
 		return (0);
 	if (!get_double(info[2], &diameter) || diameter < 0)
@@ -306,7 +330,7 @@ int	set_sphere(char **info, int cnt, t_rt_info *rt_info)
 	return (1);
 }
 
-int	set_cylinder(char **info, int cnt, t_rt_info *rt_info)
+int	set_cylinder(char **info, int cnt, t_world *world)
 {
 	double	diameter;
 	double	height;
@@ -314,7 +338,7 @@ int	set_cylinder(char **info, int cnt, t_rt_info *rt_info)
 
 	if (cnt != 6)
 		return (0);
-	cy = (t_cy *)(get_last_node(rt_info->cy)->data);
+	cy = (t_cy *)(get_last_node(world->cy)->data);
 	if (!set_coordinate(info[1], &(cy->coord)))
 		return (0);
 	if (!set_coordinate(info[2], &(cy->norm))
@@ -325,6 +349,7 @@ int	set_cylinder(char **info, int cnt, t_rt_info *rt_info)
 	if (!get_double(info[4], &height) || height < 0)
 		return (0);
 	if (!set_rgb(info[5], &(cy->rgb)))
+		return (0);
 	cy->diameter = diameter;
 	cy->height = height;
 	return (1);
@@ -403,7 +428,7 @@ void	clear_list(t_node **lst) // will be used in error handling function right b
 	*lst = 0;
 }
 
-int	set_object_list(t_rt_info *rt, int index)
+int	set_object_list(t_world *rt, int index)
 {
 	t_node	**objects;
 	t_node	*new_node;
@@ -424,12 +449,12 @@ splitted
 	1. 널 포인터 및 빈 문자열일 때 : 가드가 거름.
 	2. 내용은 있지만, 유효하지 않은 상태일 때 : 각 set_* 함수들이 걸러야 함.
 */
-int	set_rt_info(char *line, t_rt_info *rt, int *mask)
+int	set_world(char *line, t_world *rt, int *mask)
 {
 	char		**splitted;
 	int			cnt;
 	int			index;
-	static int	(*fp[6])(char **, int, t_rt_info *) = {set_ambient, set_camera,
+	static int	(*fp[6])(char **, int, t_world *) = {set_ambient, set_camera,
 		set_light, set_sphere, set_plane, set_cylinder};
 	
 	splitted = split_line(line, ' ', &cnt); // all split_lines need null-guard.
@@ -437,7 +462,7 @@ int	set_rt_info(char *line, t_rt_info *rt, int *mask)
 		return (free_splitted(splitted, 0));
 	index = check_identifier(splitted[0]);
 	if (index == -1)
-		return (free_splitted(splitted, 0)); // caller must print error if set_rt_info returns 0.
+		return (free_splitted(splitted, 0)); // caller must print error if set_world returns 0.
 	if (index < 3 && (*mask & 1 << index || !(*fp[index])(splitted, cnt, rt))) // A, C, L shouldn't be on mutiple lines and don't need malloc.
 		return (free_splitted(splitted, 0));
 	*mask |= 1 << index;
@@ -489,67 +514,35 @@ t_vec	vec_normalize(t_vec vec)
 t_vec	vec_proj(t_vec v1, t_vec v2)
 {
 	double	scalar;
+	t_vec	n;
 
-	scalar = vec_dot(v1, v2) / vec_len(v2);
-	return ((t_vec){v2.x * scalar, v2.y * scalar, v2.z * scalar});
+	n = vec_normalize(v2);
+	scalar = vec_dot(v1, v2);
+	return ((t_vec){n.x * scalar, n.y * scalar, n.z * scalar});
 }
 
-// int	get_min_intersection(double *ret, t_inter i)
-// {
-// 	if (i.l <= 1 && i.r <= 1)
-// 		return (0);
-// 	*ret = i.r;
-// 	if (i.l > 1)
-// 		*ret = i.l;
-// 	return (1);
-// }
+t_vec	vec_neg(t_vec vec)
+{
+	return ((t_vec){-vec.x, -vec.y, -vec.z});
+}
 
 double	choose_smaller_t(double current, double candidate, int condition)
 {
-	if (!condition || current < candidate)
-		return (current);
-	return (candidate);
+	if (condition && candidate < current)
+		return (candidate);
+	return (current);
 }
-
-// int	intersect_circle(t_ray ray, t_circle cir, t_inter *inter) // rename this to cal_sphere_t
-// {
-// 	double		a;
-// 	double		b;
-// 	double		c;
-// 	double		discriminant;
-// 	t_vec		ray_sp;
-
-// 	ray_sp = vec_sub(ray.pos, cir.center);
-// 	a = vec_dot(ray.dir, ray.dir);
-// 	b = 2 * vec_dot(ray_sp, ray.dir);
-// 	c = vec_dot(ray_sp, ray_sp) - pow(cir.radius, 2);
-// 	discriminant = b * b - 4 * a * c;
-// 	if (discriminant < 0)
-// 		return (0);
-// 	inter->l = (-b - sqrt(discriminant)) / (2 * a); // smaller
-// 	inter->r = (-b + sqrt(discriminant)) / (2 * a); // bigger
-// 	return (1);
-// }
-
-// int	intersect_sphere(t_ray ray, t_sp sp, double *t)// rename this to get_sphere_t and remove t_circle things.
-// {
-// 	t_inter		*i;
-// 	t_circle	p;
-
-// 	p.center = sp.coord;
-// 	p.radius = sp.diameter / 2;
-// 	return (intersect_circle(ray, p, i) && get_min_intersection(t, *i));
-// }
 
 void	solve_equation(t_equation eq, t_inter *inter)
 {
 	double	d;
 
 	d = eq.b * eq.b - 4 * eq.a * eq.c;
-	if (!d)
+	if (d < 0)
 	{
 		inter->l = HUGE_VAL; // 
 		inter->r = HUGE_VAL; // is it possible to use HUGE_VAL constant?
+		return ;
 	}
 	inter->l = (-eq.b - sqrt(d)) / (2 * eq.a);
 	inter->r = (-eq.b + sqrt(d)) / (2 * eq.a); // it is not necessary to compare l and r here.
@@ -568,7 +561,7 @@ int	intersect_sphere(t_ray ray, t_sp sp, double *t)// rename this to get_sphere_
 	eq.c = vec_dot(ray_sp, ray_sp) - pow(sp.diameter / 2, 2);
 	solve_equation(eq, &inter);
 	ret = choose_smaller_t(HUGE_VAL, inter.l, (1 < inter.l));
-	ret = choose_smaller_t(*t, inter.r, (1 < inter.r));
+	ret = choose_smaller_t(ret, inter.r, (1 < inter.r));
 	*t = ret;
 	return (ret != HUGE_VAL);
 }
@@ -598,20 +591,17 @@ void	cal_cy_caps(t_ray ray, t_cy cy, t_inter *inter)
 	bottom_center = cy.coord;
 	top_center = vec_add(cy.coord, vec_scale(cy.norm, cy.height));
 	n_dot_dir = vec_dot(cy.norm, ray.dir);
-	inter->l = vec_dot(cy.norm, vec_sub(ray.pos, bottom_center)) / n_dot_dir;
-	inter->r = vec_dot(cy.norm, vec_sub(ray.pos, top_center)) / n_dot_dir;
-}
-int	is_valid_t1(t_cy cy, t_ray ray, double t)
-{
-	return (t >= 0 && vec_dot(cy.norm, vec_sub(
-		vec_add(ray.pos, vec_scale(ray.dir, t)), cy.coord)) > 0);
+	inter->l = vec_dot(cy.norm, vec_sub(bottom_center, ray.pos)) / n_dot_dir;
+	inter->r = vec_dot(cy.norm, vec_sub(top_center, ray.pos)) / n_dot_dir;
 }
 
-int	is_valid_t2(t_cy cy, t_ray ray, double t)
+int	is_valid_t1t2(t_cy cy, t_ray ray, double t)
 {
-	return (t >= 0 && vec_dot(cy.norm, vec_sub(
+	return (t > 1 && vec_dot(cy.norm, vec_sub(
+		vec_add(ray.pos, vec_scale(ray.dir, t)), cy.coord)) > 0
+		&& vec_dot(cy.norm, vec_sub( 
 		vec_add(ray.pos, vec_scale(ray.dir, t)),
-		vec_add(cy.coord, vec_scale(cy.norm, cy.height)))) > 0);
+		vec_add(cy.coord, vec_scale(cy.norm, cy.height)))) < 0);
 }
 
 int	is_valid_t3(t_cy cy, t_ray ray, double t)
@@ -620,7 +610,7 @@ int	is_valid_t3(t_cy cy, t_ray ray, double t)
 
 	q_to_cap = vec_sub(vec_add(ray.pos, vec_scale(ray.dir, t)),
 		cy.coord);
-	return (t >= 0 && vec_dot(q_to_cap, q_to_cap) < pow(cy.diameter / 2, 2));
+	return (t > 1 && vec_dot(q_to_cap, q_to_cap) < pow(cy.diameter / 2, 2));
 }
 
 int	is_valid_t4(t_cy cy, t_ray ray, double t)
@@ -629,7 +619,7 @@ int	is_valid_t4(t_cy cy, t_ray ray, double t)
 
 	q_to_cap = vec_sub(vec_add(ray.pos, vec_scale(ray.dir, t)),
 		vec_add(cy.coord, vec_scale(cy.norm, cy.height)));
-	return (t >= 0 && vec_dot(q_to_cap, q_to_cap) < pow(cy.diameter / 2, 2));
+	return (t > 1 && vec_dot(q_to_cap, q_to_cap) < pow(cy.diameter / 2, 2));
 }
 // t1 : nonnegative, vec_dot(cy.norm, vec_sub(q, p1)) > 0
 // t2 : nonnegative, vec_dot(cy.norm, vec_sub(q, p2)) < 0
@@ -642,116 +632,35 @@ int	intersect_cylinder(t_ray ray, t_cy cy, double *t)// rename this to get_cylin
 	double		ret;
 
 	cal_cy_body(ray, cy, &t_1_2);
-	cal_cy_body(ray, cy, &t_3_4);
-	ret = choose_smaller_t(HUGE_VAL, t_1_2.l, is_valid_t1(cy, ray, t_1_2.l));
-	ret = choose_smaller_t(ret, t_1_2.r, is_valid_t2(cy, ray, t_1_2.r));
+	cal_cy_caps(ray, cy, &t_3_4);
+	ret = choose_smaller_t(HUGE_VAL, t_1_2.l, is_valid_t1t2(cy, ray, t_1_2.l));
+	ret = choose_smaller_t(ret, t_1_2.r, is_valid_t1t2(cy, ray, t_1_2.r));
 	ret = choose_smaller_t(ret, t_3_4.l, is_valid_t3(cy, ray, t_3_4.l));
 	ret = choose_smaller_t(ret, t_3_4.r, is_valid_t4(cy, ray, t_3_4.r));
 	*t = ret;
 	return (ret != HUGE_VAL);
 }
 
-// t_vec	ray_pos(t_ray ray, double t)
-// {
-// 	return (vec_add(ray.pos, vec_scale(ray.dir, t)));
-// }
-
-// int	intersect_cylinder(t_ray ray, t_cy cy, double *t) // ray랑 normal이랑 평행한 지 확인해야 한다., get_min_intersection을 체크하는 함수 포인터를 전달한다.
-// {
-// 	t_inter	inter1;
-// 	t_inter	inter2;
-// 	double	l;
-// 	double	r;
-
-// 	if (fabs(vec_len(vec_proj(vec_normalize(ray.dir), cy.norm)) - 1) < 1e-6)
-// 	{
-// 		if (!intersect_caps(ray, cy, &inter2)
-// 			|| !get_min_intersection(&r, inter2))
-// 			return (0);
-// 		*t = r;
-// 		return (1);
-// 	}
-// 	if (!intersect_body(ray, cy, &inter1))
-// 		return (0);
-// 	get_min_intersection(&l, inter1);
-// 	inter2.l = 0;
-// 	inter2.r = 0;
-// 	intersect_caps(ray, cy, &inter2);
-// 	get_min_intersection(&r, inter2);
-// 	if (!get_min_intersection(&t, (t_inter){l, r}))
-// 		return (0);
-// 	return (1);		
-// }
-// // unit vector check
-// // cylinder is infinite.
-// int	intersect_body(t_ray ray, t_cy cy, t_inter *inter)
-// {
-// 	t_vec		c_perp;
-// 	t_ray		r_perp;
-// 	double		proj_t1;
-// 	double		proj_t2;
-
-// 	c_perp = vec_sub(cy.coord, vec_proj(cy.coord, cy.norm));
-// 	r_perp.pos = vec_sub(ray.pos, vec_proj(ray.pos, cy.norm));
-// 	r_perp.dir = vec_sub(ray.dir, vec_proj(ray.dir, cy.norm));
-// 	if (!intersect_circle(r_perp, (t_circle){c_perp, cy.diameter / 2}, inter))
-// 		return (0);
-// 	proj_t1 = vec_len(vec_proj(vec_sub(ray_pos(ray, inter->l), cy.coord), cy.norm));
-// 	proj_t2 = vec_len(vec_proj(vec_sub(ray_pos(ray, inter->r), cy.coord), cy.norm));
-// 	if (proj_t1 < 0 || cy.height < proj_t1)
-// 		inter->l = -1;
-// 	if (proj_t2 < 0 || cy.height < proj_t2)
-// 		inter->r = -1;
-// 	return (1);
-// }
-
-// int	intersect_caps(t_ray ray, t_cy cy, t_inter *inter)
-// {
-// 	double	bottom;
-// 	double	top;
-// 	double	c_to_t1;
-// 	double	c_to_t2;
-// 	double	radius;
-
-// 	bottom = vec_len(vec_proj(cy.coord, cy.norm));
-// 	top = bottom + cy.height;
-// 	inter->l = (bottom - vec_len(vec_proj(ray.pos, cy.norm)))
-// 		/ vec_len(vec_proj(ray.dir, cy.norm));
-// 	inter->r = (top - vec_len(vec_proj(ray.pos, cy.norm)))
-// 		/ vec_len(vec_proj(ray.dir, cy.norm));
-// 	c_to_t1 = vec_len(vec_sub(ray_pos(ray, inter->l), cy.coord));
-// 	c_to_t2 = vec_len(vec_sub(ray_pos(ray, inter->r), vec_add(
-// 			cy.coord, vec_scale(cy.norm, cy.height))));
-// 	radius = cy.diameter / 2;
-// 	if (c_to_t1 >= radius && c_to_t2 >= radius)
-// 		return (0);
-// 	if (c_to_t1 >= radius)
-// 		inter->l = -1;
-// 	if (c_to_t2 >= radius)
-// 		inter->r = -1;
-// 	return (1);
-// }
-
 int	intersect_plane(t_ray ray, t_pl pl, double *t) //rename this to get_plane_t
 {
 	double	ray_pl_dot;
 
-	ray_pl_dot = vec_dot(ray.pos, pl.norm);
-	if (ray_pl_dot < 1e-6)
+	ray_pl_dot = vec_dot(ray.dir, pl.norm);
+	if (fabs(ray_pl_dot) <= 1e-6)
 		return (0);
 	*t = vec_dot(vec_sub(pl.coord, ray.pos), pl.norm) / ray_pl_dot;
-	return (1);
+	return (*t > 1);
 }
 
-void	check_sp(t_ray ray, t_node *sp, t_obj *obj, double initial)
+void	check_sp(t_ray ray, t_node *sp, t_obj *obj)
 {
 	double	cur;
 	double	t;
 
 	if (!sp)
 		return ;
-	t = initial;
-	while (sp->data)
+	t = obj->t;
+	while (sp)
 	{
 		if (intersect_sphere(ray, *((t_sp *)(sp->data)), &cur) && cur < t)
 		{
@@ -759,19 +668,20 @@ void	check_sp(t_ray ray, t_node *sp, t_obj *obj, double initial)
 			obj->type = SPHERE;
 			obj->object = (t_sp *)(sp->data);
 		}
+		sp = sp->next;
 	}
 	obj->t = t;
 }
 
-void	check_cy(t_ray ray, t_node *cy, t_obj *obj, double initial)
+void	check_cy(t_ray ray, t_node *cy, t_obj *obj)
 {
 	double	cur;
 	double	t;
 
 	if (!cy)
 		return ;
-	t = initial;
-	while (cy->data)
+	t = obj->t;
+	while (cy)
 	{
 		if (intersect_cylinder(ray, *((t_cy *)(cy->data)), &cur) && cur < t)
 		{
@@ -779,19 +689,20 @@ void	check_cy(t_ray ray, t_node *cy, t_obj *obj, double initial)
 			obj->type = CYLINDER;
 			obj->object = (t_cy *)(cy->data);
 		}
+		cy = cy->next;
 	}
 	obj->t = t;
 }
 
-void	check_pl(t_ray ray, t_node *pl, t_obj *obj, double initial)
+void	check_pl(t_ray ray, t_node *pl, t_obj *obj)
 {
 	double	cur;
 	double	t;
 
 	if (!pl)
 		return ;
-	t = initial;
-	while (pl->data)
+	t = obj->t;
+	while (pl)
 	{
 		if (intersect_plane(ray, *((t_pl *)(pl->data)), &cur) && cur < t)
 		{
@@ -799,33 +710,79 @@ void	check_pl(t_ray ray, t_node *pl, t_obj *obj, double initial)
 			obj->type = PLANE;
 			obj->object = (t_pl *)(pl->data);
 		}
+		pl = pl->next;
 	}
 	obj->t = t;
 }
 
-int	intersect(t_ray ray, t_rt_info info, t_obj *obj)
+int	intersect(t_ray ray, t_world world, t_obj *obj)
 {
 	obj->type = 0;
 	obj->t = INFINITY;
-	check_sp(ray, info.sp, obj, obj->t);
-	check_cy(ray, info.cy, obj, obj->t);
-	check_pl(ray, info.pl, obj, obj->t);
+
+	check_sp(ray, world.sp, obj);
+	check_cy(ray, world.cy, obj);
+	check_pl(ray, world.pl, obj);
     return (obj->type);
 }
 
-double	compute_lighting(t_vec p, t_vec n, t_rt_info info) // only for diffuse reflection, p_norm should be an unit vector
+t_vec	rgb_to_vec(t_rgb rgb)
 {
-	double	lighting;
-	t_vec	p_to_l;
-	double	n_dot_l;
+	return ((t_vec){rgb.r / 255.0, rgb.g / 255.0, rgb.b / 255.0});
+}
 
-	lighting = info.a.intensity;
-	p_to_l = vec_sub(info.l.coord, p);
-	n_dot_l = vec_dot(n, p_to_l);
+t_rgb	mult_rgb_vec(t_rgb rgb, t_vec vec)
+{
+	return ((t_rgb){(int)(vec.x * rgb.r),
+		(int)(vec.y * rgb.g), (int)(vec.z * rgb.b)});
+}
+
+t_vec	compute_diffuse(t_vec inter, t_vec n, t_world world)
+{
+	t_vec	ret;
+	t_vec	l;
+	double	n_dot_l;
+  
+	ret = (t_vec){0, 0, 0};
+	l = vec_normalize(vec_sub(world.l.coord, inter));
+	n_dot_l = vec_dot(n, l);
 	if (n_dot_l > 0)
-		lighting += info.l.intensity * n_dot_l / (vec_len(n) * vec_len(p_to_l));
-	// shadow part should be added here
-    return (lighting);
+		ret = vec_scale(rgb_to_vec(world.l.rgb), world.l.intensity * n_dot_l);
+	return (ret);
+}
+
+t_vec	compute_specular(t_vec inter, t_vec n, t_vec v, t_world world)
+{
+	t_vec	ret;
+	t_vec	l;
+	t_vec	r;
+	double	r_dot_v;
+
+	ret = (t_vec){0, 0, 0};
+	l = vec_normalize(vec_sub(world.l.coord, inter));
+	r = vec_sub(vec_neg(l), vec_scale(n, 2.0 * vec_dot(n, vec_neg(l))));
+	r_dot_v = vec_dot(v, r);
+	if (r_dot_v > 0)
+		ret = vec_scale(rgb_to_vec(world.l.rgb),
+			world.l.intensity * pow(r_dot_v, S_EXP));
+    return (ret);
+}
+
+t_vec	compute_lighting(t_vec inter, t_vec n, t_vec v, t_world world) // only for diffuse reflection, p_norm should be an unit vector
+{
+	t_vec	v_ambient;
+	t_vec	v_diffuse;
+	t_vec	v_specular;
+	t_vec	lighting;
+	
+	v_ambient = vec_scale(rgb_to_vec(world.a.rgb), world.a.intensity); // ambient light rgb should be applied.
+	v_diffuse = compute_diffuse(inter, n , world);
+	v_specular = compute_specular(inter, n, v, world);
+	lighting = vec_add(vec_add(v_ambient, v_diffuse), v_specular);
+	lighting.x -= (lighting.x > 1.0) * (lighting.x - 1.0);
+	lighting.y -= (lighting.y > 1.0) * (lighting.y - 1.0);
+	lighting.z -= (lighting.z > 1.0) * (lighting.z - 1.0);
+	return (lighting);
 }
 
 int	open_file(char *path)
@@ -841,7 +798,7 @@ int	open_file(char *path)
 	return (fd);
 }
 
-int	read_file(int fd, t_rt_info *rt_info)
+int	read_file(int fd, t_world *world)
 {
 	char		*line;
 	int			flag;
@@ -854,7 +811,7 @@ int	read_file(int fd, t_rt_info *rt_info)
 		if (line == 0)
 			break ;
 		if (line[0] != '\0')
-			flag = set_rt_info(line, rt_info, &mask);
+			flag = set_world(line, world, &mask);
 		free(line);
 	}
 	if (!flag || !(mask & 1 << 0 && mask & 1 << 1 && mask & 1 << 2))
@@ -862,26 +819,266 @@ int	read_file(int fd, t_rt_info *rt_info)
 	return (1);
 }
 
+int	check_shadow_sp(t_ray ray, t_node *sp)
+{
+	double	cur;
+
+	cur = 2;
+	if (!sp)
+		return (0);
+	while (sp)
+	{
+		if (intersect_sphere(ray, *((t_sp *)(sp->data)), &cur) && cur < 2)
+			return (1);
+		sp = sp->next;
+	}
+	return (0);
+}
+
+/////////////////////////////////////////////////////check_shadow
+int	check_shadow_cy(t_ray ray, t_node *cy)
+{
+	double	cur;
+
+	cur = 2;
+	if (!cy)
+		return (0);
+	while (cy)
+	{
+		if (intersect_cylinder(ray, *((t_cy *)(cy->data)), &cur) && cur < 2)
+			return (1);
+		cy = cy->next;
+	}
+	return (0);
+}
+
+int	check_shadow_pl(t_ray ray, t_node *pl)
+{
+	double	cur;
+
+	cur = 2;
+	if (!pl)
+		return (0);
+	while (pl)
+	{
+		if (intersect_plane(ray, *((t_pl *)(pl->data)), &cur) && cur < 2)
+			return (1);
+		pl = pl->next;
+	}
+	return (0);
+}
+
+t_ray	get_l_ray(t_light l, t_ray ray, t_obj	obj)
+{
+	t_ray	l_ray;
+	t_vec	t_pos;
+
+	t_pos = vec_add(vec_scale(ray.dir, obj.t), ray.pos);
+	l_ray.dir = vec_sub(l.coord, t_pos);
+	l_ray.pos = vec_sub(t_pos, l_ray.dir);
+	return (l_ray);
+}
+
+int	check_shadow(t_world world, t_ray l_ray)
+{
+	if (check_shadow_sp(l_ray, world.sp))
+		return (1);
+	if (check_shadow_cy(l_ray, world.cy))
+		return (1);
+	if (check_shadow_pl(l_ray, world.pl))
+		return (1);
+	return (0);
+}
+
+/////////////////////////////////////////////////////
+typedef struct s_pixel_info
+{
+	t_coord	top_left;
+	t_vec	p_h;
+	t_vec	p_v;
+}	t_p_info;
+/////////////////////////////////////////////////////
+
+t_vec	get_ab_vec(t_vec v)
+{
+	t_vec	ret;
+
+	if (v.x == 0 && v.y == 0 && (v.z == 1 || v.z == -1))
+	{
+		ret.x = 1;
+		ret.y = 0;
+		ret.z = 0;
+	}
+	else
+	{
+		ret.x = 0;
+		ret.y = 0;
+		ret.z = 1;
+	}
+	return (ret);
+}
+
+void	get_pixel_info(t_camera c, t_p_info *p_info)
+{
+	t_vec	h;
+	t_vec	v;
+	t_vec	tmp;
+	double	vp_h;
+	double	vp_w;
+
+	vp_w = tan((c.fov * M_PI / 180.0) / 2.0) * 2;
+	vp_h = vp_w * ((double)P_HEI / (double)P_WID);
+	h = vec_cross(c.norm, get_ab_vec(c.norm));
+	v = vec_cross(c.norm, h);
+	h = vec_scale(h, (double)1 / vec_len(h) * (vp_w / (double)P_WID));
+	v = vec_scale(v, (double)1 / vec_len(v) * (vp_h / (double)P_HEI));
+	p_info->p_h = h;
+	p_info->p_v = v;
+	tmp = vec_add(c.coord, c.norm);
+	tmp = vec_sub(tmp, vec_scale(h, (double)P_WID / (double)2));
+	tmp = vec_sub(tmp, vec_scale(v, (double)P_HEI / (double)2));
+	p_info->top_left = tmp;
+}
+
+/////////////////////////////////////////////////////
+t_ray	generate_ray(t_coord pos, t_p_info p_info, int i, int j)
+{
+	t_ray	ret;
+	t_coord	tmp;
+
+	ret.pos = pos;
+	tmp = p_info.top_left;
+	tmp = vec_add(tmp, vec_scale(p_info.p_h, i));
+	tmp = vec_add(tmp, vec_scale(p_info.p_v, j));
+	ret.dir = vec_sub(tmp, pos);
+	return (ret);
+}
+
+t_rgb	get_obj_rgb(t_obj obj, t_vec lighting)
+{
+	t_rgb	ret;
+
+	if (obj.type == SPHERE)
+		ret = ((t_sp *)obj.object)->rgb;
+	else if (obj.type == CYLINDER)
+		ret = ((t_cy *)obj.object)->rgb;
+	else
+		ret = ((t_pl *)obj.object)->rgb;
+	return (mult_rgb_vec(ret, lighting));
+}
+
+void	dot_pixel(t_img *img, t_rgb color, int i)
+{
+	int		pixel;
+
+	pixel = i * 4;
+	img->addr[pixel] = color.b;
+	img->addr[pixel + 1] = color.g;
+	img->addr[pixel + 2] = color.r;
+}
+
+t_vec	get_tangent_norm_cy(t_cy *cy, t_coord p)
+{
+	double	a;
+	double	b;
+	t_coord	t_c;
+
+	a = vec_dot(p, cy->norm);
+	b = vec_dot(vec_add(cy->coord, vec_scale(cy->norm, cy->height)), cy->norm);
+	if (fabs(a - b) < 1e-6)
+		return (cy->norm);
+	b = vec_dot(cy->coord, cy->norm);
+	if (fabs(a - b) < 1e-6)
+		return (vec_scale(cy->norm, -1));
+	t_c = vec_add(cy->coord, vec_scale(cy->norm, fabs(a - b)));
+	return (vec_normalize(vec_sub(p, t_c)));
+}
+
+t_vec	get_tangent_norm(t_obj	obj, t_coord p)
+{
+	t_vec	n;
+
+	if (obj.type == SPHERE)
+		n = vec_normalize(vec_sub(p, ((t_sp *)obj.object)->coord));
+	else if (obj.type == CYLINDER)
+		n = get_tangent_norm_cy(obj.object, p);
+	else
+		n = ((t_pl *)obj.object)->norm;
+	return (n);
+}
+
+int	trace_ray(t_img *img, t_world *world, t_ray ray, int i)
+{
+	t_obj	obj;
+	// t_ray	l_ray;
+	t_rgb	color;
+	t_coord	p;
+	t_vec	n;
+
+	if (!intersect(ray, *world, &obj))
+		return (0);
+	//background color
+	p = vec_add(ray.pos, vec_scale(ray.dir, obj.t));
+	n = get_tangent_norm(obj, p);
+	// l_ray = get_l_ray(world->l, ray, obj);
+	// if (check_shadow(*world, l_ray))
+	// {
+	// 	//default
+	// 	return (0);
+	// }
+	color = get_obj_rgb(obj,
+		compute_lighting(p, n, vec_neg(vec_normalize(ray.dir)), *world));
+	dot_pixel(img, color, i);
+	return (0);
+}
+/////////////////////////////////////////////////////
+
+int draw_img(t_world *world, t_vars *vars)
+{
+	t_p_info	p_info;
+	t_ray		ray;
+	int			i;
+	int			j;
+
+	get_pixel_info(world->c, &p_info);
+	j = -1;
+	while (++j < P_HEI)
+	{
+		i = -1;
+		while (++i < P_WID)
+		{
+			ray = generate_ray(world->c.coord, p_info, i, j);
+			trace_ray(&vars->img, world, ray, j * P_WID + i);
+		}
+	}
+	mlx_put_image_to_window(vars->mlx, vars->win, vars->img.ptr, 0, 0);
+	return (1);
+}
+
 int	main(int argc, char **argv)
 {
 	int			fd;
-	t_rt_info	rt_info;
+	t_world		world;
+	t_vars		vars;
 
 	if (argc != 2)
 		return (0); // call error handling function with proper error message.
+	init_mlx_pointers(&vars);
 	fd = open_file(argv[1]);
 	if (fd < 0) // remove this when error handling function is completed.
 		return (0); // 에러 문자열 출력하고 처리해주기
-	rt_info.sp = 0;
-	rt_info.pl = 0;
-	rt_info.cy = 0;
-	if (read_file(fd, &rt_info))
+	world.sp = 0;
+	world.pl = 0;
+	world.cy = 0;
+	if (read_file(fd, &world))
 		printf("%s\n", "valid format");
 	else
 		printf("%s\n", "invalid format");
 	/* draw image */
-	clear_list(&(rt_info.sp));
-	clear_list(&(rt_info.pl));
-	clear_list(&(rt_info.cy));
+	draw_img(&world, &vars);
+	clear_list(&(world.sp));
+	clear_list(&(world.pl));
+	clear_list(&(world.cy));
+	mlx_loop(vars.mlx);
 	return (0);
 }
