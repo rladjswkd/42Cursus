@@ -14,23 +14,21 @@ RM = rm
 RMFLAGS = -f
 
 %.o : %.c
-	$(CC) $(CFLAGS) -Imlx -g -c $< -o $@
+	$(CC) $(CFLAGS) -I/usr/include -Imlx_linux -O3 -c $< -o $@
 
 all : $(NAME)
 
 $(NAME) : $(OBJS)
-	@make -C mlx 2> /dev/null
-	$(CC) $(OBJS) -Lmlx -lmlx -framework OpenGL -framework AppKit -o $(NAME)
+	$(CC) $(OBJS) -Lmlx_linux -lmlx_Linux -L/usr/lib -Imlx_linux -lXext -lX11 -lm -lz -o $(NAME)
+
+bonus: $(NAME)
 
 clean :
-	@make clean -C mlx
 	$(RM) $(RMFLAGS) $(OBJS)
 
 fclean : clean
 	$(RM) $(RMFLAGS) $(NAME)
 
-bonus : $(NAME)
-
 re : fclean all
 
-.PHONY : all clean fclean re bonus
+.PHONY : all bonus clean fclean re 

@@ -785,6 +785,38 @@ t_vec	compute_lighting(t_vec inter, t_vec n, t_vec v, t_world world) // only for
 	return (lighting);
 }
 
+typedef struct s_uv
+{
+	double	u;
+	double	v;
+}	t_uv;
+
+// u increases from 0 to 1 as you move counter-clockwise around the sphere
+// v increases from 0 to 1 as you go from the north pole to the south pole.
+t_uv	uv_map_sphere(t_coord p, t_sp sp)
+{
+	t_uv	uv;
+	t_vec	vec;
+
+	vec = vec_normalize(vec_sub(p, sp.coord));
+	uv.u = 0.5 + atan2(vec.x, vec.z) / (2 * M_PI);
+	uv.v = 0.5 + asin(vec.y) / M_PI;
+	return (uv);
+}
+
+t_uv	uv_map_planar(t_coord p, t_pl pl)
+{
+
+}
+
+// u, v are in [0, 1]
+t_rgb	uv_pattern_at(t_uv uv)
+{
+	if (((int)floor(uv.u * 16) + (int)floor(uv.v * 8)) % 2)
+		return ((t_rgb){0, 255, 0});
+	return ((t_rgb){0, 0, 0});
+}
+
 int	open_file(char *path)
 {
 	int	fd;
@@ -954,16 +986,20 @@ t_ray	generate_ray(t_coord pos, t_p_info p_info, int i, int j)
 	return (ret);
 }
 
-t_rgb	get_obj_rgb(t_obj obj, t_vec lighting)
+t_rgb	get_obj_rgb(t_obj obj, t_coord p, t_vec lighting)
 {
 	t_rgb	ret;
 
+	(void)p;
 	if (obj.type == SPHERE)
-		ret = ((t_sp *)obj.object)->rgb;
+		// ret = ((t_sp *)obj.object)->rgb;
+		ret = uv_pattern_at(uv_map_sphere(p, *((t_sp *)obj.object)));
 	else if (obj.type == CYLINDER)
-		ret = ((t_cy *)obj.object)->rgb;
+		// ret = ((t_cy *)obj.object)->rgb;
+		ret = uv_pattern_at(uv_map_cylinder(p, *((t_cy *)obj.object)));
 	else
-		ret = ((t_pl *)obj.object)->rgb;
+		// ret = ((t_pl *)obj.object)->rgb;
+		ret = uv_pattern_at(uv_map_plane(p, *((t_pl *)obj.object)));
 	return (mult_rgb_vec(ret, lighting));
 }
 
@@ -1026,7 +1062,7 @@ int	trace_ray(t_img *img, t_world *world, t_ray ray, int i)
 	// 	//default
 	// 	return (0);
 	// }
-	color = get_obj_rgb(obj,
+	color = get_obj_rgb(obj, p,
 		compute_lighting(p, n, vec_neg(vec_normalize(ray.dir)), *world));
 	dot_pixel(img, color, i);
 	return (0);
