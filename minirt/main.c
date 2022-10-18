@@ -146,6 +146,7 @@ typedef struct s_equation
 	double	c;
 }	t_equation;
 
+t_vec	get_ab_vec(t_vec);
 
 int	check_rgb(t_rgb rgb)
 {
@@ -799,22 +800,51 @@ t_uv	uv_map_sphere(t_coord p, t_sp sp)
 	t_vec	vec;
 
 	vec = vec_normalize(vec_sub(p, sp.coord));
-	uv.u = 0.5 + atan2(vec.x, vec.z) / (2 * M_PI);
-	uv.v = 0.5 + asin(vec.y) / M_PI;
+	uv.u = 0.5 + atan2(vec.x, vec.y) / (2 * M_PI);
+	uv.v = 0.5 + asin(vec.z) / M_PI;
 	return (uv);
 }
 
-t_uv	uv_map_planar(t_coord p, t_pl pl)
+t_uv	uv_map_plane(t_coord p, t_pl pl)
 {
+	t_vec	coord_to_cam;
+	t_vec	e1;
+	t_vec	e2;
 
+	p = vec_scale(p, 1.0 / P_WID);
+	coord_to_cam = vec_normalize(vec_sub((t_vec){pl.coord.x - 1, pl.coord.y - 1, pl.coord.z - 1}, pl.coord));
+	e1 = vec_sub(coord_to_cam, vec_proj(coord_to_cam, pl.norm));
+	e2 = vec_cross(pl.norm, coord_to_cam);
+	return ((t_uv){vec_dot(p, e1), vec_dot(p, e2)});
+	// (void)camera;
+	// p = vec_scale(p, 1.0 / P_WID);
+	// if (fabs(pl.norm.y) > 1e-6)
+	// 	return ((t_uv){p.x - floor(p.x), p.z - floor(p.z)});
+	// else if (fabs(pl.norm.x) > 1e-6)
+	// 	return ((t_uv){p.y - floor(p.y), p.z - floor(p.z)});
+	// return ((t_uv){p.x - floor(p.x), p.y - floor(p.y)});
 }
 
+// t_uv	uv_map_cylinder(t_coord p, t_cy cy)
+// {
+// 	t_vec	e1;
+// 	t_vec	e2;
+// 	double	p1;
+// 	double	p2;
+
+// 	e1 = vec_normalize(vec_cross(cy.norm, vec_sub(p, cy.coord)));
+// 	e2 = vec_normalize(vec_cross(cy.norm, e1));
+// 	p1 = vec_dot(p, e1);
+// 	p2 = vec_dot(p, e2);
+// 	return ((t_uv){1 - (atan2(p1, p2) / (2 * M_PI) + 0.5), cy.norm - floor(p.z)});
+// }
+
 // u, v are in [0, 1]
-t_rgb	uv_pattern_at(t_uv uv)
+t_rgb	uv_pattern_at(t_uv uv, int w, int h)
 {
-	if (((int)floor(uv.u * 16) + (int)floor(uv.v * 8)) % 2)
+	if (((int)floor(uv.u * w) + (int)floor(uv.v * h)) % 2)
 		return ((t_rgb){0, 255, 0});
-	return ((t_rgb){0, 0, 0});
+	return ((t_rgb){255, 255, 255});
 }
 
 int	open_file(char *path)
@@ -935,7 +965,7 @@ t_vec	get_ab_vec(t_vec v)
 {
 	t_vec	ret;
 
-	if (v.x == 0 && v.y == 0 && (v.z == 1 || v.z == -1))
+	if (fabs(v.x) < 1e-6 && fabs(v.y) < 1e-6 && (fabs(v.z - 1) < 1e-6 || fabs(v.z - 1) < 1e-6))
 	{
 		ret.x = 1;
 		ret.y = 0;
@@ -993,13 +1023,13 @@ t_rgb	get_obj_rgb(t_obj obj, t_coord p, t_vec lighting)
 	(void)p;
 	if (obj.type == SPHERE)
 		// ret = ((t_sp *)obj.object)->rgb;
-		ret = uv_pattern_at(uv_map_sphere(p, *((t_sp *)obj.object)));
+		ret = uv_pattern_at(uv_map_sphere(p, *((t_sp *)obj.object)), 16, 8);
 	else if (obj.type == CYLINDER)
-		// ret = ((t_cy *)obj.object)->rgb;
-		ret = uv_pattern_at(uv_map_cylinder(p, *((t_cy *)obj.object)));
+		ret = ((t_cy *)obj.object)->rgb;
+		// ret = uv_pattern_at(uv_map_cylinder(p, *((t_cy *)obj.object)), 16, 8);
 	else
 		// ret = ((t_pl *)obj.object)->rgb;
-		ret = uv_pattern_at(uv_map_plane(p, *((t_pl *)obj.object)));
+		ret = uv_pattern_at(uv_map_plane(p, *((t_pl *)obj.object)), 16, 16);
 	return (mult_rgb_vec(ret, lighting));
 }
 
@@ -1045,23 +1075,16 @@ t_vec	get_tangent_norm(t_obj	obj, t_coord p)
 
 int	trace_ray(t_img *img, t_world *world, t_ray ray, int i)
 {
-	t_obj	obj;
-	// t_ray	l_ray;
-	t_rgb	color;
-	t_coord	p;
-	t_vec	n;
+	t_obj			obj;
+	t_rgb			color;
+	t_coord			p;
+	t_vec			n;
 
 	if (!intersect(ray, *world, &obj))
 		return (0);
 	//background color
 	p = vec_add(ray.pos, vec_scale(ray.dir, obj.t));
 	n = get_tangent_norm(obj, p);
-	// l_ray = get_l_ray(world->l, ray, obj);
-	// if (check_shadow(*world, l_ray))
-	// {
-	// 	//default
-	// 	return (0);
-	// }
 	color = get_obj_rgb(obj, p,
 		compute_lighting(p, n, vec_neg(vec_normalize(ray.dir)), *world));
 	dot_pixel(img, color, i);
