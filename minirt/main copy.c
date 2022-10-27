@@ -172,7 +172,10 @@ typedef struct s_vec4
 
 typedef struct s_mat
 {
-	double	arr[4][4];
+	t_vec4	r1;
+	t_vec4	r2;
+	t_vec4	r3;
+	t_vec4	r4;
 	int		len;
 }	t_mat;
 
@@ -636,59 +639,84 @@ t_vec4	vec_to_vec4(t_vec v)
 	return ((t_vec4){v.x, v.y, v.z, 1});
 }
 
-t_vec4	arr_to_vec4(double arr[4])
-{
-	return ((t_vec4){arr[0], arr[1], arr[2], arr[3]});
-}
-
 t_mat	mat_transpose(t_mat	mat)
 {
-	return ((t_mat){mat.arr[0][0], mat.arr[1][0], mat.arr[2][0], mat.arr[3][0],
-		mat.arr[0][1], mat.arr[1][1], mat.arr[2][1], mat.arr[3][1],
-		mat.arr[0][2], mat.arr[1][2], mat.arr[2][2], mat.arr[3][2],
-		mat.arr[0][3], mat.arr[1][3], mat.arr[2][3], mat.arr[3][3],
-		mat.len});
+	return ((t_mat){mat.r1.x, mat.r2.x, mat.r3.x, mat.r4.x,
+		mat.r1.y, mat.r2.y, mat.r3.y, mat.r4.y,
+		mat.r1.z, mat.r2.z, mat.r3.z, mat.r4.z,
+		mat.r1.w, mat.r2.w, mat.r3.w, mat.r4.w});
+}
+
+void	set_submat_row(double **row[4], t_vec4 *mat[4], int c, int mat_len)
+{
+	int	j;
+	int	row_j;
+
+	j = -1;
+	row_j = -1;
+	while (++j < mat_len)
+	{
+		if (j == c)
+			continue ;
+		*((*row)[++row_j]) = 
+	}
 }
 
 t_mat	mat_submat(t_mat mat, int r, int c)
 {
 	t_mat	ret;
-	int		ret_i;
-	int		ret_j;
+	t_vec4	*arr[4];
+	double	*row[4];
 	int		i;
 	int		j;
 
+	arr[0] = &(mat.r1); // mat_to_arr func
+	arr[1] = &(mat.r2);
+	arr[2] = &(mat.r3);
+	arr[3] = &(mat.r4);
 	i = -1;
-	ret_i = -1;
 	while (++i < mat.len)
 	{
 		if (i == r)
 			continue ;
-		++ret_i;
-		j = -1;
-		ret_j = -1;
-		while (++j < mat.len)
-		{
-			if (j == c)
-				continue ;
-			ret.arr[ret_i][++ret_j] = mat.arr[i][j];
-		}
+		row[0] = &(arr[i]->x); // row_to_arr func
+		row[1] = &(arr[i]->y);
+		row[2] = &(arr[i]->z);
+		row[3] = &(arr[i]->w);
+		set_submat_row(&row, arr, c, mat.len);
 	}
-	ret.len = mat.len - 1;
-	return (ret);
+
+	int tempCol = 0;
+	int tempRow = 0;
+	double[][] temp = new double[matrix.length - 1][matrix[0].length - 1];
+	for (int j = 0; j < matrix[0].length; j++) {
+		if (j == col) continue;
+		for (int i = 0; i < matrix.length; i++) {
+			if (i == row) continue;
+			temp[tempRow++][tempCol] = matrix[i][j];
+		}
+		tempRow = 0;
+		tempCol++;
+	}
+	return temp;
 }
 
 double	mat_determinant(t_mat mat)
 {
 	double	det;
+	double	row1[4];
 	int		i;
 
 	det = 0;
 	if (mat.len == 2)
-		return (mat.arr[0][0] * mat.arr[1][1] - mat.arr[0][1] * mat.arr[1][0]);
+		return (mat.r1.x * mat.r2.y - mat.r1.y * mat.r2.x);
+	row1[0] = mat.r1.x;
+	row1[1] = mat.r1.y;
+	row1[2] = mat.r1.z;
+	row1[3] = mat.r1.w;
 	i = -1;
 	while (++i < mat.len)
-		det += mat.arr[0][i]
+		det += row1[i]
 			* (1 - 2 * (i % 2)) * mat_determinant(mat_submat(mat, 0, i));
 	return (det);
 }
@@ -700,35 +728,22 @@ t_mat	mat_inverse(t_mat mat) // this function is used only for rotation transfor
 
 t_vec4	mat_mul_vec4(t_mat mat, t_vec4 v)
 {
-	return ((t_vec4){vec4_dot(arr_to_vec4(mat.arr[0]), v),
-		vec4_dot(arr_to_vec4(mat.arr[1]), v),
-		vec4_dot(arr_to_vec4(mat.arr[2]), v),
-		vec4_dot(arr_to_vec4(mat.arr[3]), v)});
+	return ((t_vec4){vec4_dot(mat.r1, v), vec4_dot(mat.r2, v),
+		vec4_dot(mat.r3, v), vec4_dot(mat.r4, v)});
 }
 
 t_mat	mat_mul(t_mat mat1, t_mat mat2)
 {
-	t_mat	ret;
-	int		i;
-	int		j;
-	double	element;
+	t_mat	mat2T;
 
-	i = -1;
-	while (++i < 4)
-	{
-		j = -1;
-		element = 0;
-		while (++j < 4)
-			element += mat1.arr[i][j] * mat2.arr[j][i];
-		ret.arr[i][j] = element;
-	}
-	ret.len = 4;
-	return (ret);
+	mat2T = mat_transpose(mat2);
+	return ((t_mat){mat_mul_vec4(mat2T, mat1.r1), mat_mul_vec4(mat2T, mat1.r2),
+		mat_mul_vec4(mat2T, mat1.r3), mat_mul_vec4(mat2T, mat1.r4)});
 }
 
 t_mat	mat_translation(double x, double y, double z)
 {
-	return ((t_mat){1, 0, 0, x,	0, 1, 0, y,	0, 0, 1, z,	0, 0, 0, 1,	4});
+	return ((t_mat){{1, 0, 0, x}, {0, 1, 0, y}, {0, 0, 1, z}, {0, 0, 0, 1}});
 }
 
 t_mat	mat_rotation(void)
@@ -747,9 +762,9 @@ t_vec	mat_op_on_vec_z(t_vec forward, t_mat mat_op) // forward를 z축으로 변�
 	rx = (t_mat){1, 0, 0, 0,
 		0, (forward.z / len_yz), -(forward.y / len_yz), 0,
 		0, (forward.y / len_yz), (forward.z / len_yz), 0,
-		0, 0, 0, 1, 4};
+		0, 0, 0, 1};
 	ry = (t_mat){len_yz, 0, -forward.x, 0, 0, 1, 0, 0,
-		forward.x, 0, len_yz, 0, 0, 0, 0, 1, 4};
+		forward.x, 0, len_yz, 0, 0, 0, 0, 1};
 	res = mat_mul_vec4(mat_mul(mat_inverse(rx), mat_mul(mat_inverse(ry),
 		mat_mul(mat_op, mat_mul(ry, rx)))), vec_to_vec4(forward));
 	return ((t_vec){res.x, res.y, res.z});
