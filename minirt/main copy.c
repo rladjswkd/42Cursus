@@ -778,25 +778,25 @@ t_mat	mat_rx(void)
 {
 	return ((t_mat){{
 		{1, 0, 0, 0},
-		{0, cos(R_RAD), -sin(R_RAD), 0},
-		{0, sin(R_RAD), cos(R_RAD), 0},
+		{0, cos(RAD), -sin(RAD), 0},
+		{0, sin(RAD), cos(RAD), 0},
 		{0, 0, 0, 1}}, 4});
 }
 
 t_mat	mat_ry(void)
 {
 	return ((t_mat){{
-		{cos(R_RAD), 0, sin(R_RAD), 0},
+		{cos(RAD), 0, sin(RAD), 0},
 		{0, 1, 0, 0},
-		{-sin(R_RAD), 0, cos(R_RAD), 0},
+		{-sin(RAD), 0, cos(RAD), 0},
 		{0, 0, 0, 1}}, 4});	
 }
 
 t_mat	mat_rz(void)
 {
 	return ((t_mat){{
-		{cos(R_RAD), -sin(R_RAD), 0, 0},
-		{sin(R_RAD), cos(R_RAD), 0, 0},
+		{cos(RAD), -sin(RAD), 0, 0},
+		{sin(RAD), cos(RAD), 0, 0},
 		{0, 0, 1, 0},
 		{0, 0, 0, 1}}, 4});
 }
@@ -1552,7 +1552,7 @@ int	trace_ray(t_img *img, t_world *world, t_ray ray, int i)
 
 // 	right = vec_normalize(vec_cross(forward, get_viewport_vec(forward)));
 // 	up = vec_normalize(vec_cross(right, forward));
-// 	return (vec_add(vec_scale(forward, cos(R_RAD)), vec_scale(up, sin(R_RAD))));
+// 	return (vec_add(vec_scale(forward, cos(RAD)), vec_scale(up, sin(RAD))));
 // }
 
 // // forward and right are on a plane and up is it's forward.
@@ -1562,7 +1562,7 @@ int	trace_ray(t_img *img, t_world *world, t_ray ray, int i)
 // 	t_vec	right;
 
 // 	right = vec_normalize(vec_cross(forward, get_viewport_vec(forward)));
-// 	return (vec_add(vec_scale(forward, cos(R_RAD)), vec_scale(right, sin(R_RAD))));
+// 	return (vec_add(vec_scale(forward, cos(RAD)), vec_scale(right, sin(RAD))));
 // }
 
 void	*drawing(void *b_pram)

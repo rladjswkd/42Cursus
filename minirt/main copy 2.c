@@ -625,16 +625,10 @@ t_vec	vec_neg(t_vec vec)
 	return ((t_vec){-vec.x, -vec.y, -vec.z});
 }
 
-void	print_vector(char *str, t_vec vec) //////////
-{
-	printf("%s", str);
-	printf("<%f\t%f\t%f>\n", vec.x, vec.y, vec.z);
-}
-
 /********************matrices*************************/
 void	print_matrix(t_mat mat) //////////
 {
-	printf("|%f,\t%f,\t%f,\t%f|\n|%f,\t%f,\t%f,\t%f|\n|%f,\t%f,\t%f,\t%f|\n|%f,\t%f,\t%f,\t%f|\n\n",
+	printf("(%f,\t%f,\t%f,\t%f)\n(%f,\t%f,\t%f,\t%f)\n(%f,\t%f,\t%f,\t%f)\n(%f,\t%f,\t%f,\t%f)\n\n",
 		mat.arr[0][0], mat.arr[0][1], mat.arr[0][2], mat.arr[0][3],
 		mat.arr[1][0], mat.arr[1][1], mat.arr[1][2], mat.arr[1][3],
 		mat.arr[2][0], mat.arr[2][1], mat.arr[2][2], mat.arr[2][3],
@@ -816,6 +810,25 @@ t_mat	mat_rz(double cosine, double sine)
 		{0, 0, 0, 1}}, 4});
 }
 
+t_vec	mat_rotate_axis(t_vec forward, t_mat mat_op)
+{
+	t_vec4	res;
+
+	res = mat_mul_vec4(mat_op, vec_to_vec4(forward));
+	return ((t_vec){res.x, res.y, res.z});
+}
+
+// t_mat	get_rx_to_z(double cosine, double sine, double y, double z)
+// {
+// 	t_mat	mat_arr[4];
+
+// 	mat_arr[0] = mat_rx(cosine, sine);
+// 	mat_arr[1] = mat_rx(cosine, -sine);
+// 	mat_arr[3] = mat_rx(-cosine, -sine);
+// 	mat_arr[2] = mat_rx(-cosine, sine);
+// 	return (mat_arr[y < 0 + 2 * (z < 0)]);
+// }
+
 t_mat	get_rx_to_z(t_vec forward)
 {
 	double	len_yz_proj;
@@ -824,52 +837,57 @@ t_mat	get_rx_to_z(t_vec forward)
 	t_mat	mat_arr[4];
 
 	len_yz_proj = sqrt(pow(forward.y, 2) + pow(forward.z, 2));
-	cosine = fabs(forward.z) / len_yz_proj;	// xy 또는 xz 평면상에 존재할 땐 별도로 처리해줘야 함
+	cosine = fabs(forward.z) / len_yz_proj;
 	sine = fabs(forward.y) / len_yz_proj;
-	mat_arr[0] = mat_rx(cosine, sine);		// 1사분면
-	mat_arr[1] = mat_rx(cosine, -sine);		// 2사분면
-	mat_arr[3] = mat_arr[1];				// 3사분면
-	mat_arr[2] = mat_arr[0];				// 4사분면
-	return (mat_arr[(fabs(forward.y) > 1e-6 && forward.y < 0)
-		+ (fabs(forward.z) > 1e-6 && 2 * (forward.z < 0))]);
+	mat_arr[0] = mat_rx(cosine, sine);
+	mat_arr[1] = mat_rx(cosine, -sine);
+	mat_arr[3] = mat_rx(-cosine, -sine);
+	mat_arr[2] = mat_rx(-cosine, sine);
+	return (mat_arr[forward.y < 0 + 2 * (forward.z < 0)]);
 }
 
-t_mat	get_ry_to_z(t_vec forward)	// 이미 rx로 회전해서 xz 평면상에 존재하는 백터에 대해 동작.
+// t_mat	get_ry_to_z(double cosine, double sine, double x, double z)
+// {
+// 	t_mat	mat_arr[4];
+
+// 	mat_arr[0] = mat_ry(cosine, sine);
+// 	mat_arr[1] = mat_ry(cosine, -sine);
+// 	mat_arr[3] = mat_ry(-cosine, -sine);
+// 	mat_arr[2] = mat_ry(-cosine, sine);
+// 	return (mat_arr[x < 0 + 2 * (z < 0)]);
+// }
+
+t_mat	get_ry_to_z(t_vec on_xz)
 {
+	double	len_on_xz;
 	double	cosine;
 	double	sine;
 	t_mat	mat_arr[4];
-	// xy 또는 xz 평면상에 존재할 땐 별도로 처리해줘야 함
-	cosine = fabs(forward.z);
-	sine = fabs(forward.x);
-	mat_arr[0] = mat_ry(cosine, -sine);		// 1사분면
-	mat_arr[1] = mat_ry(cosine, sine);		// 2사분면
-	mat_arr[3] = mat_arr[1];				// 3사분면
-	mat_arr[2] = mat_arr[0];				// 4사분면
-	return (mat_arr[(fabs(forward.x) > 1e-6 && forward.x < 0)
-		+ (fabs(forward.z) > 1e-6 && 2 * (forward.z < 0))]);
+
+	len_on_xz = vec_len(on_xz);
+	cosine = fabs(on_xz.z) / len_on_xz;
+	sine = fabs(on_xz.x) / len_on_xz;
+	mat_arr[0] = mat_ry(cosine, sine);
+	mat_arr[1] = mat_ry(cosine, -sine);
+	mat_arr[3] = mat_ry(-cosine, -sine);
+	mat_arr[2] = mat_ry(-cosine, sine);
+	return (mat_arr[on_xz.x < 0 + 2 * (on_xz.z < 0)]);
 }
 
-t_vec	mat_rotate_arbitrary(t_vec forward, t_mat rot) // forward를 z축으로 변환 후 rot 적용하고 다시 원래의 vec으로 변환
+t_vec	mat_rotate_arbitrary(t_vec forward, t_mat mat_op) // forward를 z축으로 변환 후 mat_op 적용하고 다시 원래의 vec으로 변환
 {
+	double	l_yz;
 	t_mat	rx;
 	t_mat	ry;
 	t_vec4	res;
-	t_vec	normalized;
-
-		// xy 또는 xz 평면상에 존재할 땐 별도로 처리해줘야 함
+	
+	l_yz = sqrt(pow(forward.y, 2) + pow(forward.z, 2));
 	rx = get_rx_to_z(forward);
-	// res = mat_mul_vec4(mat_mul(mat_transpose(rx), mat_mul(mat_transpose(ry),
-	// 	mat_mul(rot, mat_mul(ry, rx)))), vec_to_vec4(forward));
 	res = mat_mul_vec4(rx, vec_to_vec4(forward));
-	// print_vector("after rx: ", (t_vec){res.x, res.y, res.z});
 	ry = get_ry_to_z((t_vec){res.x, res.y, res.z});
-	res = mat_mul_vec4(ry, res);
-	normalized = vec_normalize((t_vec){res.x, res.y, res.z});
-	res = (t_vec4){normalized.x, normalized.y, normalized.z, 1};
-	// print_vector("after ry: ", (t_vec){res.x, res.y, res.z});
-	res = mat_mul_vec4(mat_mul(mat_transpose(rx), mat_mul(mat_transpose(ry), rot)), res);
-	// print_vector((t_vec){res.x, res.y, res.z});
+	res = mat_mul_vec4(mat_mul(mat_inverse(rx), mat_mul(mat_inverse(ry),
+		mat_mul(mat_op, ry))), res);
+	printf("rotated : <%f, %f, %f>\n", res.x, res.y, res.z);
 	return ((t_vec){res.x, res.y, res.z});
 }
 
@@ -1771,7 +1789,26 @@ int	main(int argc, char **argv)
 		}
 		vars.obj.type = CYLINDER;
 		vars.obj.object = world.cy->data;
-		print_vector("", ((t_cy *)(vars.obj.object))->norm);
+		printf("(%f,\t%f,\t%f,\t%f)\n(%f,\t%f,\t%f,\t%f)\n(%f,\t%f,\t%f,\t%f)\n(%f,\t%f,\t%f,\t%f)\n\n",
+			mat_rx(cos(RAD), sin(RAD)).arr[0][0], mat_rx(cos(RAD), sin(RAD)).arr[0][1], mat_rx(cos(RAD), sin(RAD)).arr[0][2], mat_rx(cos(RAD), sin(RAD)).arr[0][3],
+			mat_rx(cos(RAD), sin(RAD)).arr[1][0], mat_rx(cos(RAD), sin(RAD)).arr[1][1], mat_rx(cos(RAD), sin(RAD)).arr[1][2], mat_rx(cos(RAD), sin(RAD)).arr[1][3],
+			mat_rx(cos(RAD), sin(RAD)).arr[2][0], mat_rx(cos(RAD), sin(RAD)).arr[2][1], mat_rx(cos(RAD), sin(RAD)).arr[2][2], mat_rx(cos(RAD), sin(RAD)).arr[2][3],
+			mat_rx(cos(RAD), sin(RAD)).arr[3][0], mat_rx(cos(RAD), sin(RAD)).arr[3][1], mat_rx(cos(RAD), sin(RAD)).arr[3][2], mat_rx(cos(RAD), sin(RAD)).arr[3][3]);
+		printf("(%f,\t%f,\t%f,\t%f)\n(%f,\t%f,\t%f,\t%f)\n(%f,\t%f,\t%f,\t%f)\n(%f,\t%f,\t%f,\t%f)\n\n",
+			mat_inverse(mat_rx(cos(RAD), sin(RAD))).arr[0][0], mat_inverse(mat_rx(cos(RAD), sin(RAD))).arr[0][1], mat_inverse(mat_rx(cos(RAD), sin(RAD))).arr[0][2], mat_inverse(mat_rx(cos(RAD), sin(RAD))).arr[0][3],
+			mat_inverse(mat_rx(cos(RAD), sin(RAD))).arr[1][0], mat_inverse(mat_rx(cos(RAD), sin(RAD))).arr[1][1], mat_inverse(mat_rx(cos(RAD), sin(RAD))).arr[1][2], mat_inverse(mat_rx(cos(RAD), sin(RAD))).arr[1][3],
+			mat_inverse(mat_rx(cos(RAD), sin(RAD))).arr[2][0], mat_inverse(mat_rx(cos(RAD), sin(RAD))).arr[2][1], mat_inverse(mat_rx(cos(RAD), sin(RAD))).arr[2][2], mat_inverse(mat_rx(cos(RAD), sin(RAD))).arr[2][3],
+			mat_inverse(mat_rx(cos(RAD), sin(RAD))).arr[3][0], mat_inverse(mat_rx(cos(RAD), sin(RAD))).arr[3][1], mat_inverse(mat_rx(cos(RAD), sin(RAD))).arr[3][2], mat_inverse(mat_rx(cos(RAD), sin(RAD))).arr[3][3]);
+		printf("(%f,\t%f,\t%f,\t%f)\n(%f,\t%f,\t%f,\t%f)\n(%f,\t%f,\t%f,\t%f)\n(%f,\t%f,\t%f,\t%f)\n\n",
+			mat_ry(cos(RAD), sin(RAD)).arr[0][0], mat_ry(cos(RAD), sin(RAD)).arr[0][1], mat_ry(cos(RAD), sin(RAD)).arr[0][2], mat_ry(cos(RAD), sin(RAD)).arr[0][3],
+			mat_ry(cos(RAD), sin(RAD)).arr[1][0], mat_ry(cos(RAD), sin(RAD)).arr[1][1], mat_ry(cos(RAD), sin(RAD)).arr[1][2], mat_ry(cos(RAD), sin(RAD)).arr[1][3],
+			mat_ry(cos(RAD), sin(RAD)).arr[2][0], mat_ry(cos(RAD), sin(RAD)).arr[2][1], mat_ry(cos(RAD), sin(RAD)).arr[2][2], mat_ry(cos(RAD), sin(RAD)).arr[2][3],
+			mat_ry(cos(RAD), sin(RAD)).arr[3][0], mat_ry(cos(RAD), sin(RAD)).arr[3][1], mat_ry(cos(RAD), sin(RAD)).arr[3][2], mat_ry(cos(RAD), sin(RAD)).arr[3][3]);
+		printf("(%f,\t%f,\t%f,\t%f)\n(%f,\t%f,\t%f,\t%f)\n(%f,\t%f,\t%f,\t%f)\n(%f,\t%f,\t%f,\t%f)\n",
+			mat_inverse(mat_ry(cos(RAD), sin(RAD))).arr[0][0], mat_inverse(mat_ry(cos(RAD), sin(RAD))).arr[0][1], mat_inverse(mat_ry(cos(RAD), sin(RAD))).arr[0][2], mat_inverse(mat_ry(cos(RAD), sin(RAD))).arr[0][3],
+			mat_inverse(mat_ry(cos(RAD), sin(RAD))).arr[1][0], mat_inverse(mat_ry(cos(RAD), sin(RAD))).arr[1][1], mat_inverse(mat_ry(cos(RAD), sin(RAD))).arr[1][2], mat_inverse(mat_ry(cos(RAD), sin(RAD))).arr[1][3],
+			mat_inverse(mat_ry(cos(RAD), sin(RAD))).arr[2][0], mat_inverse(mat_ry(cos(RAD), sin(RAD))).arr[2][1], mat_inverse(mat_ry(cos(RAD), sin(RAD))).arr[2][2], mat_inverse(mat_ry(cos(RAD), sin(RAD))).arr[2][3],
+			mat_inverse(mat_ry(cos(RAD), sin(RAD))).arr[3][0], mat_inverse(mat_ry(cos(RAD), sin(RAD))).arr[3][1], mat_inverse(mat_ry(cos(RAD), sin(RAD))).arr[3][2], mat_inverse(mat_ry(cos(RAD), sin(RAD))).arr[3][3]);
 		mlx_key_hook(vars.win, key_press_handler, &vars);
 		mlx_loop(vars.mlx);
 	}

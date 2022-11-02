@@ -187,25 +187,25 @@ t_mat	mat_rx(void)
 {
 	return ((t_mat){{
 		{1, 0, 0, 0},
-		{0, cos(R_RAD), -sin(R_RAD), 0},
-		{0, sin(R_RAD), cos(R_RAD), 0},
+		{0, cos(RAD), -sin(RAD), 0},
+		{0, sin(RAD), cos(RAD), 0},
 		{0, 0, 0, 1}}, 4});
 }
 
 t_mat	mat_ry(void)
 {
 	return ((t_mat){{
-		{cos(R_RAD), 0, sin(R_RAD), 0},
+		{cos(RAD), 0, sin(RAD), 0},
 		{0, 1, 0, 0},
-		{-sin(R_RAD), 0, cos(R_RAD), 0},
+		{-sin(RAD), 0, cos(RAD), 0},
 		{0, 0, 0, 1}}, 4});	
 }
 
 t_mat	mat_rz(void)
 {
 	return ((t_mat){{
-		{cos(R_RAD), -sin(R_RAD), 0, 0},
-		{sin(R_RAD), cos(R_RAD), 0, 0},
+		{cos(RAD), -sin(RAD), 0, 0},
+		{sin(RAD), cos(RAD), 0, 0},
 		{0, 0, 1, 0},
 		{0, 0, 0, 1}}, 4});
 }
