@@ -824,7 +824,7 @@ t_mat	get_rx_to_z(t_vec forward)
 	t_mat	mat_arr[4];
 
 	len_yz_proj = sqrt(pow(forward.y, 2) + pow(forward.z, 2));
-	cosine = fabs(forward.z) / len_yz_proj;	// xy 또는 xz 평면상에 존재할 땐 별도로 처리해줘야 함
+	cosine = fabs(forward.z) / len_yz_proj;	// xy 평면상에 존재할 땐 별도로 처리해줘야 함
 	sine = fabs(forward.y) / len_yz_proj;
 	mat_arr[0] = mat_rx(cosine, sine);		// 1사분면
 	mat_arr[1] = mat_rx(cosine, -sine);		// 2사분면
@@ -839,7 +839,7 @@ t_mat	get_ry_to_z(t_vec forward)	// 이미 rx로 회전해서 xz 평면상에 �
 	double	cosine;
 	double	sine;
 	t_mat	mat_arr[4];
-	// xy 또는 xz 평면상에 존재할 땐 별도로 처리해줘야 함
+	// xy 평면상에 존재할 땐 별도로 처리해줘야 함
 	cosine = fabs(forward.z);
 	sine = fabs(forward.x);
 	mat_arr[0] = mat_ry(cosine, -sine);		// 1사분면
@@ -857,7 +857,7 @@ t_vec	mat_rotate_arbitrary(t_vec forward, t_mat rot) // forward를 z축으로 �
 	t_vec4	res;
 	t_vec	normalized;
 
-		// xy 또는 xz 평면상에 존재할 땐 별도로 처리해줘야 함
+		// xy 평면상에 존재할 땐 별도로 처리해줘야 함
 	rx = get_rx_to_z(forward);
 	// res = mat_mul_vec4(mat_mul(mat_transpose(rx), mat_mul(mat_transpose(ry),
 	// 	mat_mul(rot, mat_mul(ry, rx)))), vec_to_vec4(forward));
