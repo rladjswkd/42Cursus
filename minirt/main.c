@@ -24,7 +24,7 @@
 #define DOWN		125
 #define P_WID 		1920
 #define P_HEI		1080
-#define THREAD		8
+#define THREAD		12
 #define RAD			30 * M_PI / 180
 #define Q			12 // linux 113, mac 12 rotate virtically
 #define E			14 // linux 101, mac 14 rotate horizontally
@@ -867,7 +867,7 @@ t_vec	mat_rotate_arbitrary(t_vec forward, t_mat rot) // forward를 z축으로 �
 	res = mat_mul_vec4(ry, res);
 	normalized = vec_normalize((t_vec){res.x, res.y, res.z});
 	res = (t_vec4){normalized.x, normalized.y, normalized.z, 1};
-	// print_vector("after ry: ", (t_vec){res.x, res.y, res.z});
+	print_vector("after ry: ", (t_vec){res.x, res.y, res.z});
 	res = mat_mul_vec4(mat_mul(mat_transpose(rx), mat_mul(mat_transpose(ry), rot)), res);
 	// print_vector((t_vec){res.x, res.y, res.z});
 	return ((t_vec){res.x, res.y, res.z});
@@ -1674,12 +1674,12 @@ int	create_thread_pram(t_world *world, t_vars *vars, t_thread_pram **pram)
 
 t_vec	mat_rotate_v(t_vec forward)
 {
-	return (mat_rotate_arbitrary(forward, mat_rx(cos(RAD), sin(RAD))));
+	return (vec_normalize(mat_rotate_arbitrary(forward, mat_rx(cos(RAD), sin(RAD)))));
 }
 
 t_vec	mat_rotate_h(t_vec forward)
 {
-	return (mat_rotate_arbitrary(forward, mat_ry(cos(RAD), sin(RAD))));
+	return (vec_normalize(mat_rotate_arbitrary(forward, mat_ry(cos(RAD), sin(RAD)))));
 }
 
 void	rotate_object(t_obj obj, int keycode)
@@ -1693,6 +1693,7 @@ void	rotate_object(t_obj obj, int keycode)
 	else
 		rotated = mat_rotate_h(current_object->norm);
 	current_object->norm = rotated;
+	print_vector("after operaton: ", rotated);
 }
 
 void	translate_object(t_obj obj, int keycode)
