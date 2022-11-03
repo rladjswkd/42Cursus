@@ -811,15 +811,6 @@ t_mat	mat_mul(t_mat mat1, t_mat mat2)
 	return (ret);
 }
 
-t_mat	mat_translation(double x, double y, double z)
-{
-	return ((t_mat){{
-		{1, 0, 0, x},
-		{0, 1, 0, y},
-		{0, 0, 1, z},
-		{0, 0, 0, 1}}, 4});
-}
-
 t_mat	mat_rx(double cosine, double sine)
 {
 	return ((t_mat){{
@@ -883,17 +874,26 @@ t_mat	get_ry_to_z(t_vec forward)	// 이미 rx로 회전해서 xz 평면상에 �
 		+ (fabs(forward.z) > 1e-6 && 2 * (forward.z < 0))]);
 }
 
-t_vec	rotate_normal(t_vec forward, t_mat rot) // forward를 z축으로 변환 후 rot 적용하고 다시 원래의 vec으로 변환
+t_mat	mat_translation(double dx, double dy, double dz)
+{
+	return ((t_mat){{
+		{1, 0, 0, dx},
+		{0, 1, 0, dy},
+		{0, 0, 1, dz},
+		{0, 0, 0, 1}}, 4});
+}
+
+t_vec	rotate_normal(t_vec vec, t_mat op) // forward를 z축으로 변환 후 op 적용하고 다시 원래의 vec으로 변환
 {
 	t_mat	rx;
 	t_mat	ry;
 	t_vec4	res;
 
-	rx = get_rx_to_z(forward);
-	res = mat_mul_vec4(rx, vec_to_vec4(forward));
+	rx = get_rx_to_z(vec);
+	res = mat_mul_vec4(rx, vec_to_vec4(vec));
 	ry = get_ry_to_z((t_vec){res.x, res.y, res.z});
 	res = mat_mul_vec4(ry, res);
-	res = mat_mul_vec4(rot, res);
+	res = mat_mul_vec4(op, res);
 	res = mat_mul_vec4(mat_transpose(ry), res);
 	res = mat_mul_vec4(mat_transpose(rx), res);
 	return ((t_vec){res.x, res.y, res.z});
@@ -1698,7 +1698,7 @@ int	create_thread_pram(t_world *world, t_vars *vars, t_thread_pram **pram)
 	return (1);
 }
 
-t_mat	mat_rotate(int angle)
+t_mat	rotate_latitude(int angle)
 {
 	double	rad;
 
@@ -1706,7 +1706,7 @@ t_mat	mat_rotate(int angle)
 	return (mat_rx(cos(rad), sin(rad)));
 }
 
-t_mat	mat_rotate_h(int angle)
+t_mat	rotate_longitude(int angle)
 {
 	double	rad;
 
@@ -1716,31 +1716,46 @@ t_mat	mat_rotate_h(int angle)
 
 void	rotate_object(t_obj obj, int keycode)
 {
-	int			is_one;
-	int			is_two;
-	int			is_three;
-	int			is_four;
-	t_obj_info	*info;
+	t_obj_info	*current_object;
+	int			latitude;
+	int			longitude;
 
-	is_one = (keycode == ONE);
-	is_two = (keycode == TWO);
-	is_three = (keycode == THREE);
-	is_four = (keycode == FOUR);
-	info = (t_obj_info *)(obj.object);
-	info->lati = (info->lati + (is_one * 30) + (is_two * -30)) % 360;
-	info->longi = (info->longi + (is_three * 30) + (is_four * -30)) % 360;
-	info->norm = rotate_normal(
-		info->norm_const,
-		mat_mul(mat_rotate_h(info->longi), mat_rotate(info->lati)));
+	current_object = (t_obj_info *)(obj.object);
+	latitude = current_object->lati;
+	longitude = current_object->longi;
+	latitude += (keycode == ONE) * ANGLE + (keycode == TWO) * -ANGLE;
+	latitude %= 360;
+	longitude += (keycode == THREE) * ANGLE + (keycode == FOUR) * -ANGLE;
+	longitude %= 360;
+	current_object->norm = rotate_normal(
+		current_object->norm_const,
+		mat_mul(rotate_longitude(longitude), rotate_latitude(latitude)));
 }
 
 void	translate_object(t_obj obj, int keycode)
 {
+	// t_obj_info	*current_object;
+	// t_vec4		translated;
+
+	// current_object = (t_obj_info *)(obj.object);
+	// translated = mat_mul_vec4(
+	// 	mat_translation(
+	// 		(keycode == W) - (keycode == S),
+	// 		(keycode == D) - (keycode == A),
+	// 		(keycode == E) - (keycode == Q)),
+	// 	vec_to_vec4(current_object->coord));
+	// current_object->coord = (t_vec){translated.x, translated.y, translated.z};
 	t_obj_info	*current_object;
 	t_coord		translated;
 
 	current_object = (t_obj_info *)(obj.object);
-	
+	translated = current_object->coord;
+	translated = (t_vec){
+		translated.x + (keycode == W) - (keycode == S),
+		translated.y + (keycode == D) - (keycode == A),
+		translated.z + (keycode == E) - (keycode == Q)
+	};
+	current_object->coord = translated;
 }
 
 int	key_press_handler(int code, t_vars *vars)
