@@ -1690,7 +1690,7 @@ int	create_thread_pram(t_world *world, t_vars *vars, t_thread_pram **pram)
 	return (1);
 }
 
-t_vec	mat_rotate_v(t_vec forward)
+t_vec	mat_rotate(t_vec forward)
 {
 	return (mat_rotate_arbitrary(forward, mat_rx(cos(RAD), sin(RAD))));
 }
@@ -1707,7 +1707,7 @@ void	rotate_object(t_obj obj, int keycode)
 
 	current_object = (t_obj_info *)(obj.object);
 	if (keycode == Q)
-		rotated = mat_rotate_v(current_object->norm);
+		rotated = mat_rotate(current_object->norm);
 	else
 		rotated = mat_rotate_h(current_object->norm);
 	current_object->norm = rotated;

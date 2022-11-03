@@ -22,16 +22,23 @@
 #define UP			126
 #define RIGHT		124
 #define DOWN		125
-#define P_WID 		1920
-#define P_HEI		1080
+#define P_WID 		1280
+#define P_HEI		720
 #define THREAD		12
-#define RAD			30 * M_PI / 180
-#define Q			12 // linux 113, mac 12 rotate virtically
-#define E			14 // linux 101, mac 14 rotate horizontally
+#define ANGLE		30
+
 #define W			13 // linux 97,  mac 13 move up
 #define A			0  // linux 115, mac 0  move left
 #define S			1  // linux 113, mac 1  move down
 #define D			2  // linux 101, mac 2  move right
+#define Q			12 // linux 113, mac 12 move forward
+#define E			14 // linux 101, mac 14 move backward
+
+#define ONE			18 // , mac 18 rotate forward
+#define TWO			19 // , mac 19 rotate backward
+#define THREE		20 // , mac 20 choose rotate circle forward
+#define FOUR		21 // , mac 21 choose rotate circle backward
+
 #define Z			6  // linux 122, mac 6  move forward
 #define X			7  // linux 120, mac 7  move back
 //#define	INFINITY	1e500
@@ -73,6 +80,9 @@ typedef struct s_obj_info
 {
 	t_coord	coord;
 	t_vec	norm;
+	int		lati;
+	int		longi;
+	t_vec	norm_const;
 }	t_obj_info;
 
 typedef struct s_ambient
@@ -92,6 +102,9 @@ typedef struct s_camera
 {
 	t_coord	coord;
 	t_vec	norm;
+	int		lati;
+	int		longi;
+	t_vec	norm_const;
 	int		fov;
 }	t_camera;
 
@@ -106,6 +119,9 @@ typedef struct s_plane
 {
 	t_coord	coord;
 	t_vec	norm;
+	int		lati;
+	int		longi;
+	t_vec	norm_const;
 	t_rgb	rgb;
 }	t_pl;
 
@@ -113,6 +129,9 @@ typedef struct s_cylinder
 {
 	t_coord	coord;
 	t_vec	norm;
+	int		lati;
+	int		longi;
+	t_vec	norm_const;
 	double	diameter;
 	double	height;
 	t_rgb	rgb;
@@ -345,6 +364,9 @@ int	set_camera(char **info, int cnt, t_world *world)
 		return (0);
 	if (!get_int(info[3], &fov)	|| fov < 0 || 180 < fov) // 180 0
 		return (0);
+	c->lati = 0;
+	c->longi = 0;
+	c->norm_const = c->norm;
 	c->fov = fov;
 	return (1);
 }
@@ -370,6 +392,9 @@ int	set_plane(char **info, int cnt, t_world *world)
 		return (0);
 	if (!set_rgb(info[3], &(pl->rgb)))
 		return (0);
+	pl->longi = 0;
+	pl->lati = 0;
+	pl->norm_const = pl->norm;
 	return (1);
 }
 
@@ -411,6 +436,9 @@ int	set_cylinder(char **info, int cnt, t_world *world)
 		return (0);
 	if (!set_rgb(info[5], &(cy->rgb)))
 		return (0);
+	cy->lati = 0;
+	cy->longi = 0;
+	cy->norm_const = cy->norm;
 	cy->diameter = diameter;
 	cy->height = height;
 	return (1);
@@ -436,6 +464,9 @@ int	set_cone(char **info, int cnt, t_world *world)
 		return (0);
 	if (!set_rgb(info[5], &(cn->rgb)))
 		return (0);
+	cn->lati = 0;
+	cn->longi = 0;
+	cn->norm_const = cn->norm;	
 	cn->diameter = diameter;
 	cn->height = height;
 	return (1);
@@ -823,8 +854,10 @@ t_mat	get_rx_to_z(t_vec forward)
 	double	sine;
 	t_mat	mat_arr[4];
 
+	if (fabs(fabs(forward.x) - 1) < 1e-6)
+		return (mat_rx(cos(M_PI / 2), (forward.x < 0) * sin(M_PI / 2)));
 	len_yz_proj = sqrt(pow(forward.y, 2) + pow(forward.z, 2));
-	cosine = fabs(forward.z) / len_yz_proj;	// xy 평면상에 존재할 땐 별도로 처리해줘야 함
+	cosine = fabs(forward.z) / len_yz_proj;
 	sine = fabs(forward.y) / len_yz_proj;
 	mat_arr[0] = mat_rx(cosine, sine);		// 1사분면
 	mat_arr[1] = mat_rx(cosine, -sine);		// 2사분면
@@ -839,7 +872,7 @@ t_mat	get_ry_to_z(t_vec forward)	// 이미 rx로 회전해서 xz 평면상에 �
 	double	cosine;
 	double	sine;
 	t_mat	mat_arr[4];
-	// xy 평면상에 존재할 땐 별도로 처리해줘야 함
+
 	cosine = fabs(forward.z);
 	sine = fabs(forward.x);
 	mat_arr[0] = mat_ry(cosine, -sine);		// 1사분면
@@ -850,26 +883,19 @@ t_mat	get_ry_to_z(t_vec forward)	// 이미 rx로 회전해서 xz 평면상에 �
 		+ (fabs(forward.z) > 1e-6 && 2 * (forward.z < 0))]);
 }
 
-t_vec	mat_rotate_arbitrary(t_vec forward, t_mat rot) // forward를 z축으로 변환 후 rot 적용하고 다시 원래의 vec으로 변환
+t_vec	rotate_normal(t_vec forward, t_mat rot) // forward를 z축으로 변환 후 rot 적용하고 다시 원래의 vec으로 변환
 {
 	t_mat	rx;
 	t_mat	ry;
 	t_vec4	res;
-	t_vec	normalized;
 
-		// xy 평면상에 존재할 땐 별도로 처리해줘야 함
 	rx = get_rx_to_z(forward);
-	// res = mat_mul_vec4(mat_mul(mat_transpose(rx), mat_mul(mat_transpose(ry),
-	// 	mat_mul(rot, mat_mul(ry, rx)))), vec_to_vec4(forward));
 	res = mat_mul_vec4(rx, vec_to_vec4(forward));
-	// print_vector("after rx: ", (t_vec){res.x, res.y, res.z});
 	ry = get_ry_to_z((t_vec){res.x, res.y, res.z});
 	res = mat_mul_vec4(ry, res);
-	normalized = vec_normalize((t_vec){res.x, res.y, res.z});
-	res = (t_vec4){normalized.x, normalized.y, normalized.z, 1};
-	print_vector("after ry: ", (t_vec){res.x, res.y, res.z});
-	res = mat_mul_vec4(mat_mul(mat_transpose(rx), mat_mul(mat_transpose(ry), rot)), res);
-	// print_vector((t_vec){res.x, res.y, res.z});
+	res = mat_mul_vec4(rot, res);
+	res = mat_mul_vec4(mat_transpose(ry), res);
+	res = mat_mul_vec4(mat_transpose(rx), res);
 	return ((t_vec){res.x, res.y, res.z});
 }
 
@@ -1672,71 +1698,63 @@ int	create_thread_pram(t_world *world, t_vars *vars, t_thread_pram **pram)
 	return (1);
 }
 
-t_vec	mat_rotate_v(t_vec forward)
+t_mat	mat_rotate(int angle)
 {
-	return (vec_normalize(mat_rotate_arbitrary(forward, mat_rx(cos(RAD), sin(RAD)))));
+	double	rad;
+
+	rad = angle * M_PI / 180;
+	return (mat_rx(cos(rad), sin(rad)));
 }
 
-t_vec	mat_rotate_h(t_vec forward)
+t_mat	mat_rotate_h(int angle)
 {
-	return (vec_normalize(mat_rotate_arbitrary(forward, mat_ry(cos(RAD), sin(RAD)))));
+	double	rad;
+
+	rad = angle * M_PI / 180;
+	return (mat_ry(cos(rad), sin(rad)));
 }
 
 void	rotate_object(t_obj obj, int keycode)
 {
-	t_vec		rotated;
-	t_obj_info	*current_object;
+	int			is_one;
+	int			is_two;
+	int			is_three;
+	int			is_four;
+	t_obj_info	*info;
 
-	current_object = (t_obj_info *)(obj.object);
-	if (keycode == Q)
-		rotated = mat_rotate_v(current_object->norm);
-	else
-		rotated = mat_rotate_h(current_object->norm);
-	current_object->norm = rotated;
-	print_vector("after operaton: ", rotated);
+	is_one = (keycode == ONE);
+	is_two = (keycode == TWO);
+	is_three = (keycode == THREE);
+	is_four = (keycode == FOUR);
+	info = (t_obj_info *)(obj.object);
+	info->lati = (info->lati + (is_one * 30) + (is_two * -30)) % 360;
+	info->longi = (info->longi + (is_three * 30) + (is_four * -30)) % 360;
+	info->norm = rotate_normal(
+		info->norm_const,
+		mat_mul(mat_rotate_h(info->longi), mat_rotate(info->lati)));
 }
 
 void	translate_object(t_obj obj, int keycode)
 {
-	(void)obj;
-	(void)keycode;
-	// t_coord		translated;
-	// t_vec		dv;
-	// t_obj_info	*current_object;
+	t_obj_info	*current_object;
+	t_coord		translated;
 
-	// current_object = (t_obj_info *)(obj.object);
-	// if (keycode == W || keycode == S)
-	// 	current_object->coord = 
-	// else if (keycode == A || keycode == D)
-	// else
-
-	// current_object->coord = translated;
+	current_object = (t_obj_info *)(obj.object);
+	
 }
 
-int	key_press_handler(int keycode, t_vars *vars)
+int	key_press_handler(int code, t_vars *vars)
 {
-	// printf("type is %d\n", vars->obj.type);
-	// printf("keycode is %d\n", keycode);
 	if (vars->obj.type == NONE)
 		return (0);
-	// printf("<%f %f %f>\n", ((t_cy *)(vars->obj.object))->norm.x, ((t_cy *)(vars->obj.object))->norm.y, ((t_cy *)(vars->obj.object))->norm.z);
-	if (keycode == Q || keycode == E)
-		rotate_object(vars->obj, keycode);
-	else if (keycode == W || keycode == A || keycode == S || keycode == D
-		|| keycode == Z || keycode == X)
-		translate_object(vars->obj, keycode);
+	if (code == ONE || code == TWO || code == THREE || code == FOUR)
+		rotate_object(vars->obj, code);
+	else if (code == W || code == A || code == S || code == D
+		|| code == Q || code == E)
+		translate_object(vars->obj, code);
 	draw_img(&(vars->world), vars);
 	return (0);
 }
-
-// int	main(void) //keycode tester
-// {
-// 	t_vars		vars;
-
-// 	init_mlx_pointers(&vars);
-// 	mlx_key_hook(vars.win, key_press_handler, &vars);
-// 	mlx_loop(vars.mlx);
-// }
 
 int	main(int argc, char **argv)
 {
@@ -1772,7 +1790,6 @@ int	main(int argc, char **argv)
 		}
 		vars.obj.type = CYLINDER;
 		vars.obj.object = world.cy->data;
-		print_vector("", ((t_cy *)(vars.obj.object))->norm);
 		mlx_key_hook(vars.win, key_press_handler, &vars);
 		mlx_loop(vars.mlx);
 	}
