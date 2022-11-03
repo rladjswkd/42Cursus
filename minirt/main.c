@@ -1727,6 +1727,8 @@ void	rotate_object(t_obj obj, int keycode)
 	latitude %= 360;
 	longitude += (keycode == THREE) * ANGLE + (keycode == FOUR) * -ANGLE;
 	longitude %= 360;
+	current_object->lati = latitude;
+	current_object->longi = longitude;
 	current_object->norm = rotate_normal(
 		current_object->norm_const,
 		mat_mul(rotate_longitude(longitude), rotate_latitude(latitude)));
