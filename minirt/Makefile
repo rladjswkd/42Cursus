@@ -15,6 +15,7 @@ RMFLAGS = -f
 
 %.o : %.c
 	$(CC) $(CFLAGS) -I/usr/include -Imlx_linux -O3 -c $< -o $@ -pthread
+#	$(CC) $(CFLAGS) -I/usr/include -Imlx_linux -g -c $< -o $@ -pthread
 
 all : $(NAME)
 

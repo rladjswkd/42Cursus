@@ -845,9 +845,12 @@ t_mat	get_rx_to_z(t_vec forward)
 	double	sine;
 	t_mat	mat_arr[4];
 
-	if (fabs(fabs(forward.x) - 1) < 1e-6)
-		return (mat_rx(cos(M_PI / 2), (forward.x < 0) * sin(M_PI / 2)));
+	// if (fabs(fabs(forward.x) - 1) < 1e-6)
+	// 	return (mat_rx(cos(M_PI / 2), forward.x * sin(M_PI / 2)));
 	len_yz_proj = sqrt(pow(forward.y, 2) + pow(forward.z, 2));
+// you need below if-statement because cosine-sine logic is not work if forward is on x-axis.
+	if (len_yz_proj < 1e-6) // this means forward is on x axis.
+		return (mat_rx(cos(M_PI / 2), forward.x * sin(M_PI / 2)));
 	cosine = fabs(forward.z) / len_yz_proj;
 	sine = fabs(forward.y) / len_yz_proj;
 	mat_arr[0] = mat_rx(cosine, sine);		// 1사분면
@@ -1611,31 +1614,6 @@ int	trace_ray(t_img *img, t_world *world, t_ray ray, int i)
 }
 /////////////////////////////////////////////////////
 
-// t_vec	vec_translate(t_vec v, double dx, double dy, double dz)
-// {
-// 	return ((t_vec){v.x + dx, v.y + dy, v.z + dz});
-// }
-
-// t_vec	vec_rotate_v(t_vec forward)
-// {
-// 	t_vec	up;
-// 	t_vec	right;
-
-// 	right = vec_normalize(vec_cross(forward, get_viewport_vec(forward)));
-// 	up = vec_normalize(vec_cross(right, forward));
-// 	return (vec_add(vec_scale(forward, cos(RAD)), vec_scale(up, sin(RAD))));
-// }
-
-// // forward and right are on a plane and up is it's forward.
-// // forward length is always 1.
-// t_vec	vec_rotate_h(t_vec forward)
-// {
-// 	t_vec	right;
-
-// 	right = vec_normalize(vec_cross(forward, get_viewport_vec(forward)));
-// 	return (vec_add(vec_scale(forward, cos(RAD)), vec_scale(right, sin(RAD))));
-// }
-
 void	*drawing(void *b_pram)
 {
 	t_thread_pram	pram;
@@ -1775,6 +1753,14 @@ int	key_press_handler(int code, t_vars *vars)
 	return (0);
 }
 
+int	mouse_handler(int button, int x, int y, t_vars *vars)
+{
+	(void)vars;
+	(void)button;
+	printf("%d, %d\n", x, y);
+	return (0);
+}
+
 int	main(int argc, char **argv)
 {
 	int				fd;
@@ -1807,9 +1793,10 @@ int	main(int argc, char **argv)
 			//free
 			return (1);
 		}
-		vars.obj.type = CONE;
-		vars.obj.object = world.cn->data;
+		vars.obj.type = CYLINDER;
+		vars.obj.object = world.cy->data;
 		mlx_key_hook(vars.win, key_press_handler, &vars);
+		mlx_mouse_hook(vars.win, mouse_handler, &vars);
 		mlx_loop(vars.mlx);
 	}
 	else
