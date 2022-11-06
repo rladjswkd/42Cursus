@@ -199,6 +199,7 @@ typedef struct s_mat
 }	t_mat;
 
 t_vec	get_basis_vec(t_vec);
+int	rotate_z_to_vec(t_vec, t_mat *);
 
 typedef struct s_viewport
 {
@@ -1356,6 +1357,21 @@ t_uv	uv_map_sphere(t_coord p, t_sp sp)
 	return (uv);
 }
 
+// t_uv	uv_map_plane(t_coord p, t_pl pl)
+// {
+// 	t_mat	z_to_n;
+// 	int		is_positive;
+// 	t_vec	e1;
+// 	t_vec	e2;
+
+// 	is_positive = rotate_z_to_vec(pl.norm, &z_to_n);
+// 	e1 = vec4_to_vec(mat_mul_vec4(z_to_n, (t_vec4){0, 1, 0, 1}));
+// 	e2 = vec4_to_vec(mat_mul_vec4(
+// 		z_to_n, (t_vec4){-1 + 2 * is_positive, 0, 0, 1}));
+// 	return ((t_uv){fabs(fmod(vec_dot(p, e1), 100)) / 100,
+// 		fabs(fmod(vec_dot(p, e2), 100)) / 100});
+// }
+
 t_uv	uv_map_plane(t_coord p, t_pl pl)
 {
 	t_vec	e1;
@@ -1428,6 +1444,17 @@ int	read_file(int fd, t_world *world)
 	if (!flag || !(mask & 1 << 0 && mask & 1 << 1 && mask & 1 << 2))
 		return (0);
 	return (1);
+}
+
+int	rotate_z_to_vec(t_vec vec, t_mat *ret)
+{
+	t_mat	rx;
+	t_mat	ry;
+
+	rx = get_rx_to_z(vec);
+	ry = get_ry_to_z(vec4_to_vec(mat_mul_vec4(rx, vec_to_vec4(vec))));
+	*ret = mat_mul(mat_transpose(rx), mat_transpose(ry));
+	return (mat_mul_vec4(*ret, vec_to_vec4(vec)).z > 0);
 }
 
 t_vec	get_basis_vec(t_vec v) // replace this function's content with <rotation_to_z>_<operation>_<inverse_from_z>.
@@ -1515,11 +1542,11 @@ t_rgb	get_obj_rgb(t_obj obj, t_coord p, t_vec lighting)
 		// ret = ((t_sp *)obj.object)->rgb;
 		ret = uv_pattern_at(uv_map_sphere(p, *((t_sp *)obj.object)), 16, 8);
 	else if (obj.type == PLANE)
-		// ret = ((t_pl *)obj.object)->rgb;
-		ret = uv_pattern_at(uv_map_plane(p, *((t_pl *)obj.object)), 16, 16);
+		ret = ((t_pl *)obj.object)->rgb;
+		// ret = uv_pattern_at(uv_map_plane(p, *((t_pl *)obj.object)), 16, 16);
 	else if (obj.type == CYLINDER)
-		ret = ((t_cy *)obj.object)->rgb;
-		// ret = uv_pattern_at(uv_map_cylinder(p, *((t_cy *)obj.object)), 16, 8);
+		// ret = ((t_cy *)obj.object)->rgb;
+		ret = uv_pattern_at(uv_map_cylinder(p, *((t_cy *)obj.object)), 16, 8);
 	else if (obj.type == CONE)
 		ret = ((t_cn *)obj.object)->rgb;
 		// ret = uv_pattern_at(uv_map_cone(p, *((t_cn *)obj.object)), 16, 8);
@@ -1832,8 +1859,8 @@ int	main(int argc, char **argv)
 			//free
 			return (1);
 		}
-		vars.obj.type = CAMERA;
-		vars.obj.object = &(world->c);//world->pl->data; 
+		vars.obj.type = CYLINDER;
+		vars.obj.object = world->cy->data; //&(world->c);
 		mlx_key_hook(vars.win, key_press_handler, &vars);
 		mlx_mouse_hook(vars.win, mouse_handler, &vars);
 		mlx_loop(vars.mlx);
