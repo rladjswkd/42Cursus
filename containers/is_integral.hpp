@@ -1,5 +1,3 @@
-#include <type_traits>
-
 namespace ft {
 	template <class T, T v>
 	struct integral_constant {
