@@ -1,3 +1,5 @@
+#ifndef IS_INTEGRAL_HPP
+# define IS_INTEGRAL_HPP
 namespace ft {
 	template <class T, T v>
 	struct integral_constant {
@@ -93,3 +95,4 @@ namespace ft {
 	template <>
 	struct is_integral<__uint128_t> : public true_type {};
 };
+#endif

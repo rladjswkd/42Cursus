@@ -1,3 +1,5 @@
+#ifndef ITERATOR_HPP
+# define ITERATOR_HPP
 namespace ft {
 	template <typename Iter>
 	struct iterator_traits {
@@ -26,4 +28,4 @@ namespace ft {
 		typedef std::random_access_iterator_tag		iterator_category;
 	};
 }
-
+#endif
