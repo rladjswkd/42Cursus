@@ -1,6 +1,14 @@
 #ifndef ITERATOR_HPP
 # define ITERATOR_HPP
+# include <stddef.h>
+
 namespace ft {
+	struct input_iterator_tag  {};
+	struct output_iterator_tag {};
+	struct forward_iterator_tag       : public input_iterator_tag         {};
+	struct bidirectional_iterator_tag : public forward_iterator_tag       {};
+	struct random_access_iterator_tag : public bidirectional_iterator_tag {};
+
 	template <typename Iter>
 	struct iterator_traits {
 		typedef typename Iter::iterator_category	iterator_category;
@@ -12,20 +20,91 @@ namespace ft {
 
 	template <typename T>
 	struct iterator_traits<T*> {
-		typedef std::ptrdiff_t						difference_type;
+		typedef ptrdiff_t							difference_type;
 		typedef T									value_type;
 		typedef T*									pointer;
 		typedef T&									reference;
-		typedef std::random_access_iterator_tag		iterator_category;
+		typedef random_access_iterator_tag			iterator_category;
 	};
 
 	template <typename T>
 	struct iterator_traits<const T*> {
-		typedef std::ptrdiff_t						difference_type;
+		typedef ptrdiff_t							difference_type;
 		typedef T									value_type;
 		typedef const T*							pointer;
 		typedef const T&							reference;
-		typedef std::random_access_iterator_tag		iterator_category;
+		typedef random_access_iterator_tag			iterator_category;
 	};
+
+
+	template <class T>
+	class InputIterator {
+	protected:
+		T	current;
+	public: 
+	    typedef T															iterator_type;
+		typedef typename iterator_traits<iterator_type>::iterator_category	iterator_category;
+		typedef typename iterator_traits<iterator_type>::value_type			value_type;
+		typedef typename iterator_traits<iterator_type>::difference_type	difference_type;
+		typedef typename iterator_traits<iterator_type>::pointer			pointer;
+		typedef typename iterator_traits<iterator_type>::reference			reference;	
+
+		InputIterator();
+		InputIterator(const InputIterator<T>& other);
+		~InputIterator();
+		iterator_type		base() const;
+		reference			operator*() const;
+		pointer				operator->() const;
+		InputIterator<T>	operator++();
+		InputIterator<T>	operator++(int);
+	};
+
+	template <class T>
+	InputIterator<T>::InputIterator() {}
+
+	template <class T>
+	InputIterator<T>::~InputIterator() {}
+
+	template <class T>
+	InputIterator<T>::InputIterator(const InputIterator<T>& other) : current(other.current) {}
+
+	template <class T>
+	typename InputIterator<T>::iterator_type	InputIterator<T>::base() const {
+		return (current);
+	}
+
+	template <class T1, class T2>
+	bool	operator==(const InputIterator<T1>& lhs, const InputIterator<T2>& rhs) {
+		return (lhs.base() == rhs.base());
+	}
+
+	template <class T1, class T2>
+	bool	operator!=(const InputIterator<T1>& lhs, const InputIterator<T2>& rhs) {
+		return (!operator==(lhs, rhs));
+	}
+
+	template <class T>
+	typename InputIterator<T>::reference	InputIterator<T>::operator*() const {
+		return (*current);
+	}
+
+	template <class T>
+	typename InputIterator<T>::pointer	InputIterator<T>::operator->() const {
+		return (&(*current));
+	}
+
+	template <class T>
+	InputIterator<T>	InputIterator<T>::operator++() {
+		++current;
+		return (*this);
+	}
+
+	template <class T>
+	InputIterator<T>	InputIterator<T>::operator++(int) {
+		InputIterator<T>	temp(*this);
+
+		++current;
+		return (temp);
+	}
 }
 #endif
