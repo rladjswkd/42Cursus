@@ -131,6 +131,15 @@ namespace ft {
 		reverse_iterator();
 		explicit reverse_iterator(iterator_type x);
 		template <class U> reverse_iterator(const reverse_iterator<U>& other);
+
+		template <class U> reverse_iterator&	operator=( const reverse_iterator<U>& other );
+
+		iterator_type	base() const;
+
+		reference	operator*() const;
+		pointer		operator->() const;
+
+		reference	operator[](difference_type n) const;
 	};
 
 	template <class Iter>
@@ -142,5 +151,34 @@ namespace ft {
 	template <class Iter>
 	template <class U>
 	inline reverse_iterator<Iter>::reverse_iterator(const reverse_iterator<U> &other) : current(other.current) { }
+
+	template <class Iter>
+	template <class U>
+	inline reverse_iterator<Iter>& reverse_iterator<Iter>::operator=(const reverse_iterator<U>& other) {
+		this.current = other.current;
+		return (*this);
+	}
+
+	template <class Iter>
+	inline Iter	reverse_iterator<Iter>::base() const {
+		return (current);
+	}
+
+	template <class Iter>
+	inline typename reverse_iterator<Iter>::reference	reverse_iterator<Iter>::operator*() const {
+		Iter	temp = current;
+
+		return (*(--temp));
+	}
+
+	template <class Iter>
+	inline typename reverse_iterator<Iter>::pointer	reverse_iterator<Iter>::operator->() const {
+		return (&operator*());
+	}
+
+	template <class Iter>
+	inline typename reverse_iterator<Iter>::reference	reverse_iterator<Iter>::operator[](reverse_iterator<Iter>::difference_type n) const {
+		return (current - n);
+	}
 }
 #endif
