@@ -271,5 +271,15 @@ namespace ft {
 	inline bool operator>=(const reverse_iterator<Iter1>& lhs, const reverse_iterator<Iter2>& rhs) {
 		return (lhs.base() >= rhs.base());
 	}
+
+	template <class Iter>
+	inline reverse_iterator<Iter>	operator+(typename reverse_iterator<Iter>::difference_type n, const reverse_iterator<Iter>& it) {
+		return (reverse_iterator(current - n));
+	}
+
+	template <class Iter>
+	inline reverse_iterator<Iter>	operator-(typename reverse_iterator<Iter>::difference_type n, const reverse_iterator<Iter>& it) {
+		return (reverse_iterator(current + n));
+	}
 }
 #endif
