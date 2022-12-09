@@ -239,5 +239,37 @@ namespace ft {
 		current += n;
 		return (*this);
 	}
+
+	// non-member functions
+
+	template <class Iter1, class Iter2>
+	inline bool operator==(const reverse_iterator<Iter1>& lhs, const reverse_iterator<Iter2>& rhs) {
+		return (lhs.base() == rhs.base());
+	}
+
+	template <class Iter1, class Iter2>
+	inline bool operator!=(const reverse_iterator<Iter1>& lhs, const reverse_iterator<Iter2>& rhs) {
+		return (lhs.base() != rhs.base());
+	}
+
+	template <class Iter1, class Iter2>
+	inline bool operator<(const reverse_iterator<Iter1>& lhs, const reverse_iterator<Iter2>& rhs) {
+		return (lhs.base() < rhs.base());
+	}
+
+	template <class Iter1, class Iter2>
+	inline bool operator<=(const reverse_iterator<Iter1>& lhs, const reverse_iterator<Iter2>& rhs) {
+		return (lhs.base() <= rhs.base());
+	}
+
+	template <class Iter1, class Iter2>
+	inline bool operator>(const reverse_iterator<Iter1>& lhs, const reverse_iterator<Iter2>& rhs) {
+		return (lhs.base() > rhs.base());
+	}
+
+	template <class Iter1, class Iter2>
+	inline bool operator>=(const reverse_iterator<Iter1>& lhs, const reverse_iterator<Iter2>& rhs) {
+		return (lhs.base() >= rhs.base());
+	}
 }
 #endif

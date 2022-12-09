@@ -11,6 +11,7 @@
 		"string_view": "cpp",
 		"unordered_map": "cpp",
 		"vector": "cpp",
-		"atomic": "cpp"
+		"atomic": "cpp",
+		"algorithm": "cpp"
 	}
 }
