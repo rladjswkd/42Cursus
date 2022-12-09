@@ -12,6 +12,9 @@
 		"unordered_map": "cpp",
 		"vector": "cpp",
 		"atomic": "cpp",
-		"algorithm": "cpp"
+		"algorithm": "cpp",
+		"*.tcc": "cpp",
+		"numeric": "cpp",
+		"random": "cpp"
 	}
 }

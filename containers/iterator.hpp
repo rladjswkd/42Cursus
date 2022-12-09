@@ -1,7 +1,7 @@
 #ifndef ITERATOR_HPP
 # define ITERATOR_HPP
 # include <stddef.h>
-# include <iterator>
+
 namespace ft {
 	struct input_iterator_tag {};
 	struct output_iterator_tag {};

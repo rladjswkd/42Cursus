@@ -1,6 +1,6 @@
 #include <vector>
 #include <iostream>
-
+#include <algorithm>
 int main() {
 	std::vector<int>	v = {2, 3, 1, 4};
 
