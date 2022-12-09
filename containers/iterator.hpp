@@ -140,6 +140,15 @@ namespace ft {
 		pointer		operator->() const;
 
 		reference	operator[](difference_type n) const;
+
+		reverse_iterator&	operator++();
+		reverse_iterator&	operator--();
+		reverse_iterator	operator++(int);
+		reverse_iterator	operator--(int);
+		reverse_iterator	operator+(difference_type n) const;
+		reverse_iterator	operator-(difference_type n) const;
+		reverse_iterator&	operator+=(difference_type n);
+		reverse_iterator&	operator-=(difference_type n);
 	};
 
 	template <class Iter>
@@ -178,7 +187,57 @@ namespace ft {
 
 	template <class Iter>
 	inline typename reverse_iterator<Iter>::reference	reverse_iterator<Iter>::operator[](reverse_iterator<Iter>::difference_type n) const {
-		return (current - n);
+		return (reverse_iterator(current - n));
+	}
+
+	template <class Iter>
+	reverse_iterator<Iter>&	reverse_iterator<Iter>::operator++() {
+		--current;
+		return (*this);
+	}
+
+	template <class Iter>
+	reverse_iterator<Iter>&	reverse_iterator<Iter>::operator--() {
+		++current;
+		return (*this);
+	}
+
+	template <class Iter>
+	reverse_iterator<Iter>	reverse_iterator<Iter>::operator++(int) {
+		reverse_iterator temp = *this;
+
+		--current;
+		return (temp);	
+	}
+
+	template <class Iter>
+	reverse_iterator<Iter>	reverse_iterator<Iter>::operator--(int) {
+		reverse_iterator temp = *this;
+
+		++current;
+		return (temp);
+	}
+
+	template <class Iter>
+	reverse_iterator<Iter>	reverse_iterator<Iter>::operator+(difference_type n) const {
+		return (reverse_iterator(current - n));
+	}
+
+	template <class Iter>
+	reverse_iterator<Iter>	reverse_iterator<Iter>::operator-(difference_type n) const {
+		return (reverse_iterator(current + n));
+	}
+	
+	template <class Iter>
+	reverse_iterator<Iter>&	reverse_iterator<Iter>::operator+=(difference_type n) {
+		current -= n;
+		return (*this);
+	}
+	
+	template <class Iter>
+	reverse_iterator<Iter>&	reverse_iterator<Iter>::operator-=(difference_type n) {
+		current += n;
+		return (*this);
 	}
 }
 #endif
