@@ -48,8 +48,8 @@ namespace ft {
 	
 	template <class InputIt1, class InputIt2>
 	inline bool equal_auxiliary(InputIt1 first1, InputIt1 last1, InputIt2 first2) {
-		typedef typename ft::iterator_traits<InputIt1>::value_type v1;
-		typedef typename ft::iterator_traits<InputIt2>::value_type v2;
+		typedef typename iterator_traits<InputIt1>::value_type v1;
+		typedef typename iterator_traits<InputIt2>::value_type v2;
 		const bool simple = (
 			(is_integral<v1>::value || is_pointer<v1>::value)
 			&& is_pointer<InputIt1>::value

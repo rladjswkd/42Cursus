@@ -1,20 +1,5 @@
 {
 	"files.associations": {
-		"iterator": "cpp",
-		"__bit_reference": "cpp",
-		"array": "cpp",
-		"bitset": "cpp",
-		"chrono": "cpp",
-		"functional": "cpp",
-		"memory": "cpp",
-		"string": "cpp",
-		"string_view": "cpp",
-		"unordered_map": "cpp",
-		"vector": "cpp",
-		"atomic": "cpp",
-		"algorithm": "cpp",
-		"*.tcc": "cpp",
-		"numeric": "cpp",
-		"random": "cpp"
+		"iterator": "cpp"
 	}
 }

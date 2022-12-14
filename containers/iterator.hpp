@@ -274,12 +274,12 @@ namespace ft {
 
 	template <class Iter>
 	inline reverse_iterator<Iter>	operator+(typename reverse_iterator<Iter>::difference_type n, const reverse_iterator<Iter>& it) {
-		return (reverse_iterator(current - n));
+		return (reverse_iterator<Iter>(it.base() - n));
 	}
 
 	template <class Iter>
 	inline reverse_iterator<Iter>	operator-(typename reverse_iterator<Iter>::difference_type n, const reverse_iterator<Iter>& it) {
-		return (reverse_iterator(current + n));
+		return (reverse_iterator<Iter>(it.base() + n));
 	}
 }
 #endif
