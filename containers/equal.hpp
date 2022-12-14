@@ -62,5 +62,13 @@ namespace ft {
 	inline bool equal(InputIt1 first1, InputIt1 last1, InputIt2 first2) {
 		return (equal_auxiliary<InputIt1, InputIt2>(first1, last1, first2));
 	}
+
+	template <class InputIt1, class InputIt2, class BinaryPredicate>
+	inline bool equal(InputIt1 first1, InputIt1 last1, InputIt2 first2, BinaryPredicate p) {
+			for (; first1 != last1; (void)++first1, (void)++first2)
+				if (!p(*first1, *first2))
+					return (false);
+			return (true);
+	}
 }
 #endif
