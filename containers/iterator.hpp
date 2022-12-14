@@ -164,7 +164,7 @@ namespace ft {
 	template <class Iter>
 	template <class U>
 	inline reverse_iterator<Iter>& reverse_iterator<Iter>::operator=(const reverse_iterator<U>& other) {
-		this.current = other.current;
+		this->current = other.current;
 		return (*this);
 	}
 
