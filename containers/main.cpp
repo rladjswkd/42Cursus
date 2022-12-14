@@ -1,40 +1,34 @@
-#include "equal.hpp"
-#include <iostream>
-#include <type_traits>
 #include <algorithm>
-
-bool foo(int p1, int p2) {
-	return (p1 == p2);
-}
-
-int main() {
-	std::cout << ft::is_pointer<int *>::value << std::endl;
-	std::cout << ft::are_same<int, int>::value << std::endl;
-	std::cout << ft::is_integral<int>::value << std::endl;
-
-	std::vector<int>	v;
-	std::vector<int>	other;
-
-	v.push_back(1);
-	v.push_back(1);
-	v.push_back(2);
-
-	other.push_back(1);
-	other.push_back(1);
-	other.push_back(2);
-
-	std::cout << ft::equal(v.begin(), v.end(), other.begin()) << std::endl;
-
-	int	iter[3] = {1, 2, 3};
-	int iter2[3] = {1, 2, 3};
-
-	std::cout << ft::equal(&(iter[0]), &(iter[3]), &(iter2[0])) << std::endl;
-
-	int	iter3[3] = {0, 2, 3};
-	int iter4[3] = {1, 2, 3};
-
-	std::cout << ft::equal(&(iter3[0]), &(iter3[3]), &(iter4[0])) << std::endl;
-
-	std::cout << ft::equal(&(iter[0]), &(iter[3]), &(iter2[0]), &foo) << std::endl;
-	return (0);
+#include <iostream>
+#include <vector>
+#include <random>
+#include "lexicographical_compare.hpp"
+int main()
+{
+    std::vector<char> v1{'a', 'b', 'c', 'd'};
+    std::vector<char> v2{'a', 'b', 'c', 'd'};
+ 
+    std::mt19937 g{std::random_device{}()};
+    while (!ft::lexicographical_compare(v1.begin(), v1.end(),
+                                         v2.begin(), v2.end()))
+    {
+        for (auto c : v1)
+            std::cout << c << ' ';
+        std::cout << ">= ";
+ 
+        for (auto c : v2)
+            std::cout << c << ' ';
+        std::cout << '\n';
+ 
+        std::shuffle(v1.begin(), v1.end(), g);
+        std::shuffle(v2.begin(), v2.end(), g);
+    }
+ 
+    for (auto c : v1)
+        std::cout << c << ' ';
+    std::cout << "<  ";
+ 
+    for (auto c : v2)
+        std::cout << c << ' ';
+    std::cout << '\n';
 }
