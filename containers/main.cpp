@@ -1,34 +1,18 @@
-#include <algorithm>
-#include <iostream>
-#include <vector>
-#include <random>
-#include "lexicographical_compare.hpp"
-int main()
-{
-    std::vector<char> v1{'a', 'b', 'c', 'd'};
-    std::vector<char> v2{'a', 'b', 'c', 'd'};
- 
-    std::mt19937 g{std::random_device{}()};
-    while (!ft::lexicographical_compare(v1.begin(), v1.end(),
-                                         v2.begin(), v2.end()))
-    {
-        for (auto c : v1)
-            std::cout << c << ' ';
-        std::cout << ">= ";
- 
-        for (auto c : v2)
-            std::cout << c << ' ';
-        std::cout << '\n';
- 
-        std::shuffle(v1.begin(), v1.end(), g);
-        std::shuffle(v2.begin(), v2.end(), g);
-    }
- 
-    for (auto c : v1)
-        std::cout << c << ' ';
-    std::cout << "<  ";
- 
-    for (auto c : v2)
-        std::cout << c << ' ';
-    std::cout << '\n';
+// pair::pair example
+#include "pair.hpp"
+#include <utility>      // std::pair, std::make_pair
+#include <string>       // std::string
+#include <iostream>     // std::cout
+
+int main () {
+    ft::pair<std::string, double> product1;                     // default constructor
+    ft::pair<std::string, double> product2("tomatoes",2.30);   // value init
+    ft::pair<std::string, double> product3(product2);          // copy constructor
+    ft::pair<std::string, double> product4(ft::make_pair<std::string, double>(std::string("apple"), 4.42));
+
+    std::cout << "The price of " << product2.first << " is $" << product2.second << '\n';
+    std::cout << "The price of " << product3.first << " is $" << product3.second << '\n';
+    std::cout << "The price of " << product4.first << " is $" << product4.second << '\n';
+    
+    return 0;
 }
