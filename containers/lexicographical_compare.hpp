@@ -1,7 +1,8 @@
 #ifndef LEXICOGRAPHICAL_COMPARE_HPP
 # define LEXICOGRAPHICAL_COMPARE_HPP
 # include <stdlib.h>
-# include <algorithm>
+# include <cstring>		//memcmp
+# include <algorithm>	//min
 
 namespace ft {
 	bool lexicographical_compare(char *first1, char *last1, char *first2, char *last2);

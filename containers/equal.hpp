@@ -2,8 +2,8 @@
 # define EQUAL_HPP
 # include "is_integral.hpp"
 # include "iterator.hpp"
-# include <algorithm>
-# include <vector>
+# include <cstring>			//memcmp
+
 namespace ft {
 	template <class T>
 	struct is_pointer {
