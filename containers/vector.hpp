@@ -5,12 +5,63 @@
 # include "iterator.hpp"
 
 # include <vector> // remove
-
+# include <deque>
 namespace ft {
+	template <class T, class Allocator>
+	struct vector_base {
+		typedef Allocator	allocator_type;
+		typedef T*			pointer;
+		typedef std::size_t	size_type;
+
+		pointer		memory_start;
+		pointer		size_end;
+		pointer		capacity_end;
+		Allocator	allocator;
+
+		vector_base();
+		vector_base(const allocator_type& alloc);
+		vector_base(size_type count, const allocator_type& alloc);
+		~vector_base();
+
+		pointer	allocate_memory(size_type count);
+		void	deallocate_memory(pointer ptr, size_type count);
+	};
+
+	template <class T, class Allocator>
+	inline vector_base<T, Allocator>::vector_base() : memory_start(NULL), size_end(NULL), capacity_end(NULL), alloc() { }
+
+	template <class T, class Allocator>
+	inline vector_base<T, Allocator>::vector_base(const allocator_type& alloc) : memory_start(NULL), size_end(NULL), capacity_end(NULL), allocator(alloc) { }
+
+	template <class T, class Allocator>
+	inline vector_base<T, Allocator>::vector_base(size_type count, const allocator_type& alloc) : allocator(alloc) {
+		memory_start = allocate_memory(count);
+		size_end = memory_start;
+		capacity_end = memory_start + count;
+	}
+
+	template <class T, class Allocator>
+	inline vector_base<T, Allocator>::~vector_base() {
+		deallocate_memory(memory_start, apacity_end - memory_start);
+	}
+
+	template <class T, class Allocator>
+	inline T* vector_base<T, Allocator>::allocate_memory(size_type count) {
+		if (count != 0)
+			return (Allocator().allocate(count));  // default constructors are stateless.
+		return (pointer());
+	}
+
+	template <class T, class Allocator>
+	inline void vector_base<T, Allocator>::deallocate_memory(pointer ptr, size_type count) {
+		if (ptr)
+			Allocator().deallocate(ptr, count);
+	}
+
 	template < class T, class Allocator = std::allocator<T> >
 	class vector {
 	public:
-	// member types - cppreference.com
+	// member types
 		typedef T										value_type;
 		typedef Allocator								allocator_type;
 		typedef std::size_t								size_type;
@@ -19,11 +70,30 @@ namespace ft {
 		typedef const T&								const_reference;
 		typedef T*										pointer;
 		typedef const T*								const_pointer;
-		typedef T*										iterator;	//나중에 이터레이터 구현하기
+		typedef T*										iterator;	// implement iterator later.
 		typedef const T*								const_iterator;
 		typedef ft::reverse_iterator<iterator>			reverse_iterator;
 		typedef ft::reverse_iterator<const_iterator>	const_reverse_iterator;
 
+	// constructor
+		vector();
+		explicit vector(const Allocator& alloc);
+		explicit vector(size_type count, const T& value = T(), const Allocator& alloc = Allocator());
+		template <class InputIt> vector(InputIt first, InputIt last, const Allocator& alloc = Allocator());
+		vector(const vector& other);
+
 	};
+
+	template <class T, class Allocator>
+	inline vector<T, Allocator>::vector() { }
+
+	template <class T, class Allocator>
+	inline vector<T, Allocator>::vector(const Allocator& alloc) { }
+
+	template <class T, class Allocator>
+	inline vector<T, Allocator>::vector(size_type count, const T& value = T(), const Allocator& alloc = Allocator()) {
+
+	}
+	
 }
 #endif
