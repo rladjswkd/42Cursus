@@ -7,6 +7,7 @@
 # include <vector> // remove
 # include <deque>
 namespace ft {
+// vector_base
 	template <class T, class Allocator>
 	struct vector_base {
 		typedef Allocator	allocator_type;
@@ -25,6 +26,7 @@ namespace ft {
 
 		pointer	allocate_memory(size_type count);
 		void	deallocate_memory(pointer ptr, size_type count);
+		void	create_storage(size_type count);
 	};
 
 	template <class T, class Allocator>
@@ -35,9 +37,7 @@ namespace ft {
 
 	template <class T, class Allocator>
 	inline vector_base<T, Allocator>::vector_base(size_type count, const allocator_type& alloc) : allocator(alloc) {
-		memory_start = allocate_memory(count);
-		size_end = memory_start;
-		capacity_end = memory_start + count;
+		create_storage(count);
 	}
 
 	template <class T, class Allocator>
@@ -58,8 +58,17 @@ namespace ft {
 			Allocator().deallocate(ptr, count);
 	}
 
+	template <class T, class Allocator>
+	inline void vector_base<T, Allocator>::create_storage(size_type count) {
+		memory_start = allocate_memory(count);
+		size_end = memory_start;
+		capacity_end = memory_start + count;
+	}
+
+
+// vector
 	template < class T, class Allocator = std::allocator<T> >
-	class vector {
+	class vector : protected vector_base<T, Allocator> {
 	public:
 	// member types
 		typedef T										value_type;
@@ -88,12 +97,22 @@ namespace ft {
 	inline vector<T, Allocator>::vector() { }
 
 	template <class T, class Allocator>
-	inline vector<T, Allocator>::vector(const Allocator& alloc) { }
+	inline vector<T, Allocator>::vector(const Allocator& alloc) : vector_base(alloc) { }
 
 	template <class T, class Allocator>
-	inline vector<T, Allocator>::vector(size_type count, const T& value = T(), const Allocator& alloc = Allocator()) {
+	inline vector<T, Allocator>::vector(size_type count, const T& value = T(), const Allocator& alloc = Allocator()) : vector_base(count, allocator) {
 
 	}
-	
+
+	template <class T, class Allocator>
+	template <class InputIt>
+	inline vector<T, Allocator>::vector(InputIt first, InputIt last, const Allocator& alloc = Allocator()) {
+
+	}
+
+	template <class T, class Allocator>
+	inline vector<T, Allocator>::vector(const vector& other) {
+
+	}
 }
 #endif
