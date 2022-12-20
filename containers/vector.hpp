@@ -93,6 +93,15 @@ namespace ft {
 		template <class InputIt> vector(InputIt first, InputIt last, const Allocator& alloc = Allocator());
 		vector(const vector& other);
 
+	// iterator
+		iterator begin();
+		const_iterator begin() const;
+		iterator end();
+		const_iterator end() const;
+		reverse_iterator rbegin();
+		const_reverse_iterator rbegin() const;
+		reverse_iterator rend();
+		const_reverse_iterator rend() const;
 	};
 
 	template <class T, class Allocator>
@@ -117,6 +126,46 @@ namespace ft {
 	template <class T, class Allocator>
 	inline vector<T, Allocator>::vector(const vector& other) {
 
+	}
+
+	template <class T, class Allocator>
+	inline vector<T, Allocator>::iterator vector<T, Allocator>::begin() {
+		return (iterator(this->begin));
+	}
+
+	template <class T, class Allocator>
+	inline vector<T, Allocator>::const_iterator vector<T, Allocator>::begin() const {
+		return (const_iterator(this->begin));
+	}
+
+	template <class T, class Allocator>
+	inline vector<T, Allocator>::iterator vector<T, Allocator>::end() {
+		return (iterator(this->end));
+	}
+
+	template <class T, class Allocator>
+	inline vector<T, Allocator>::const_iterator vector<T, Allocator>::end() const {
+		return (const_iterator(this->end));
+	}
+
+	template <class T, class Allocator>
+	inline vector<T, Allocator>::reverse_iterator vector<T, Allocator>::rbegin() {
+		return (reverse_iterator(this->end));
+	}
+
+	template <class T, class Allocator>
+	inline vector<T, Allocator>::const_reverse_iterator vector<T, Allocator>::rbegin() const {
+		return (const_reverse_iterator(this->end));
+	}
+
+	template <class T, class Allocator>
+	inline vector<T, Allocator>::reverse_iterator vector<T, Allocator>::rend() {
+		return (reverse_iterator(this->begin));
+	}
+
+	template <class T, class Allocator>
+	inline vector<T, Allocator>::const_reverse_iterator vector<T, Allocator>::rend() const {
+		return (const_reverse_iterator(this->begin));
 	}
 }
 #endif
