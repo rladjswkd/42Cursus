@@ -1,8 +1,9 @@
 #ifndef VECTOR_HPP
 # define VECTOR_HPP
+# include "iterator.hpp"
 # include <memory>
 # include <cstddef> // std::size_t, std::ptrdiff_t
-# include "iterator.hpp"
+# include <stdexcept> // exceptions
 
 # include <vector> // remove
 # include <deque>
@@ -14,8 +15,8 @@ namespace ft {
 		typedef T*			pointer;
 		typedef std::size_t	size_type;
 
-		pointer		memory_start;
-		pointer		size_end;
+		pointer		begin;
+		pointer		end;
 		pointer		capacity_end;
 		Allocator	allocator;
 
@@ -27,13 +28,14 @@ namespace ft {
 		pointer	allocate_memory(size_type count);
 		void	deallocate_memory(pointer ptr, size_type count);
 		void	create_storage(size_type count);
+
 	};
 
 	template <class T, class Allocator>
-	inline vector_base<T, Allocator>::vector_base() : memory_start(NULL), size_end(NULL), capacity_end(NULL), alloc() { }
+	inline vector_base<T, Allocator>::vector_base() : begin(NULL), end(NULL), capacity_end(NULL), alloc() { }
 
 	template <class T, class Allocator>
-	inline vector_base<T, Allocator>::vector_base(const allocator_type& alloc) : memory_start(NULL), size_end(NULL), capacity_end(NULL), allocator(alloc) { }
+	inline vector_base<T, Allocator>::vector_base(const allocator_type& alloc) : begin(NULL), end(NULL), capacity_end(NULL), allocator(alloc) { }
 
 	template <class T, class Allocator>
 	inline vector_base<T, Allocator>::vector_base(size_type count, const allocator_type& alloc) : allocator(alloc) {
@@ -42,7 +44,7 @@ namespace ft {
 
 	template <class T, class Allocator>
 	inline vector_base<T, Allocator>::~vector_base() {
-		deallocate_memory(memory_start, apacity_end - memory_start);
+		deallocate_memory(begin, apacity_end - begin);
 	}
 
 	template <class T, class Allocator>
@@ -60,9 +62,9 @@ namespace ft {
 
 	template <class T, class Allocator>
 	inline void vector_base<T, Allocator>::create_storage(size_type count) {
-		memory_start = allocate_memory(count);
-		size_end = memory_start;
-		capacity_end = memory_start + count;
+		begin = allocate_memory(count);
+		end = begin;
+		capacity_end = begin + count;
 	}
 
 
@@ -97,11 +99,13 @@ namespace ft {
 	inline vector<T, Allocator>::vector() { }
 
 	template <class T, class Allocator>
-	inline vector<T, Allocator>::vector(const Allocator& alloc) : vector_base(alloc) { }
+	inline vector<T, Allocator>::vector(const Allocator& alloc)
+	: vector_base(alloc) { }
 
 	template <class T, class Allocator>
-	inline vector<T, Allocator>::vector(size_type count, const T& value = T(), const Allocator& alloc = Allocator()) : vector_base(count, allocator) {
-
+	inline vector<T, Allocator>::vector(size_type count, const T& value = T(), const Allocator& alloc = Allocator())
+	: vector_base(count, alloc) {
+		
 	}
 
 	template <class T, class Allocator>

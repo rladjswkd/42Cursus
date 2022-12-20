@@ -68,6 +68,9 @@
 		"random": "cpp",
 		"fstream": "cpp",
 		"stack": "cpp",
-		"map": "cpp"
+		"map": "cpp",
+		"__functional_03": "cpp",
+		"list": "cpp",
+		"__cxx_version": "cpp"
 	}
 }
