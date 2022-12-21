@@ -191,6 +191,56 @@ namespace ft {
 ///////////////////////////////////////////////////////////////////////
 // vector
 ///////////////////////////////////////////////////////////////////////
+// constructor
+
+// destructor
+
+// element access
+
+// iterator
+	template <class T, class Allocator>
+	inline vector<T, Allocator>::iterator vector<T, Allocator>::begin() {
+		return (iterator(this->begin));
+	}
+
+	template <class T, class Allocator>
+	inline vector<T, Allocator>::const_iterator vector<T, Allocator>::begin() const {
+		return (const_iterator(this->begin));
+	}
+
+	template <class T, class Allocator>
+	inline vector<T, Allocator>::iterator vector<T, Allocator>::end() {
+		return (iterator(this->end));
+	}
+
+	template <class T, class Allocator>
+	inline vector<T, Allocator>::const_iterator vector<T, Allocator>::end() const {
+		return (const_iterator(this->end));
+	}
+
+	template <class T, class Allocator>
+	inline vector<T, Allocator>::reverse_iterator vector<T, Allocator>::rbegin() {
+		return (reverse_iterator(this->end));
+	}
+
+	template <class T, class Allocator>
+	inline vector<T, Allocator>::const_reverse_iterator vector<T, Allocator>::rbegin() const {
+		return (const_reverse_iterator(this->end));
+	}
+
+	template <class T, class Allocator>
+	inline vector<T, Allocator>::reverse_iterator vector<T, Allocator>::rend() {
+		return (reverse_iterator(this->begin));
+	}
+
+	template <class T, class Allocator>
+	inline vector<T, Allocator>::const_reverse_iterator vector<T, Allocator>::rend() const {
+		return (const_reverse_iterator(this->begin));
+	}
+	
+// capacity
+
+// modifier
 
 // non-member functions
 	template <class T, class Allocator>
