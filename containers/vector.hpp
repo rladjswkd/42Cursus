@@ -2,6 +2,7 @@
 # define VECTOR_HPP
 # include <memory>
 # include <algorithm>
+# include <stdexcept> 		// exceptions
 # include "iterator.hpp"
 # include "allocate.hpp"
 
@@ -94,8 +95,8 @@ namespace ft {
 		const_reference	front() const;
 		reference		back();
 		const_reference	back() const;
-		T*				data();
-		const T*		data() const;
+		pointer			data();
+		const_pointer	data() const;
 
 // iterator
 		iterator				begin();
@@ -131,6 +132,7 @@ namespace ft {
 
 		static size_type	_max_size(const T_allocator_type& alloc);
 		pointer				_allocate_and_copy(size_type count, pointer first, pointer last);
+		void				_range_check(size_type count) const;
 	};
 
 ///////////////////////////////////////////////////////////////////////
@@ -197,11 +199,63 @@ namespace ft {
 ///////////////////////////////////////////////////////////////////////
 // vector
 ///////////////////////////////////////////////////////////////////////
+
 // constructor
 
 // destructor
 
 // element access
+	template <class T, class Allocator>
+	vector<T, Allocator>::reference		vector<T, Allocator>::at(size_type pos){
+		_range_check(pos);
+		return ((*this)[pos]);
+	}
+
+	template <class T, class Allocator>
+	vector<T, Allocator>::const_reference	vector<T, Allocator>::at(size_type pos) const{
+		_range_check(pos);
+		return ((*this)[pos]);
+	}
+
+	template <class T, class Allocator>
+	vector<T, Allocator>::reference		vector<T, Allocator>::operator[](size_type pos){
+		return (*(this->begin + pos))
+	}
+
+	template <class T, class Allocator>
+	vector<T, Allocator>::const_reference	vector<T, Allocator>::operator[](size_type pos) const{
+		return (*(this->begin + pos));
+	}
+
+	template <class T, class Allocator>
+	vector<T, Allocator>::reference		vector<T, Allocator>::front(){
+		return (*(this->begin));
+	}
+
+	template <class T, class Allocator>
+	vector<T, Allocator>::const_reference	vector<T, Allocator>::front() const{
+		return (*(this->begin));
+	}
+
+	template <class T, class Allocator>
+	vector<T, Allocator>::reference		vector<T, Allocator>::back(){
+		return (*(this->end - 1));
+	}
+
+	template <class T, class Allocator>
+	vector<T, Allocator>::const_reference	vector<T, Allocator>::back() const{
+		return (*(this->end - 1));
+	}
+
+	template <class T, class Allocator>
+	vector<T, Allocator>::pointer	vector<T, Allocator>::data(){
+		return (this->begin);
+	}
+
+	template <class T, class Allocator>
+	vector<T, Allocator>::const_pointer		vector<T, Allocator>::data() const{
+		return (this->begin);
+	}
 
 // iterator
 	template <class T, class Allocator>
@@ -327,5 +381,11 @@ namespace ft {
 			throw;
 		}
 	}
+	template <class T, class Allocator>
+	void	vector<T, Allocator>::_range_check(size_type count) const {
+		if (count >= this->size())
+			// __throw_out_of_range(__N("vector::_range_check: count (which is %zu) >= this->size() (which is %zu)"), count, this->size());
+			__throw_out_of_range("vector::_range_check: count (which is " + count + ") >= this->size() (which is " + this->size() + ")");
+      }
 }
 #endif
