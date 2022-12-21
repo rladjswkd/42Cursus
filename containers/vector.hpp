@@ -1,7 +1,9 @@
 #ifndef VECTOR_HPP
 # define VECTOR_HPP
 # include <memory>
+# include <algorithm>
 # include "iterator.hpp"
+# include "allocate.hpp"
 
 namespace ft {
 	template<typename T, typename Allocator>
@@ -124,8 +126,12 @@ namespace ft {
 		void		pop_back();
 		void		resize(size_type count, T value = T());
 		void		swap(vector& other);
-	};
 
+	protected:
+
+		static size_type	_max_size(const T_allocator_type& alloc);
+		pointer				_allocate_and_copy(size_type count, pointer first, pointer last);
+	};
 
 ///////////////////////////////////////////////////////////////////////
 // vector_base
@@ -239,8 +245,47 @@ namespace ft {
 	}
 	
 // capacity
+	template <class T, class Allocator>
+	inline bool vector<T, Allocator>::empty() const {
+		return (this->begin == this->end);
+	}
+	
+	template <class T, class Allocator>
+	vector<T, Allocator>::size_type vector<T, Allocator>::size() const {
+		return (size_type(this->end - this->begin));
+	}
+	
+	template <class T, class Allocator>
+	vector<T, Allocator>::size_type vector<T, Allocator>::max_size() const {
+		return(_max_size(get_T_allocator()));
+	}
+	
+	template <class T, class Allocator>
+	void vector<T, Allocator>::reserve(size_type new_cap) {
+		const size_type	old_size;
+		pointer			reserved;
+
+		if (new_cap > this->max_size())
+			__throw_length_error("__vector::reserve");
+  	    if (this->capacity() < new_cap) {
+			old_size = size();
+			reserved = _allocate_and_copy(new_cap, this->begin, this->end);
+			ft::destroy_range(this->begin, this->end, this->t_alloc);
+			deallocate(this->begin, this->end_cap - this->begin);
+			this->begin = reserved;
+			this->end = reserved + old_size;
+			this->end_cap = this->begin + new_cap;
+		}
+	}
+	
+	template <class T, class Allocator>
+	vector<T, Allocator>::size_type vector<T, Allocator>::capacity() const {
+		return (size_type(this->end_cap - this->begin));
+	}
 
 // modifier
+
+// other member functions
 
 // non-member functions
 	template <class T, class Allocator>
@@ -263,5 +308,24 @@ namespace ft {
 
 	template <class T, class Allocator>
 	void	swap(std::vector<T, Allocator>& lhs, std::vector<T, Allocator>& rhs);
+
+// others
+	template <class T, class Allocator>
+	vector<T, Allocator>::size_type	vector<T, Allocator>::_max_size(const T_allocator_type& alloc) {
+		return (std::min<ptrdiff_t>(std::numeric_limits<ptrdiff_t>::max() / sizeof(T), alloc.max_size()));
+	}
+
+	template <class T, class Allocator>
+	vector<T, Allocator>::pointer	vector<T, Allocator>::_allocate_and_copy(size_type count, pointer first, pointer last) {
+		pointer result = this->allocate(count);
+
+		try {
+			uninitialized_copy_alloc(first, last, result, this->t_alloc); 	// std::uninitialized_copy with allocator
+			return result;
+		} catch(...) {
+			deallocate(result, count);
+			throw;
+		}
+	}
 }
 #endif
