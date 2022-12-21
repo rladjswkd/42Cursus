@@ -28,11 +28,10 @@ namespace ft {
 		pointer	allocate_memory(size_type count);
 		void	deallocate_memory(pointer ptr, size_type count);
 		void	create_storage(size_type count);
-
 	};
 
 	template <class T, class Allocator>
-	inline vector_base<T, Allocator>::vector_base() : begin(NULL), end(NULL), capacity_end(NULL), alloc() { }
+	inline vector_base<T, Allocator>::vector_base() : begin(NULL), end(NULL), capacity_end(NULL), allocator() { }
 
 	template <class T, class Allocator>
 	inline vector_base<T, Allocator>::vector_base(const allocator_type& alloc) : begin(NULL), end(NULL), capacity_end(NULL), allocator(alloc) { }
