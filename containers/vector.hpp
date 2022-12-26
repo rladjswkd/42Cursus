@@ -3,8 +3,10 @@
 # include <memory>
 # include <algorithm>
 # include <stdexcept> 		// exceptions
+# include <sstream>
 # include "iterator.hpp"
 # include "allocate.hpp"
+# include "is_integral.hpp"
 
 namespace ft {
 	template<typename T, typename Allocator>
@@ -117,10 +119,10 @@ namespace ft {
 
 // modifier
 		void		clear();
-		iterator	insert(const_iterator pos, const T& value);
+		iterator	insert(const_iterator pos, const value_type& value);
 		void		insert(const_iterator pos, size_type count, const value_type& value);
 		template <class InputIt>
-		iterator	insert(const_iterator pos, InputIt first, InputIt last);
+		void		insert(const_iterator pos, InputIt first, InputIt last);
 		iterator	erase(iterator pos);
 		iterator	erase(iterator first, iterator last);
 		void		push_back(const T& value);
@@ -130,9 +132,24 @@ namespace ft {
 
 	protected:
 
-		static size_type	_max_size(const T_allocator_type& alloc);
-		pointer				_allocate_and_copy(size_type count, pointer first, pointer last);
-		void				_range_check(size_type count) const;
+		static size_type	choose_max_size(const T_allocator_type& alloc);
+		pointer				allocate_and_copy(size_type count, pointer first, pointer last);
+		void				erase_from_pos(pointer pos);
+		void				insert_no_realloc(iterator pos, const value_type& value);
+		void				insert_realloc(iterator pos, const value_type& value);
+		void				insert_fill(iterator pos, size_type count, const value_type& value);
+		template <class Integral>
+		void				resolve_overload_insert(iterator pos, Integral count, Integral value, ft::true_type);
+		template <class InputIt>
+		void				resolve_overload_insert(iterator pos, InputIt first, InputIt last, ft::false_type);
+		template <class InputIt>
+		void				insert_range(iterator pos, InputIt first, InputIt last, std::input_iterator_tag);
+		template <class ForwardIt>
+		void				insert_range(iterator pos, ForwardIt first, ForwardIt last, std::forward_iterator_tag);
+
+	// validation
+		void				validate_range(size_type count) const;
+		size_type			validate_length(size_type count, const char *msg) const;
 	};
 
 ///////////////////////////////////////////////////////////////////////
@@ -207,13 +224,13 @@ namespace ft {
 // element access
 	template <class T, class Allocator>
 	vector<T, Allocator>::reference		vector<T, Allocator>::at(size_type pos){
-		_range_check(pos);
+		validate_range(pos);
 		return ((*this)[pos]);
 	}
 
 	template <class T, class Allocator>
 	vector<T, Allocator>::const_reference	vector<T, Allocator>::at(size_type pos) const{
-		_range_check(pos);
+		validate_range(pos);
 		return ((*this)[pos]);
 	}
 
@@ -311,7 +328,7 @@ namespace ft {
 	
 	template <class T, class Allocator>
 	vector<T, Allocator>::size_type vector<T, Allocator>::max_size() const {
-		return(_max_size(get_T_allocator()));
+		return(choose_max_size(get_T_allocator()));
 	}
 	
 	template <class T, class Allocator>
@@ -320,10 +337,10 @@ namespace ft {
 		pointer			reserved;
 
 		if (new_cap > this->max_size())
-			__throw_length_error("__vector::reserve");
+			throw std::length_error("vector::reserve");
   	    if (this->capacity() < new_cap) {
 			old_size = size();
-			reserved = _allocate_and_copy(new_cap, this->begin, this->end);
+			reserved = allocate_and_copy(new_cap, this->begin, this->end);
 			ft::destroy_range(this->begin, this->end, this->t_alloc);
 			deallocate(this->begin, this->end_cap - this->begin);
 			this->begin = reserved;
@@ -338,54 +355,335 @@ namespace ft {
 	}
 
 // modifier
+	template <class T, class Allocator>
+	void		vector<T, Allocator>::clear() {
+		erase_from_pos(this->begin);
+	}
+
+	template <class T, class Allocator>
+	vector<T, Allocator>::iterator	vector<T, Allocator>::insert(const_iterator pos, const value_type& value) {
+		if (this->end != this->end_cap)				// if there is no problem, end is always smaller than end_cap
+			insert_no_realloc(pos, value);
+		else
+			insert_realloc(pos, value);
+		return (iterator(pos));
+	}
+
+	template <class T, class Allocator>
+	void		vector<T, Allocator>::insert(const_iterator pos, size_type count, const value_type& value) {
+		insert_fill(pos, count, value);
+	}
+
+	template <class T, class Allocator>
+	template <class InputIt>
+	void	vector<T, Allocator>::insert(const_iterator pos, InputIt first, InputIt last) {
+		resolve_overload_insert(pos, first, last, ft::is_integral<InputIt>::type);
+	}
+
+	template <class T, class Allocator>
+	template <class Integral>
+	inline void vector<T, Allocator>::resolve_overload_insert(iterator pos, Integral count, Integral value, ft::true_type) {
+		insert_fill(pos, count, value);
+	}
+
+	template <class T, class Allocator>
+	template <class InputIt>
+	inline void vector<T, Allocator>::resolve_overload_insert(iterator pos, InputIt first, InputIt last, ft::false_type) {
+		insert_range(pos, first, last, ft::iterator_traits<InputIt>::iterator_category())
+	}
+
+	template <class T, class Allocator>
+	template <class InputIt>
+	inline void vector<T, Allocator>::insert_range(iterator pos, InputIt first, InputIt last, std::input_iterator_tag) {
+		if (pos == this->end) {
+			for (; first != last; ++first)
+				insert(this->end, *first);	//	call insert(const_iterator pos, const value_type& value)
+		}
+		else if (first != last) {
+			vector temp(first, last, this->t_alloc);
+			insert(pos, temp.begin(), temp.end());	//	at the end, call insert_range(iterator pos, ForwardIt first, ForwardIt last, std::forward_iterator_tag)
+		}
+	}
+
+	template <class T, class Allocator>
+	template <class ForwardIt>
+	inline void vector<T, Allocator>::insert_range(iterator pos, ForwardIt first, ForwardIt last, std::forward_iterator_tag) {
+		if (first != last) {
+			const size_type diff = std::distance(first, last);				//	last - first is impossible for forward iterators
+			if (size_type(this->end_cap - this->end) >= diff) {				//	if capacity is enough
+				const size_type elems_after = this->end - pos;
+				if (elems_after > diff) {									//	if new diff elements fits in vector size()
+					ft::uninitialized_copy_alloc(this->end - diff, this->end, this->end, this->t_alloc);
+					std::copy_backward(pos.base(), this->end - diff, this->end);
+					std::copy(first, last, pos);
+				}
+				else {
+					ForwardIt temp_it = first;
+					std::advance(temp_it, elems_after);
+					ft::uninitialized_copy_alloc(temp_it, last, this->end, this->t_alloc);
+					ft::uninitialized_copy_alloc(pos.base(), this->end, this->end + diff - elems_after, this->t_alloc);
+					std::copy(first, temp_it, pos);
+				}
+				this->end += diff;
+			}
+			else {															// expand capacity
+				pointer old_begin = this->begin;
+				pointer old_end = this->end;
+				const size_type len = _check_len(diff, "vector::insert_range");
+				pointer new_begin = this->allocate(len);
+				pointer new_end = new_begin;
+				try {
+					new_end = ft::uninitialized_copy_alloc(old_begin, pos.base(), new_begin, this->t_alloc);
+					new_end	= ft::uninitialized_copy_alloc(first, last, new_end, this->t_alloc);
+					new_end = ft::uninitialized_copy_alloc(pos.base(), old_end, new_end, this->t_alloc);
+				} catch(...) {
+					ft::destroy_range(new_begin, new_end, this->t_alloc);
+					deallocate(new_begin, len);
+					throw;
+				}
+				ft::destroy_range(old_begin, old_end, this->t_alloc);
+				deallocate(old_begin, this->end_cap - old_begin);
+				this->begin = new_begin;
+				this->end = new_end;
+				this->end_cap = new_begin + len; 		
+			}
+		}
+	}
+
+	template <class T, class Allocator>
+	vector<T, Allocator>::iterator	vector<T, Allocator>::erase(iterator pos) {
+		if (pos + 1 != this->end)
+			std::copy(pos + 1, this->end, pos);
+		--this->end;
+		this->t_alloc.destroy(this->end);
+		return (pos);
+	}
+
+	template <class T, class Allocator>
+	vector<T, Allocator>::iterator	vector<T, Allocator>::erase(iterator first, iterator last) {
+		if (first != last) {
+			if (last != this->end)
+				std::copy(last, this->end, first);
+			erase_from_pos(first.base() + (this->end - last));
+		}
+		return (first);
+	}
+
+	template <class T, class Allocator>
+	void	vector<T, Allocator>::push_back(const T& value) {
+		if (this->end != this->end_cap)	//	end < end_cap
+			this->t_alloc.construct((this->end)++, value);
+		else
+			insert_realloc(this->end, value);
+	}
+
+	template <class T, class Allocator>
+	void	vector<T, Allocator>::pop_back() {
+		--this->end;
+		this->t_alloc.destroy(this->end);
+	}
+
+	template <class T, class Allocator>
+	void	vector<T, Allocator>::resize(size_type count, T value = T()) {
+		if (count < size())
+			erase_from_pos(this->begin + count);
+		else if (count > size())
+			insert_fill(this->end, count - size(), value);	//	if capacity is less than count, reallocation occurs here
+	}
+
+	template <class T, class Allocator>
+	void	vector<T, Allocator>::swap(vector& other) {
+		pointer	begin_temp = this->begin;
+		pointer	end_temp = this->end;
+		pointer	end_cap_temp = this->end_cap;
+
+		this->begin = other.begin;
+		this->end = other.end;
+		this->end_cap = other.end_cap;
+		other.begin = begin_temp;
+		other.end = end_temp;
+		other.end_cap = end_cap_temp;
+		//	std::allocator<T> is stateless. interchangeable.
+	}
 
 // other member functions
 
 // non-member functions
 	template <class T, class Allocator>
-	bool	operator==(const std::vector<T, Allocator>& lhs, const std::vector<T, Allocator>& rhs);
+	bool	operator==(const ft::vector<T, Allocator>& lhs, const ft::vector<T, Allocator>& rhs);
 
 	template <class T, class Allocator>
-	bool	operator!=(const std::vector<T, Allocator>& lhs, const std::vector<T, Allocator>& rhs);
+	bool	operator!=(const ft::vector<T, Allocator>& lhs, const ft::vector<T, Allocator>& rhs);
 
 	template <class T, class Allocator>
-	bool	operator<(const std::vector<T, Allocator>& lhs, const std::vector<T, Allocator>& rhs);
+	bool	operator<(const ft::vector<T, Allocator>& lhs, const ft::vector<T, Allocator>& rhs);
 
 	template <class T, class Allocator>
-	bool	operator<=(const std::vector<T, Allocator>& lhs, const std::vector<T, Allocator>& rhs);
+	bool	operator<=(const ft::vector<T, Allocator>& lhs, const ft::vector<T, Allocator>& rhs);
 
 	template <class T, class Allocator>
-	bool	operator>(const std::vector<T, Allocator>& lhs, const std::vector<T, Allocator>& rhs);
+	bool	operator>(const ft::vector<T, Allocator>& lhs, const ft::vector<T, Allocator>& rhs);
 
 	template <class T, class Allocator>
-	bool	operator>=(const std::vector<T, Allocator>& lhs, const std::vector<T, Allocator>& rhs);
+	bool	operator>=(const ft::vector<T, Allocator>& lhs, const ft::vector<T, Allocator>& rhs);
 
 	template <class T, class Allocator>
-	void	swap(std::vector<T, Allocator>& lhs, std::vector<T, Allocator>& rhs);
+	void	swap(ft::vector<T, Allocator>& lhs, ft::vector<T, Allocator>& rhs) {
+		lhs.swap(rhs);
+	}
 
 // others
 	template <class T, class Allocator>
-	vector<T, Allocator>::size_type	vector<T, Allocator>::_max_size(const T_allocator_type& alloc) {
+	vector<T, Allocator>::size_type	vector<T, Allocator>::choose_max_size(const T_allocator_type& alloc) {
 		return (std::min<ptrdiff_t>(std::numeric_limits<ptrdiff_t>::max() / sizeof(T), alloc.max_size()));
 	}
 
 	template <class T, class Allocator>
-	vector<T, Allocator>::pointer	vector<T, Allocator>::_allocate_and_copy(size_type count, pointer first, pointer last) {
+	vector<T, Allocator>::pointer	vector<T, Allocator>::allocate_and_copy(size_type count, pointer first, pointer last) {
 		pointer result = this->allocate(count);
 
 		try {
 			uninitialized_copy_alloc(first, last, result, this->t_alloc); 	// std::uninitialized_copy with allocator
 			return result;
-		} catch(...) {
+		} catch (...) {
 			deallocate(result, count);
 			throw;
 		}
 	}
+
 	template <class T, class Allocator>
-	void	vector<T, Allocator>::_range_check(size_type count) const {
-		if (count >= this->size())
-			// __throw_out_of_range(__N("vector::_range_check: count (which is %zu) >= this->size() (which is %zu)"), count, this->size());
-			__throw_out_of_range("vector::_range_check: count (which is " + count + ") >= this->size() (which is " + this->size() + ")");
-      }
+	void	vector<T, Allocator>::validate_range(size_type count) const {
+		std::ostringstream	ss;
+
+		if (count >= this->size()) {
+			ss << "vector::validate_range: count (which is " << count << ") >= this->size() (which is " << this->size() << ")";
+			throw std::out_of_range(ss.str());
+		}
+	}
+
+	template <class T, class Allocator>
+	inline vector<T, Allocator>::size_type vector<T, Allocator>::validate_length(size_type count, const char *msg) const {
+		const size_type	new_size;
+
+		if (max_size() - size() < count)
+			throw std::length_error(msg);
+		new_size = size() + std::max(size(), count);	// twice as its current size()
+		if (new_size < size() || new_size > max_size())	// new_size < size() is checking overflow
+			return (max_size());
+		return (new_size);
+	}
+
+	template <class T, class Allocator>
+	void	vector<T, Allocator>::erase_from_pos(pointer pos) {
+		ft::destroy_range(pos, this->end, t_alloc);
+		this->end = pos;
+	}
+
+	template <class T, class Allocator>
+	inline void vector<T, Allocator>::insert_no_realloc(iterator pos, const value_type &value) {
+		T	copy;
+
+		if (pos == this->end) {
+			this->t_alloc.construct(this->end, value);
+			++this->end;
+		}
+		else {
+			this->t_alloc.construct(this->end, *(this->end - 1));
+			++this->end;
+			std::copy_backward(pos.base(), this->end - 2, this->end - 1);	//	&(at(pos - this->begin))
+			copy = value;
+			*pos = copy;
+		}
+	}
+
+	template <class T, class Allocator>
+	inline void vector<T, Allocator>::insert_realloc(iterator pos, const value_type &value) {
+		const size_type	len = validate_length(size_type(1), "vector::_M_realloc_insert");
+		const size_type	elems_before = pos - this->begin;
+		pointer			old_begin = this->begin;
+		pointer			old_end = this->end;
+		pointer			new_begin(this->allocate(len));	// no need to do something for exceptions thrown by this.
+		pointer			new_end;
+		try {
+			this->t_alloc.construct(this->t_alloc, new_begin + elems_before, value);
+			new_end = pointer();
+			new_end = ft::uninitialized_copy_alloc(old_begin, pos.base(), new_begin, this->t_alloc);
+			++new_end;	// this memory space is for "value"
+			new_end = ft::uninitialized_copy_alloc(pos.base(), old_end, new_end, this->t_alloc);
+		}
+		catch (...) {
+			if (!new_end)
+				this->t_alloc.destroy(new_begin + elems_before);	// first ft::uninitialized_copy_alloc is failed
+			else
+				ft::destroy_range(new_begin, new_end, this->t_alloc);
+			deallocate(new_begin, len);
+			throw;
+		}
+		ft::destroy_range(old_begin, old_end, this->t_alloc);
+		deallocate(old_begin, this->end_cap - old_begin);
+		this->begin = new_begin;
+		this->end = new_end;
+		this->end_cap = new_begin + len;
+	}
+
+	template <class T, class Allocator>
+	inline void vector<T, Allocator>::insert_fill(iterator pos, size_type count, const value_type &value) {
+		value_type		copy;
+		const size_type	elems_before;
+		const size_type	elems_after;
+		pointer			old_begin;
+		pointer			old_end;
+		const pointer	pos_base;
+		const size_type	len;
+		pointer			new_begin;
+		pointer			new_end;
+
+		if (count == 0)
+			return;
+		if (size_type(this->end_cap - this->end) >= count){	//	free, allocated memory blocks are more than or equal to "count"
+			copy = value;
+			elems_after = this->end - pos;
+			old_end(this->end);
+			if (elems_after > count) {
+				ft::uninitialized_copy_alloc(old_end - count, old_end, old_end, this->t_alloc);	//	memory blocks after end need "construct"
+				this->end += count;
+				std::copy_backward(pos.base(), old_end - count, old_end);	//	"construct" is unnecessary
+				std::fill(pos.base(), pos.base() + count, copy);
+			}
+			else {
+				this->end =	ft::uninitialized_fill_n_alloc(old_end, count - elems_after, copy, this->t_alloc);	//	fill "copy" after end
+				ft::uninitialized_copy_alloc(pos.base(), old_end, this->end, this->t_alloc);	//	fill original values after new end
+				this->end += elems_after;	//	end is old_end + count now
+				std::fill(pos.base(), old_end, copy);
+			}
+		}
+		else {
+			old_begin = this->begin;
+			old_end = this->end;
+			pos_base = pos.base();
+			len = check_len(count, "vector::_M_fill_insert");
+			elems_before = pos_base - old_begin;
+			new_begin(this->allocate(len));
+			try {
+				ft::uninitialized_fill_n_alloc(new_begin + elems_before, count, value, this->t_alloc);
+				new_end = pointer();
+				new_end = ft::uninitialized_copy_alloc(old_begin, pos_base, new_begin, this->t_alloc);
+				new_end += count;
+				new_end = ft::uninitialized_copy_alloc(pos_base, old_end, new_end, this->t_alloc);
+			} catch (...) {
+				if (!new_end)
+					ft::destroy_range(new_begin + elems_before,	new_begin + elems_before + count, this->t_alloc);
+				else
+					ft::destroy_range(new_begin, new_end, this->t_alloc);
+				deallocate(new_begin, len);
+				throw;
+			}
+			destroy_range(old_begin, old_end, this->t_alloc);
+			deallocate(old_begin, this->end_cap - old_begin);
+			this->begin = new_begin;
+			this->end = new_end;
+			this->end_cap = new_begin + len;
+		}
+	}
 }
 #endif

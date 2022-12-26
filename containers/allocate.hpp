@@ -17,7 +17,21 @@ namespace ft {
 				alloc.construct(alloc.address(*cur), *first);
 			return cur;
 		} catch(...) {
-			_destroy_range(result, cur, alloc);
+			destroy_range(result, cur, alloc);
+			throw;
+		}
+	}
+
+	template<typename ForwardIterator, typename Size, typename Tp, typename Allocator>
+	ForwardIterator	uninitialized_fill_n_alloc(ForwardIterator first, Size n, const Tp& value, Allocator& alloc) {
+		ForwardIterator cur = first;
+		
+		try{
+			for (; n > 0; (void)--n, (void)++cur)
+				alloc.construct(alloc.address(*cur), value);
+			return cur;
+		} catch (...) {
+			destroy_range(first, cur, alloc);
 			throw;
 		}
 	}
