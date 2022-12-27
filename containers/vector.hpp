@@ -132,6 +132,10 @@ namespace ft {
 
 	protected:
 
+		template <class Integral>
+		void				init_dispatch(Integral count, Integral value, ft::true_type);
+		template <class InputIt>
+		void				init_dispatch(InputIt first, InputIt last, ft::false_type);
 		static size_type	choose_max_size(const T_allocator_type& alloc);
 		pointer				allocate_and_copy(size_type count, pointer first, pointer last);
 		void				erase_from_pos(pointer pos);
@@ -139,17 +143,18 @@ namespace ft {
 		void				insert_realloc(iterator pos, const value_type& value);
 		void				insert_fill(iterator pos, size_type count, const value_type& value);
 		template <class Integral>
-		void				resolve_overload_insert(iterator pos, Integral count, Integral value, ft::true_type);
+		void				insert_dispatch(iterator pos, Integral count, Integral value, ft::true_type);
 		template <class InputIt>
-		void				resolve_overload_insert(iterator pos, InputIt first, InputIt last, ft::false_type);
+		void				insert_dispatch(iterator pos, InputIt first, InputIt last, ft::false_type);
 		template <class InputIt>
-		void				insert_range(iterator pos, InputIt first, InputIt last, std::input_iterator_tag);
+		void				insert_range(iterator pos, InputIt first, InputIt last, ft::input_iterator_tag);
 		template <class ForwardIt>
-		void				insert_range(iterator pos, ForwardIt first, ForwardIt last, std::forward_iterator_tag);
+		void				insert_range(iterator pos, ForwardIt first, ForwardIt last, ft::forward_iterator_tag);
 
 	// validation
 		void				validate_range(size_type count) const;
 		size_type			validate_length(size_type count, const char *msg) const;
+		size_type			validate_init_length(size_type count);
 	};
 
 ///////////////////////////////////////////////////////////////////////
@@ -193,7 +198,7 @@ namespace ft {
 
 	template <class T, class Allocator>
 	inline void vector_base<T, Allocator>::create_storage(size_t count) {
-		this->begin = allocate(count);
+		this->begin = this->allocate(count);
 		this->end = this->begin;
 		this->end_cap = this->begin + this->count;
 	}
@@ -218,8 +223,37 @@ namespace ft {
 ///////////////////////////////////////////////////////////////////////
 
 // constructor
+	template <class T, class Allocator>
+	vector<T, Allocator>::vector() { }
+
+	template <class T, class Allocator>
+	vector<T, Allocator>::vector(const Allocator& alloc)
+	: vector_base(alloc) { }
+
+	template <class T, class Allocator>
+	vector<T, Allocator>::vector(size_type count, const T& value = T(), const Allocator& alloc = Allocator())
+	: vector_base(validate_init_length(count), alloc) {
+		ft::uninitialized_fill_n_alloc(this->begin, count, value, alloc);
+	}
+
+	template <class T, class Allocator>
+	vector<T, Allocator>::vector(const vector& other)
+	: vector_base(other.size(), other.get_T_allocator()) {
+		ft::uninitialized_copy_alloc(other->begin, other->end, this->begin, this->t_alloc);
+	}
+
+	template <class T, class Allocator>
+	template <class InputIt>
+	vector<T, Allocator>::vector(InputIt first, InputIt last, const Allocator& alloc = Allocator())
+	: vector_base(alloc) {
+		init_dispatch(first, last, ft::is_integral<InputIt>::type());
+	}
 
 // destructor
+	template <class T, class Allocator>
+	vector<T, Allocator>::~vector() {
+		ft::destroy_range(this->begin, this->end, this->t_alloc);
+	}
 
 // element access
 	template <class T, class Allocator>
@@ -377,37 +411,52 @@ namespace ft {
 	template <class T, class Allocator>
 	template <class InputIt>
 	void	vector<T, Allocator>::insert(const_iterator pos, InputIt first, InputIt last) {
-		resolve_overload_insert(pos, first, last, ft::is_integral<InputIt>::type);
+		insert_dispatch(pos, first, last, ft::is_integral<InputIt>::type);
 	}
 
 	template <class T, class Allocator>
 	template <class Integral>
-	inline void vector<T, Allocator>::resolve_overload_insert(iterator pos, Integral count, Integral value, ft::true_type) {
+	inline void vector<T, Allocator>::init_dispatch(Integral count, Integral value, ft::true_type) {
+		this->begin = this->allocate(count);
+		this->end = this->begin + count;
+		this->end_cap = this->end;
+		// this->end = 
+		ft::uninitialized_fill_n(this->begin, count, value, this->t_alloc);
+	}
+
+	template <class T, class Allocator>
+	template <class InputIt>
+	inline void vector<T, Allocator>::init_dispatch(InputIt first, InputIt last, ft::false_type) {
+	}
+
+	template <class T, class Allocator>
+	template <class Integral>
+	inline void vector<T, Allocator>::insert_dispatch(iterator pos, Integral count, Integral value, ft::true_type) {
 		insert_fill(pos, count, value);
 	}
 
 	template <class T, class Allocator>
 	template <class InputIt>
-	inline void vector<T, Allocator>::resolve_overload_insert(iterator pos, InputIt first, InputIt last, ft::false_type) {
+	inline void vector<T, Allocator>::insert_dispatch(iterator pos, InputIt first, InputIt last, ft::false_type) {
 		insert_range(pos, first, last, ft::iterator_traits<InputIt>::iterator_category())
 	}
 
 	template <class T, class Allocator>
 	template <class InputIt>
-	inline void vector<T, Allocator>::insert_range(iterator pos, InputIt first, InputIt last, std::input_iterator_tag) {
+	inline void vector<T, Allocator>::insert_range(iterator pos, InputIt first, InputIt last, ft::input_iterator_tag) {
 		if (pos == this->end) {
 			for (; first != last; ++first)
 				insert(this->end, *first);	//	call insert(const_iterator pos, const value_type& value)
 		}
 		else if (first != last) {
 			vector temp(first, last, this->t_alloc);
-			insert(pos, temp.begin(), temp.end());	//	at the end, call insert_range(iterator pos, ForwardIt first, ForwardIt last, std::forward_iterator_tag)
+			insert(pos, temp.begin(), temp.end());	//	at the end, call insert_range(iterator pos, ForwardIt first, ForwardIt last, ft::forward_iterator_tag)
 		}
 	}
 
 	template <class T, class Allocator>
 	template <class ForwardIt>
-	inline void vector<T, Allocator>::insert_range(iterator pos, ForwardIt first, ForwardIt last, std::forward_iterator_tag) {
+	inline void vector<T, Allocator>::insert_range(iterator pos, ForwardIt first, ForwardIt last, ft::forward_iterator_tag) {
 		if (first != last) {
 			const size_type diff = std::distance(first, last);				//	last - first is impossible for forward iterators
 			if (size_type(this->end_cap - this->end) >= diff) {				//	if capacity is enough
@@ -426,10 +475,10 @@ namespace ft {
 				}
 				this->end += diff;
 			}
-			else {															// expand capacity
+			else {															//	capacity is not enough
 				pointer old_begin = this->begin;
 				pointer old_end = this->end;
-				const size_type len = _check_len(diff, "vector::insert_range");
+				const size_type len = validate_length(diff, "vector::insert_range");
 				pointer new_begin = this->allocate(len);
 				pointer new_end = new_begin;
 				try {
@@ -574,6 +623,13 @@ namespace ft {
 	}
 
 	template <class T, class Allocator>
+	inline vector<T, Allocator>::size_type vector<T, Allocator>::validate_init_length(size_type count) {
+		if (count > choose_max_size(get_T_allocator()))
+			throw std::length_error("cannot create ft::vector larger than max_size()");
+		return (count);
+	}
+
+	template <class T, class Allocator>
 	void	vector<T, Allocator>::erase_from_pos(pointer pos) {
 		ft::destroy_range(pos, this->end, t_alloc);
 		this->end = pos;
@@ -598,7 +654,7 @@ namespace ft {
 
 	template <class T, class Allocator>
 	inline void vector<T, Allocator>::insert_realloc(iterator pos, const value_type &value) {
-		const size_type	len = validate_length(size_type(1), "vector::_M_realloc_insert");
+		const size_type	len = validate_length(size_type(1), "vector::insert");
 		const size_type	elems_before = pos - this->begin;
 		pointer			old_begin = this->begin;
 		pointer			old_end = this->end;
@@ -661,7 +717,7 @@ namespace ft {
 			old_begin = this->begin;
 			old_end = this->end;
 			pos_base = pos.base();
-			len = check_len(count, "vector::_M_fill_insert");
+			len = validate_length(count, "vector::insert_fill");
 			elems_before = pos_base - old_begin;
 			new_begin(this->allocate(len));
 			try {
