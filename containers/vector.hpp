@@ -649,7 +649,25 @@ namespace ft {
 
 	template <class T, class Allocator>
 	vector<T, Allocator>&	vector<T, Allocator>::operator=(const vector& other) {
-
+		if (this->t_alloc.address(other) != this) {
+			const size_type other_len = other.size();
+			if (other_len > capacity()) {
+				pointer temp = allocate_and_copy(other_len, other._begin, other._end);
+				ft::destroy_range(this->_begin, this->_end, this->t_alloc);
+				deallocate(this->_begin, this->end_cap - this->_begin);
+				this->_begin = temp;
+				this->end_cap = this->_begin + other_len;
+			}
+			else if (size() >= other_len) {
+				ft::destroy_range(std::copy(other._begin, other._end, this->_begin), this->end, this->t_alloc);
+			}
+			else {
+				std::copy(other._begin, other._begin + size(), this->_begin);
+				ft::uninitialized_copy_alloc(other._begin + size(),	other._end,	this->_end, this->t_alloc);
+			}
+			this->_end = this->_begin + other_len;
+		}
+		return (*this);
 	}
 
 	template <class T, class Allocator>
