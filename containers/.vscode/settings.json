@@ -74,6 +74,10 @@
 		"system_error": "cpp",
 		"typeinfo": "cpp",
 		"utility": "cpp",
-		"__memory": "cpp"
+		"__memory": "cpp",
+		"*.tcc": "cpp",
+		"clocale": "cpp",
+		"numeric": "cpp",
+		"random": "cpp"
 	}
 }

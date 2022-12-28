@@ -3,6 +3,7 @@
 # include <memory>
 # include <stdexcept> 		// exceptions
 # include <sstream>
+# include <limits>
 # include "iterator.hpp"
 # include "algorithm.hpp"
 # include "allocate.hpp"
@@ -43,23 +44,23 @@ namespace ft {
 	template < class T, class Allocator = std::allocator<T> >
 	class vector : protected vector_base<T, Allocator> {
 
-		typedef vector_base<T, Allocator>							Base;
-		typedef typename Base::T_allocator_type						T_allocator_type;
+		typedef vector_base<T, Allocator>								Base;
+		typedef typename Base::T_allocator_type							T_allocator_type;
 
 	public:
 
-		typedef T										value_type;
-		typedef Allocator								allocator_type;
-		typedef std::size_t								size_type;
-		typedef std::ptrdiff_t							difference_type;
-		typedef T&										reference;
-		typedef const T&								const_reference;
-		typedef T*										pointer;
-		typedef const T*								const_pointer;
-		typedef T*										iterator;				// implement iterator later.
-		typedef const T*								const_iterator;
-		typedef ft::reverse_iterator<iterator>			reverse_iterator;
-		typedef ft::reverse_iterator<const_iterator>	const_reverse_iterator;
+		typedef T														value_type;
+		typedef Allocator												allocator_type;
+		typedef std::size_t												size_type;
+		typedef std::ptrdiff_t											difference_type;
+		typedef T&														reference;
+		typedef const T&												const_reference;
+		typedef T*														pointer;
+		typedef const T*												const_pointer;
+		typedef ft::random_access_iterator<pointer, vector>				iterator;
+		typedef ft::random_access_iterator<const_pointer, vector>		const_iterator;
+		typedef ft::reverse_iterator<iterator>							reverse_iterator;
+		typedef ft::reverse_iterator<const_iterator>					const_reverse_iterator;
 
 	protected:
 
