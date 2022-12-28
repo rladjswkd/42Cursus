@@ -48,17 +48,17 @@ namespace ft {
 	}
 
 	template <class Type, class Container>
-	inline stack<Type, Container>::size_type	stack<Type, Container>::size() const {
+	inline typename stack<Type, Container>::size_type	stack<Type, Container>::size() const {
 		return (c.size());
 	}
 
 	template <class Type, class Container>
-	inline stack<Type, Container>::reference	stack<Type, Container>::top() {
+	inline typename stack<Type, Container>::reference	stack<Type, Container>::top() {
 		return (c.back());
 	}
 
 	template <class Type, class Container>
-	inline stack<Type, Container>::const_reference	stack<Type, Container>::top() const {
+	inline typename stack<Type, Container>::const_reference	stack<Type, Container>::top() const {
 		return (c.back());
 	}
 
