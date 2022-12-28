@@ -781,7 +781,7 @@ namespace ft {
 	inline typename vector<T, Allocator>::size_type vector<T, Allocator>::validate_length(size_type count, const char *msg) const {
 		if (max_size() - size() < count)
 			throw std::length_error(msg);
-		const size_t	new_size = size() + std::max(size(), count);	// twice as its current size()
+		const size_t	new_size = size() + ft::max(size(), count);	// twice as its current size()
 		if (new_size < size() || new_size > max_size())	// new_size < size() is checking overflow
 			return (max_size());
 		return (new_size);

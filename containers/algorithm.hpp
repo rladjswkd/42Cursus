@@ -50,13 +50,6 @@ namespace ft {
 					return (false);
 			return (true);
 	}
-
-	bool lexicographical_compare(char *first1, char *last1, char *first2, char *last2);
-	bool lexicographical_compare(const char *first1, const char *last1, const char *first2, const char *last2);
-	bool lexicographical_compare(signed char *first1, signed char *last1, signed char *first2, signed char *last2);
-	bool lexicographical_compare(const signed char *first1, const signed char *last1, const signed char *first2, const signed char *last2);
-	bool lexicographical_compare(unsigned char *first1, unsigned char *last1, unsigned char *first2, unsigned char *last2);
-	bool lexicographical_compare(const unsigned char *first1, const unsigned char *last1, const unsigned char *first2, const unsigned char *last2);
 	
 	template <class InputIt1, class InputIt2>
 	bool lexicographical_compare(InputIt1 first1, InputIt1 last1, InputIt2 first2, InputIt2 last2) {
@@ -79,5 +72,27 @@ namespace ft {
 		}
 		return (first1 == last1 && first2 != last2);
 	}	
+
+	bool lexicographical_compare(char *first1, char *last1, char *first2, char *last2);
+	bool lexicographical_compare(const char *first1, const char *last1, const char *first2, const char *last2);
+	bool lexicographical_compare(signed char *first1, signed char *last1, signed char *first2, signed char *last2);
+	bool lexicographical_compare(const signed char *first1, const signed char *last1, const signed char *first2, const signed char *last2);
+	bool lexicographical_compare(unsigned char *first1, unsigned char *last1, unsigned char *first2, unsigned char *last2);
+	bool lexicographical_compare(const unsigned char *first1, const unsigned char *last1, const unsigned char *first2, const unsigned char *last2);
+
+	template <typename T>
+	inline const T	&min(const T& a, const T& b) {
+		if (b < a)
+			return (b);
+		return (a);
+	}
+
+	template <typename T>
+	inline const T	&max(const T& a, const T& b)
+	{
+		if (a < b)
+			return (b);
+		return (a);
+	}
 }
 #endif

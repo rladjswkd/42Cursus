@@ -6,11 +6,8 @@ namespace ft {
 	template <class Type, class Container= ft::vector<Type> >
 	class stack {
 	protected:
-
 		Container	c;
-
 	public:
-
 		typedef Container							container_type;
 		typedef typename Container::value_type		value_type;
 		typedef typename Container::size_type		size_type;
@@ -18,15 +15,12 @@ namespace ft {
 		typedef typename Container::const_reference	const_reference;	//	c++98? c++11?
 
 		explicit stack(const Container& right = Container());
-
 		bool			empty() const;
 		void			pop();
 		void			push(const Type& val);
 		size_type		size() const;
 		reference		top();
 		const_reference	top() const;
-
-		// stack&	operator=(const stack& other); // implicitly declared one.
 	};
 	
 	template <class Type, class Container>

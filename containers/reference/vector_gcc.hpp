@@ -692,7 +692,7 @@ protected:
 		if (max_size() - size() < __n)
 			__throw_length_error(__N(__s));
 
-		const size_type __len = size() + (std::max)(size(), __n);
+		const size_type __len = size() + (ft::max)(size(), __n);
 		return (__len < size() || __len > max_size()) ? max_size() : __len;
 	}
 
