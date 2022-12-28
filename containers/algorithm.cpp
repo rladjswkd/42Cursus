@@ -1,4 +1,4 @@
-#include "lexicographical_compare.hpp"
+#include "algorithm.hpp"
 
 bool ft::lexicographical_compare(char *first1, char *last1, char *first2, char *last2) {
 	const size_t	len1 = last1 - first1;

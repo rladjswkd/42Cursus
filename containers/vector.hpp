@@ -1,13 +1,11 @@
 #ifndef VECTOR_HPP
 # define VECTOR_HPP
 # include <memory>
-# include <algorithm>
 # include <stdexcept> 		// exceptions
 # include <sstream>
 # include "iterator.hpp"
+# include "algorithm.hpp"
 # include "allocate.hpp"
-# include "is_integral.hpp"
-# include "lexicographical_compare.hpp"
 
 namespace ft {
 	template<typename T, typename Allocator>

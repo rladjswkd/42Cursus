@@ -1,6 +1,27 @@
-#ifndef IS_INTEGRAL_HPP
-# define IS_INTEGRAL_HPP
+#ifndef TYPE_TRAITS_HPP
+# define TYPE_TRAITS_HPP
+
 namespace ft {
+	template <class T>
+	struct is_pointer {
+		enum {value = 0};
+	};
+
+	template <class T>
+	struct is_pointer<T*> {
+		enum {value = 1};
+	};
+
+	template <class, class>
+	struct are_same {
+		enum {value = 0};
+	};
+
+	template <class T>
+	struct are_same<T, T> {
+		enum {value = 1};
+	};
+
 	template <class T, T v>
 	struct integral_constant {
 		static const T				value = v;
@@ -15,8 +36,8 @@ namespace ft {
 	}
 
 	typedef integral_constant<bool, true>	true_type;
+	
 	typedef integral_constant<bool, false>	false_type;
-
 
 	template <typename T>
 	struct remove_const {
@@ -42,7 +63,6 @@ namespace ft {
 	struct remove_cv {
 		typedef typename remove_const<typename remove_volatile<T>::type>::type	type;
 	};
-
 
 	template <typename>
 	struct is_integral : public false_type {};
@@ -94,5 +114,13 @@ namespace ft {
 
 	template <>
 	struct is_integral<__uint128_t> : public true_type {};
-};
+
+	template <bool B, class T = void>
+	struct enable_if {};
+
+	template <class T>
+	struct enable_if<true, T> {
+		typedef T type;
+	};
+}
 #endif
