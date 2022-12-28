@@ -10,26 +10,26 @@ namespace ft {
 
 	template <class InputIterator, class ForwardIterator, class Allocator>
 	ForwardIterator	uninitialized_copy_alloc(InputIterator first, InputIterator last, ForwardIterator result, Allocator& alloc) {
-		ForwardIterator cur = result;
+		ForwardIterator	cur = result;
 
 		try {
 			for (; first != last; (void)++first, (void)++cur)
 				alloc.construct(alloc.address(*cur), *first);
-			return cur;
-		} catch(...) {
+			return (cur);
+		} catch (...) {
 			destroy_range(result, cur, alloc);
 			throw;
 		}
 	}
 
-	template<typename ForwardIterator, typename Size, typename Tp, typename Allocator>
-	ForwardIterator	uninitialized_fill_n_alloc(ForwardIterator first, Size n, const Tp& value, Allocator& alloc) {
-		ForwardIterator cur = first;
+	template <typename ForwardIterator, typename Size, typename T, typename Allocator>
+	ForwardIterator	uninitialized_fill_n_alloc(ForwardIterator first, Size n, const T& value, Allocator& alloc) {
+		ForwardIterator	cur = first;
 		
 		try{
 			for (; n > 0; (void)--n, (void)++cur)
 				alloc.construct(alloc.address(*cur), value);
-			return cur;
+			return (cur);
 		} catch (...) {
 			destroy_range(first, cur, alloc);
 			throw;
