@@ -323,22 +323,26 @@ namespace ft {
 // iterator
 	template <class T, class Allocator>
 	inline typename vector<T, Allocator>::iterator vector<T, Allocator>::begin() {
-		return (iterator(this->_begin));
+		// return (iterator(this->_begin));
+		return (this->_begin);	//	remove
 	}
 
 	template <class T, class Allocator>
 	inline typename vector<T, Allocator>::const_iterator vector<T, Allocator>::begin() const {
-		return (const_iterator(this->_begin));
+		// return (const_iterator(this->_begin));
+		return (this->_begin);	//	remove
 	}
 
 	template <class T, class Allocator>
 	inline typename vector<T, Allocator>::iterator vector<T, Allocator>::end() {
-		return (iterator(this->_end));
+		// return (iterator(this->_end));
+		return (this->_end);	//	remove
 	}
 
 	template <class T, class Allocator>
 	inline typename vector<T, Allocator>::const_iterator vector<T, Allocator>::end() const {
-		return (const_iterator(this->_end));
+		// return (const_iterator(this->_end));
+		return (this->_end);	//	remove
 	}
 
 	template <class T, class Allocator>
@@ -408,21 +412,21 @@ namespace ft {
 	template <class T, class Allocator>
 	typename vector<T, Allocator>::iterator	vector<T, Allocator>::insert(const_iterator pos, const value_type& value) {
 		if (this->_end != this->end_cap)				// if there is no problem, end is always smaller than end_cap
-			insert_no_realloc(pos, value);
+			insert_no_realloc(const_cast<iterator>(pos), value);
 		else
-			insert_realloc(pos, value);
+			insert_realloc(const_cast<iterator>(pos), value);
 		return (iterator(pos));
 	}
 
 	template <class T, class Allocator>
 	void		vector<T, Allocator>::insert(const_iterator pos, size_type count, const value_type& value) {
-		insert_fill(pos, count, value);
+		insert_fill(const_cast<iterator>(pos), count, value);
 	}
 
 	template <class T, class Allocator>
 	template <class InputIt>
 	void	vector<T, Allocator>::insert(const_iterator pos, InputIt first, InputIt last) {
-		insert_dispatch(pos, first, last, ft::is_integral<InputIt>::type);
+		insert_dispatch(const_cast<iterator>(pos), first, last, typename ft::is_integral<InputIt>::type());
 	}
 
 	template <class T, class Allocator>
@@ -450,7 +454,7 @@ namespace ft {
 	template <class T, class Allocator>
 	template <class InputIt>
 	inline void vector<T, Allocator>::insert_dispatch(iterator pos, InputIt first, InputIt last, ft::false_type) {
-		insert_range(pos, first, last, ft::iterator_traits<InputIt>::iterator_category());
+		insert_range(pos, first, last, typename ft::iterator_traits<InputIt>::iterator_category());
 	}
 
 	template <class T, class Allocator>
@@ -731,7 +735,7 @@ namespace ft {
 
 	template <class T, class Allocator>
 	inline void vector<T, Allocator>::init_fill(size_type count, const value_type &value){
-		ft::uninitialized_fill_n_alloc(this->_begin, count, value, this->t_alloc);
+		this->_end = ft::uninitialized_fill_n_alloc(this->_begin, count, value, this->t_alloc);
 	}
 
 	template <class T, class Allocator>
@@ -793,7 +797,7 @@ namespace ft {
 
 	template <class T, class Allocator>
 	void	vector<T, Allocator>::erase_from_pos(pointer pos) {
-		ft::destroy_range(pos, this->_end, t_alloc);
+		ft::destroy_range(pos, this->_end, this->t_alloc);
 		this->_end = pos;
 	}
 
@@ -853,12 +857,8 @@ namespace ft {
 	template <class T, class Allocator>
 	inline void vector<T, Allocator>::insert_fill(iterator pos, size_type count, const value_type &value) {
 		value_type		copy;
-		// const size_type	elems_before;
-		// const size_type	elems_after;
 		pointer			old_begin;
 		pointer			old_end;
-		// const pointer	pos_base;
-		// const size_type	len;
 		pointer			new_begin;
 		pointer			new_end;
 
@@ -867,7 +867,7 @@ namespace ft {
 		if (size_type(this->end_cap - this->_end) >= count){	//	free, allocated memory blocks are more than or equal to "count"
 			copy = value;
 			const size_type	elems_after = this->_end - pos;
-			old_end(this->_end);
+			old_end = this->_end;
 			if (elems_after > count) {
 				ft::uninitialized_copy_alloc(old_end - count, old_end, old_end, this->t_alloc);	//	memory blocks after end need "construct"
 				this->_end += count;
@@ -898,7 +898,7 @@ namespace ft {
 			const pointer	pos_base = pos; // pos.base();
 			const size_type	len = validate_length(count, "vector::insert_fill");
 			const size_t	elems_before = pos_base - old_begin;
-			new_begin(this->allocate(len));
+			new_begin = this->allocate(len);
 			try {
 				ft::uninitialized_fill_n_alloc(new_begin + elems_before, count, value, this->t_alloc);
 				new_end = pointer();
