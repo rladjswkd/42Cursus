@@ -497,14 +497,14 @@ namespace ft {
 				if (elems_after > diff) {									//	if new diff elements fits in vector size()
 					ft::uninitialized_copy_alloc(this->_end - diff, this->_end, this->_end, this->t_alloc);
 					std::copy_backward(pos.base(), this->_end - diff, this->_end);
-					std::copy(first, last, pos);
+					ft::copy(first, last, pos);
 				}
 				else {
 					ForwardIt temp_it = first;
 					std::advance(temp_it, elems_after);
 					ft::uninitialized_copy_alloc(temp_it, last, this->_end, this->t_alloc);
 					ft::uninitialized_copy_alloc(pos.base(), this->_end, this->_end + diff - elems_after, this->t_alloc);
-					std::copy(first, temp_it, pos);
+					ft::copy(first, temp_it, pos);
 				}
 				this->_end += diff;
 			}
@@ -535,29 +535,6 @@ namespace ft {
 
 	template <class T, class Allocator>
 	template <class InputIt>
-	inline void vector<T, Allocator>::init_from_iterator(InputIt first, InputIt last, ft::input_iterator_tag) {
-		try {
-			for (; first != last; ++first)
-				push_back(*first);
-		} catch(...) {
-			clear();
-			throw;
-		}
-	}
-
-
-	template <class T, class Allocator>
-	template <class ForwardIt>
-	inline void vector<T, Allocator>::init_from_iterator(ForwardIt first, ForwardIt last, ft::forward_iterator_tag)	{
-		const size_type	diff = ft::distance(first, last);
-		this->_begin = this->allocate(validate_init_length(diff));
-		this->end_cap = this->_begin + diff;
-		this->_end = ft::uninitialized_copy_alloc(first, last, this->_begin, this->t_alloc);
-	}
-
-
-	template <class T, class Allocator>
-	template <class InputIt>
 	inline void vector<T, Allocator>::assign_aux(InputIt first, InputIt last, ft::input_iterator_tag) {
 		pointer	cur(this->_begin);
 		for (; first != last && cur != this->_end; (void)++cur, (void)++first)
@@ -576,7 +553,7 @@ namespace ft {
 
 		if (len > capacity()) {
 			validate_init_length(len);
-			pointer	temp(allocate_and_copy(len, first, last));
+			pointer	temp = allocate_and_copy(len, first, last);
 			ft::destroy_range(this->_begin, this->_end, this->t_alloc);
 			deallocate(this->_begin, this->end_cap - this->_begin);
 			this->_begin = temp;
@@ -584,11 +561,11 @@ namespace ft {
 			this->end_cap = this->_end;
 		}
 		else if (size() >= len)
-			erase_from_pos(std::copy(first, last, this->_begin));
+			erase_from_pos(ft::copy(first, last, this->_begin));
 		else {
 			ForwardIt temp_it = first;
 			std::advance(temp_it, size());
-			std::copy(first, temp_it, this->_begin);
+			ft::copy(first, temp_it, this->_begin);
 			this->_end = ft::uninitialized_copy_alloc(temp_it, last, this->_end, this->t_alloc);
 		}
 	}
@@ -611,7 +588,7 @@ namespace ft {
 	template <class T, class Allocator>
 	typename vector<T, Allocator>::iterator	vector<T, Allocator>::erase(iterator pos) {
 		if (pos + 1 != this->_end)
-			std::copy(pos + 1, this->_end, pos);
+			ft::copy(pos + 1, this->_end, pos);
 		--this->_end;
 		this->t_alloc.destroy(this->_end);
 		return (pos);
@@ -622,7 +599,7 @@ namespace ft {
 	typename vector<T, Allocator>::iterator	vector<T, Allocator>::erase(iterator first, iterator last) {
 		if (first != last) {
 			if (last != this->_end)
-				std::copy(last, this->_end, first);
+				ft::copy(last, this->_end, first);
 			erase_from_pos(first.base() + (this->_end - last));
 		}
 		return (first);
@@ -674,7 +651,7 @@ namespace ft {
 
 	template <class T, class Allocator>
 	vector<T, Allocator>&	vector<T, Allocator>::operator=(const vector& other) {
-		if (&other != this) {
+		if (this != &other) {	// operator & is not overloaded.
 			const size_type other_len = other.size();
 			if (other_len > capacity()) {
 				pointer temp = allocate_and_copy(other_len, other._begin, other._end);
@@ -684,10 +661,10 @@ namespace ft {
 				this->end_cap = this->_begin + other_len;
 			}
 			else if (size() >= other_len) {
-				ft::destroy_range(std::copy(other._begin, other._end, this->_begin), this->_end, this->t_alloc);
+				ft::destroy_range(ft::copy(other._begin, other._end, this->_begin), this->_end, this->t_alloc);
 			}
 			else {
-				std::copy(other._begin, other._begin + size(), this->_begin);
+				ft::copy(other._begin, other._begin + size(), this->_begin);
 				ft::uninitialized_copy_alloc(other._begin + size(),	other._end,	this->_end, this->t_alloc);
 			}
 			this->_end = this->_begin + other_len;
@@ -777,6 +754,29 @@ namespace ft {
 	}
 
 
+	template <class T, class Allocator>
+	template <class InputIt>
+	inline void vector<T, Allocator>::init_from_iterator(InputIt first, InputIt last, ft::input_iterator_tag) {
+		try {
+			for (; first != last; ++first)
+				push_back(*first);
+		} catch(...) {
+			clear();
+			throw;
+		}
+	}
+
+
+	template <class T, class Allocator>
+	template <class ForwardIt>
+	inline void vector<T, Allocator>::init_from_iterator(ForwardIt first, ForwardIt last, ft::forward_iterator_tag)	{
+		const size_type	diff = ft::distance(first, last);
+		this->_begin = this->allocate(validate_init_length(diff));
+		this->end_cap = this->_begin + diff;
+		this->_end = ft::uninitialized_copy_alloc(first, last, this->_begin, this->t_alloc);
+	}
+
+	
 	template <class T, class Allocator>
 	typename vector<T, Allocator>::size_type	vector<T, Allocator>::choose_max_size(const T_allocator_type& alloc) {
 		return (ft::min<ptrdiff_t>(std::numeric_limits<ptrdiff_t>::max() / sizeof(T), alloc.max_size()));
