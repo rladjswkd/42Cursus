@@ -51,19 +51,20 @@ namespace ft {
 		typedef ft::random_access_iterator<const_pointer, vector>		const_iterator;
 		typedef ft::reverse_iterator<iterator>							reverse_iterator;
 		typedef ft::reverse_iterator<const_iterator>					const_reverse_iterator;
-
-// constructor
+	protected:
+		using Base::allocate;
+		using Base::deallocate;
+		using Base::t_alloc;
+		using Base::get_T_allocator;
+	public:
 		vector();
 		explicit vector(const Allocator& alloc);
 		explicit vector(size_type count, const T& value = T(), const Allocator& alloc = Allocator());
 		vector(const vector& other);
 		template <class InputIt>
 		vector(InputIt first, InputIt last, const Allocator& alloc = Allocator());
-
-// destructor
 		~vector();
 
-// other member functions
 		vector&			operator=(const vector& other);
 		allocator_type	get_allocator() const;
 		void			assign(size_type count, const T& value);
@@ -112,23 +113,12 @@ namespace ft {
 		void		resize(size_type count, T value = T());
 		void		swap(vector& other);
 
-	protected:
-		using Base::allocate;
-		using Base::deallocate;
-		using Base::t_alloc;
-		using Base::get_T_allocator;
 // auxiliary
-		size_type			validate_init_length(size_type count);
-		void				validate_range(size_type count) const;
-		size_type			validate_length(size_type count, const char *msg) const;
+	protected:
 		template <class Integral>
 		void				init_dispatch(Integral count, Integral value, ft::true_type);
 		template <class InputIt>
 		void				init_dispatch(InputIt first, InputIt last, ft::false_type);
-		template <class InputIt>
-		void				init_from_iterator(InputIt first, InputIt last, ft::input_iterator_tag);
-		template <class ForwardIt>
-		void				init_from_iterator(ForwardIt first, ForwardIt last, ft::forward_iterator_tag);
 		static size_type	choose_max_size(const T_allocator_type& alloc);
 		pointer				allocate_and_copy(size_type count, pointer first, pointer last);
 		void				erase_from_pos(pointer pos);
@@ -143,6 +133,10 @@ namespace ft {
 		void				insert_range(iterator pos, InputIt first, InputIt last, ft::input_iterator_tag);
 		template <class ForwardIt>
 		void				insert_range(iterator pos, ForwardIt first, ForwardIt last, ft::forward_iterator_tag);
+		template <class InputIt>
+		void				init_range(InputIt first, InputIt last, ft::input_iterator_tag);
+		template <class ForwardIt>
+		void				init_range(ForwardIt first, ForwardIt last, ft::forward_iterator_tag);
 		void				assign_fill(size_type count, const T& value);
 		template <class Integral>
 		void				assign_dispatch(Integral count, Integral value, ft::true_type);
@@ -152,12 +146,15 @@ namespace ft {
 		void				assign_aux(InputIt first, InputIt last, ft::input_iterator_tag);
 		template <class ForwardIt>
 		void				assign_aux(ForwardIt first, ForwardIt last, ft::forward_iterator_tag);
+	// validation
+		void				validate_range(size_type count) const;
+		size_type			validate_length(size_type count, const char *msg) const;
+		size_type			validate_init_length(size_type count);
 	};
 
 ///////////////////////////////////////////////////////////////////////
 // vector_base
 ///////////////////////////////////////////////////////////////////////
-
 
 // constructor
 
@@ -491,7 +488,7 @@ namespace ft {
 	template <class ForwardIt>
 	inline void vector<T, Allocator>::insert_range(iterator pos, ForwardIt first, ForwardIt last, ft::forward_iterator_tag) {
 		if (first != last) {
-			const size_type diff = ft::distance(first, last);				//	last - first is impossible for forward iterators
+			const size_type diff = std::distance(first, last);				//	last - first is impossible for forward iterators
 			if (size_type(this->end_cap - this->_end) >= diff) {				//	if capacity is enough
 				const size_type elems_after = this->_end - pos;
 				if (elems_after > diff) {									//	if new diff elements fits in vector size()
@@ -535,7 +532,7 @@ namespace ft {
 
 	template <class T, class Allocator>
 	template <class InputIt>
-	inline void vector<T, Allocator>::init_from_iterator(InputIt first, InputIt last, ft::input_iterator_tag) {
+	inline void vector<T, Allocator>::init_range(InputIt first, InputIt last, ft::input_iterator_tag) {
 		try {
 			for (; first != last; ++first)
 				push_back(*first);
@@ -548,8 +545,8 @@ namespace ft {
 
 	template <class T, class Allocator>
 	template <class ForwardIt>
-	inline void vector<T, Allocator>::init_from_iterator(ForwardIt first, ForwardIt last, ft::forward_iterator_tag)	{
-		const size_type	diff = ft::distance(first, last);
+	inline void vector<T, Allocator>::init_range(ForwardIt first, ForwardIt last, ft::forward_iterator_tag)	{
+		const size_type	diff = std::distance(first, last);
 		this->_begin = this->allocate(validate_init_length(diff));
 		this->end_cap = this->_begin + diff;
 		this->_end = ft::uninitialized_copy_alloc(first, last, this->_begin, this->t_alloc);
@@ -572,7 +569,7 @@ namespace ft {
 	template <class T, class Allocator>
 	template <class ForwardIt>
 	inline void vector<T, Allocator>::assign_aux(ForwardIt first, ForwardIt last, ft::forward_iterator_tag) {
-		const size_type	len = ft::distance(first, last);
+		const size_type	len = std::distance(first, last);
 
 		if (len > capacity()) {
 			validate_init_length(len);
@@ -764,16 +761,18 @@ namespace ft {
 	template <class T, class Allocator>
 	template <class Integral>
 	inline void vector<T, Allocator>::init_dispatch(Integral count, Integral value, ft::true_type) {
-		this->_begin = this->allocate(validate_init_length(count));
-		this->end_cap = this->_begin + count;
-		this->_end = ft::uninitialized_fill_n_alloc(this->_begin, count, value, this->t_alloc);
+		this->_begin = this->allocate(count);
+		this->_end = this->_begin + count;
+		this->end_cap = this->_end;
+		// this->_end = 
+		ft::uninitialized_fill_n_alloc(this->_begin, count, value, this->t_alloc);
 	}
 
 
 	template <class T, class Allocator>
 	template <class InputIt>
 	inline void vector<T, Allocator>::init_dispatch(InputIt first, InputIt last, ft::false_type) {
-		init_from_iterator(first, last, typename ft::iterator_traits<InputIt>::iterator_category());
+		init_range(first, last, typename ft::iterator_traits<InputIt>::iterator_category());
 	}
 
 
