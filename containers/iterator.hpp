@@ -153,12 +153,15 @@ namespace ft {
 	template <typename Iter>
 	inline reverse_iterator<Iter>::reverse_iterator() : current() { }
 
+
 	template <typename Iter>
 	inline reverse_iterator<Iter>::reverse_iterator(iterator_type x) : current(x) { }
 	
+
 	template <typename Iter>
 	template <typename U>
 	inline reverse_iterator<Iter>::reverse_iterator(const reverse_iterator<U> &other) : current(other.current) { }
+
 
 	template <typename Iter>
 	template <typename U>
@@ -167,10 +170,12 @@ namespace ft {
 		return (*this);
 	}
 
+
 	template <typename Iter>
 	inline Iter	reverse_iterator<Iter>::base() const {
 		return (current);
 	}
+
 
 	template <typename Iter>
 	inline typename reverse_iterator<Iter>::reference	reverse_iterator<Iter>::operator*() const {
@@ -179,15 +184,18 @@ namespace ft {
 		return (*(--temp));
 	}
 
+
 	template <typename Iter>
 	inline typename reverse_iterator<Iter>::pointer	reverse_iterator<Iter>::operator->() const {
 		return (&(operator*()));
 	}
 
+
 	template <typename Iter>
 	inline typename reverse_iterator<Iter>::reference	reverse_iterator<Iter>::operator[](reverse_iterator<Iter>::difference_type n) const {
 		return (current[-n - 1]);
 	}
+
 
 	template <typename Iter>
 	inline reverse_iterator<Iter>&	reverse_iterator<Iter>::operator++() {
@@ -195,11 +203,13 @@ namespace ft {
 		return (*this);
 	}
 
+
 	template <typename Iter>
 	inline reverse_iterator<Iter>&	reverse_iterator<Iter>::operator--() {
 		++current;
 		return (*this);
 	}
+
 
 	template <typename Iter>
 	inline reverse_iterator<Iter>	reverse_iterator<Iter>::operator++(int) {
@@ -209,6 +219,7 @@ namespace ft {
 		return (temp);	
 	}
 
+
 	template <typename Iter>
 	inline reverse_iterator<Iter>	reverse_iterator<Iter>::operator--(int) {
 		reverse_iterator temp = *this;
@@ -217,67 +228,80 @@ namespace ft {
 		return (temp);
 	}
 
+
 	template <typename Iter>
 	inline reverse_iterator<Iter>	reverse_iterator<Iter>::operator+(difference_type n) const {
 		return (reverse_iterator(current - n));
 	}
+
 
 	template <typename Iter>
 	inline reverse_iterator<Iter>	reverse_iterator<Iter>::operator-(difference_type n) const {
 		return (reverse_iterator(current + n));
 	}
 	
+
 	template <typename Iter>
 	inline reverse_iterator<Iter>&	reverse_iterator<Iter>::operator+=(difference_type n) {
 		current -= n;
 		return (*this);
 	}
 	
+
 	template <typename Iter>
 	inline reverse_iterator<Iter>&	reverse_iterator<Iter>::operator-=(difference_type n) {
 		current += n;
 		return (*this);
 	}
 
+
 	template <typename Iter1, typename Iter2>
 	inline bool operator==(const reverse_iterator<Iter1>& lhs, const reverse_iterator<Iter2>& rhs) {
 		return (lhs.base() == rhs.base());
 	}
+
 
 	template <typename Iter1, typename Iter2>
 	inline bool operator!=(const reverse_iterator<Iter1>& lhs, const reverse_iterator<Iter2>& rhs) {
 		return (lhs.base() != rhs.base());
 	}
 
+
 	template <typename Iter1, typename Iter2>
 	inline bool operator<(const reverse_iterator<Iter1>& lhs, const reverse_iterator<Iter2>& rhs) {
 		return (lhs.base() < rhs.base());
 	}
+
 
 	template <typename Iter1, typename Iter2>
 	inline bool operator<=(const reverse_iterator<Iter1>& lhs, const reverse_iterator<Iter2>& rhs) {
 		return (lhs.base() <= rhs.base());
 	}
 
+
 	template <typename Iter1, typename Iter2>
 	inline bool operator>(const reverse_iterator<Iter1>& lhs, const reverse_iterator<Iter2>& rhs) {
 		return (lhs.base() > rhs.base());
 	}
+
 
 	template <typename Iter1, typename Iter2>
 	inline bool operator>=(const reverse_iterator<Iter1>& lhs, const reverse_iterator<Iter2>& rhs) {
 		return (lhs.base() >= rhs.base());
 	}
 
+
 	template <typename Iter>
 	inline reverse_iterator<Iter>	operator+(typename reverse_iterator<Iter>::difference_type n, const reverse_iterator<Iter>& it) {
 		return (reverse_iterator<Iter>(it.base() - n));
 	}
 
+
 	template <typename Iter>
 	inline reverse_iterator<Iter>	operator-(typename reverse_iterator<Iter>::difference_type n, const reverse_iterator<Iter>& it) {
 		return (reverse_iterator<Iter>(it.base() + n));
 	}
+
 
 ///////////////////////////////////////////////////////////////////////
 // random_access_iterator
@@ -286,12 +310,15 @@ namespace ft {
 	template <typename Iter, typename Container>
 	inline random_access_iterator<Iter, Container>::random_access_iterator() : current() { }
 
+
 	template <typename Iter, typename Container>
 	inline random_access_iterator<Iter, Container>::random_access_iterator(const random_access_iterator<Iter, typename ft::enable_if<(ft::are_same<Iter, typename Container::pointer>::value), Container>::type> &other)
 	: current(other.current) { }
 
+
 	template <typename Iter, typename Container>
 	inline random_access_iterator<Iter, Container>::random_access_iterator(const Iter &it) : current(it) { }
+
 
 	template <typename Iter, typename Container>
 	inline random_access_iterator<Iter, Container> &random_access_iterator<Iter, Container>::operator=(const random_access_iterator<Iter, typename ft::enable_if<(ft::are_same<Iter, typename Container::pointer>::value), Container>::type> &other) {
@@ -299,28 +326,34 @@ namespace ft {
 		return (*this);
 	}
 	
+
 	template <typename Iter, typename Container>
 	inline random_access_iterator<Iter, Container>::~random_access_iterator() { }
 	
+
 	template <typename Iter, typename Container>
 	inline typename random_access_iterator<Iter, Container>::iterator_type random_access_iterator<Iter, Container>::base() const {
 		return (this->current);
 	}
 	
+
 	template <typename Iter, typename Container>
 	inline typename random_access_iterator<Iter, Container>::reference random_access_iterator<Iter, Container>::operator*() const	{
 		return (*current);
 	}
 	
+
 	template <typename Iter, typename Container>
 	inline typename random_access_iterator<Iter, Container>::pointer random_access_iterator<Iter, Container>::operator->() const {
 		return (&(*current));
 	}
 	
+
 	template <typename Iter, typename Container>
 	inline typename random_access_iterator<Iter, Container>::reference random_access_iterator<Iter, Container>::operator[](difference_type n) const {
 		return (current[n]);
 	}
+
 
 	template <typename Iter, typename Container>
 	inline random_access_iterator<Iter, Container> &random_access_iterator<Iter, Container>::operator++() {
@@ -328,37 +361,44 @@ namespace ft {
 		return (*this);
 	}
 
+
 	template <typename Iter, typename Container>
 	inline random_access_iterator<Iter, Container> &random_access_iterator<Iter, Container>::operator--() {
 		--current;
 		return (*this);
 	}
 	
+
 	template <typename Iter, typename Container>
 	inline random_access_iterator<Iter, Container> random_access_iterator<Iter, Container>::operator++(int)	{
 		return (random_access_iterator<Iter, Container>(current++));
 	}
 	
+
 	template <typename Iter, typename Container>
 	inline random_access_iterator<Iter, Container> random_access_iterator<Iter, Container>::operator--(int) {
 		return (random_access_iterator<Iter, Container>(current--));
 	}
 	
+
 	template <typename Iter, typename Container>
 	inline random_access_iterator<Iter, Container> random_access_iterator<Iter, Container>::operator+(difference_type n) const {
 		return (random_access_iterator<Iter, Container>(current + n));
 	}
+
 
 	template <typename Iter, typename Container>
 	inline random_access_iterator<Iter, Container> random_access_iterator<Iter, Container>::operator-(difference_type n) const {
 		return (random_access_iterator<Iter, Container>(current - n));
 	}
 	
+
 	template <typename Iter, typename Container>
 	inline random_access_iterator<Iter, Container> &random_access_iterator<Iter, Container>::operator+=(difference_type n) {
 		current += n;
 		return (*this);
 	}
+
 
 	template <typename Iter, typename Container>
 	inline random_access_iterator<Iter, Container> &random_access_iterator<Iter, Container>::operator-=(difference_type n) {
@@ -366,49 +406,74 @@ namespace ft {
 		return (*this);
 	}
 
+
 	template <typename Iter, typename Container>
 	bool	operator==(const random_access_iterator<Iter, Container> &lhs, const random_access_iterator<Iter, Container> &rhs) {
 		return (lhs.base() == rhs.base());
 	}
+
 	// for example, Iter1 is int* and Iter2 is const(or volatile) int*
 	template <typename Iter1, typename Iter2, typename Container>
 	bool	operator==(const random_access_iterator<Iter1, Container> &lhs, const random_access_iterator<Iter2, Container> &rhs) {
 		return (lhs.base() == rhs.base());
 	}
 
+
 	template <typename Iter, typename Container>
 	bool	operator!=(const random_access_iterator<Iter, Container> &lhs, const random_access_iterator<Iter, Container> &rhs) {
 		return (lhs.base() != rhs.base());
 	}
 	
+
 	template <typename Iter, typename Container>
 	bool	operator>(const random_access_iterator<Iter, Container> &lhs, const random_access_iterator<Iter, Container> &rhs) {
 		return (lhs.base() > rhs.base());
 	}
 	
+
 	template <typename Iter, typename Container>
 	bool	operator>=(const random_access_iterator<Iter, Container> &lhs, const random_access_iterator<Iter, Container> &rhs) {
 		return (lhs.base() >= rhs.base());
 	}
 	
+
 	template <typename Iter, typename Container>
 	bool	operator<(const random_access_iterator<Iter, Container> &lhs, const random_access_iterator<Iter, Container> &rhs) {
 		return (lhs.base() < rhs.base());
 	}
 	
+
 	template <typename Iter, typename Container>
 	bool	operator<=(const random_access_iterator<Iter, Container> &lhs, const random_access_iterator<Iter, Container> &rhs) {
 		return (lhs.base() <= rhs.base());
 	}
 	
+
 	template <typename Iter, typename Container>
 	random_access_iterator<Iter, Container>	operator+(typename random_access_iterator<Iter, Container>::difference_type n, const random_access_iterator<Iter, Container>& it) {
 		return (random_access_iterator<Iter, Container>(it.base() + n));
 	}
 	
+
 	template <typename Iter, typename Container>
 	random_access_iterator<Iter, Container>	operator-(typename random_access_iterator<Iter, Container>::difference_type n, const random_access_iterator<Iter, Container>& it) {
 		return (random_access_iterator<Iter, Container>(it.base() - n));
+	}
+
+
+///////////////////////////////////////////////////////////////////////
+// other functions
+///////////////////////////////////////////////////////////////////////
+
+	template <typename Iter>
+	inline Iter	unwrap_iterator(Iter iter){
+		return (iter);
+	}	
+	
+	
+	template <typename Iter, typename Container>
+	inline Iter	unwrap_iterator(random_access_iterator<Iter, Container> iter) {
+		return (iter.base());
 	}
 }
 #endif

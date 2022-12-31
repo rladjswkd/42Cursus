@@ -4,6 +4,7 @@
 # include <algorithm>		//min	Todo
 # include <stdlib.h>
 # include "type_traits.hpp"
+# include "iterator.hpp"
 
 namespace ft {
 	template <bool B>
@@ -114,12 +115,52 @@ namespace ft {
 		return (a);
 	}
 
+	// wrap random_access_iterator around other and returns it.	Todo: have to decide to(if not used) or not to remove this.
+	template <typename RandomAccessIter, typename Base>
+	inline RandomAccessIter
+	wrap_random_access_around(RandomAccessIter wrapper, Base other) {
+		return (wrapper + (other - ft::unwrap_iterator(wrapper)));
+	}
 
-	template<typename InputIt, typename OutputIt>
-	inline OutputIt	copy(InputIt first, InputIt last, OutputIt result) {
+	// defensive programming?	Todo: have to decide to(if not used) or not to remove this.
+	template<typename RandomAccessIter>
+	inline RandomAccessIter
+	wrap_random_access_around(const RandomAccessIter&, RandomAccessIter res) {
+		return (res);
+	}
+
+
+	template <typename InputIt, typename OutputIt, typename Category>
+	inline OutputIt copy_impl(InputIt first, InputIt last, OutputIt result, ft::input_iterator_tag) {
 		for (; first != last; (void)++result, (void)++first)
 			*result = *first;
 		return (result);
+	}
+
+
+	template <typename InputIt, typename OutputIt>
+	inline OutputIt	copy_impl(InputIt first, InputIt last, OutputIt result, ft::random_access_iterator_tag) {
+		for(typename iterator_traits<InputIt>::difference_type d = last - first; d > 0; --d) {
+			*result = *first;
+			++first;
+			++result;
+		}
+		return (result);
+	}
+
+
+	template <typename InputIt, typename OutputIt>
+	inline OutputIt	copy_helper(InputIt first, InputIt last, OutputIt result) {
+		return (copy_impl(first, last, result, typename ft::iterator_traits<InputIt>::iterator_category()));
+	}	
+
+
+	template <typename InputIt, typename OutputIt>
+	inline OutputIt	copy(InputIt first, InputIt last, OutputIt result) {
+		return (wrap_random_access_around(result, copy_helper(
+			ft::unwrap_iterator(first),
+			ft::unwrap_iterator(last),
+			ft::unwrap_iterator(result))));
 	}
 }
 #endif

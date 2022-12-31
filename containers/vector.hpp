@@ -21,15 +21,15 @@ namespace ft {
 		T_allocator_type	t_alloc;
 
 		vector_base();
-		vector_base(const allocator_type& alloc);
-		vector_base(size_t count, const allocator_type& alloc);
+		vector_base(const allocator_type &alloc);
+		vector_base(size_t count, const allocator_type &alloc);
 		~vector_base();
 
 		pointer					allocate(size_t count);
 		void					deallocate(pointer ptr, size_t count);
 		void					create_storage(size_t count);
-		T_allocator_type&		get_T_allocator();
-		const T_allocator_type&	get_T_allocator() const;
+		T_allocator_type		&get_T_allocator();
+		const T_allocator_type	&get_T_allocator() const;
 		allocator_type			get_allocator() const;
 	};
 
@@ -54,19 +54,19 @@ namespace ft {
 
 // constructor
 		vector();
-		explicit vector(const Allocator& alloc);
-		explicit vector(size_type count, const T& value = T(), const Allocator& alloc = Allocator());
-		vector(const vector& other);
+		explicit vector(const Allocator &alloc);
+		explicit vector(size_type count, const T &value = T(), const Allocator &alloc = Allocator());
+		vector(const vector &other);
 		template <class InputIt>
-		vector(InputIt first, InputIt last, const Allocator& alloc = Allocator());
+		vector(InputIt first, InputIt last, const Allocator &alloc = Allocator());
 
 // destructor
 		~vector();
 
 // other member functions
-		vector&			operator=(const vector& other);
+		vector			&operator=(const vector &other);
 		allocator_type	get_allocator() const;
-		void			assign(size_type count, const T& value);
+		void			assign(size_type count, const T &value);
 		template <class InputIt>
 		void			assign(InputIt first, InputIt last);
 
@@ -107,10 +107,10 @@ namespace ft {
 		void		insert(const_iterator pos, InputIt first, InputIt last);
 		iterator	erase(iterator pos);
 		iterator	erase(iterator first, iterator last);
-		void		push_back(const T& value);
+		void		push_back(const T &value);
 		void		pop_back();
 		void		resize(size_type count, T value = T());
-		void		swap(vector& other);
+		void		swap(vector &other);
 
 	protected:
 		using Base::allocate;
@@ -129,12 +129,12 @@ namespace ft {
 		void				init_from_iterator(InputIt first, InputIt last, ft::input_iterator_tag);
 		template <class ForwardIt>
 		void				init_from_iterator(ForwardIt first, ForwardIt last, ft::forward_iterator_tag);
-		static size_type	choose_max_size(const T_allocator_type& alloc);
+		static size_type	choose_max_size(const T_allocator_type &alloc);
 		pointer				allocate_and_copy(size_type count, pointer first, pointer last);
 		void				erase_from_pos(pointer pos);
-		void				insert_no_realloc(iterator pos, const value_type& value);
-		void				insert_realloc(iterator pos, const value_type& value);
-		void				insert_fill(iterator pos, size_type count, const value_type& value);
+		void				insert_no_realloc(iterator pos, const value_type &value);
+		void				insert_realloc(iterator pos, const value_type &value);
+		void				insert_fill(iterator pos, size_type count, const value_type &value);
 		template <class Integral>
 		void				insert_dispatch(iterator pos, Integral count, Integral value, ft::true_type);
 		template <class InputIt>
@@ -143,7 +143,7 @@ namespace ft {
 		void				insert_range(iterator pos, InputIt first, InputIt last, ft::input_iterator_tag);
 		template <class ForwardIt>
 		void				insert_range(iterator pos, ForwardIt first, ForwardIt last, ft::forward_iterator_tag);
-		void				assign_fill(size_type count, const T& value);
+		void				assign_values(size_type count, const T &value);
 		template <class Integral>
 		void				assign_dispatch(Integral count, Integral value, ft::true_type);
 		template <class InputIt>
@@ -167,12 +167,12 @@ namespace ft {
 
 
 	template <class T, class Allocator>
-	inline vector_base<T, Allocator>::vector_base(const allocator_type& alloc)
+	inline vector_base<T, Allocator>::vector_base(const allocator_type &alloc)
 	: _begin(NULL), _end(NULL), end_cap(NULL), t_alloc(alloc) { }
 
 
 	template <class T, class Allocator>
-	inline vector_base<T, Allocator>::vector_base(size_t count, const allocator_type& alloc)
+	inline vector_base<T, Allocator>::vector_base(size_t count, const allocator_type &alloc)
 	: t_alloc(alloc) {
 		create_storage(count);
 	}
@@ -212,13 +212,13 @@ namespace ft {
 
 
 	template <class T, class Allocator>
-	inline typename vector_base<T, Allocator>::T_allocator_type&	vector_base<T, Allocator>::get_T_allocator() {
+	inline typename vector_base<T, Allocator>::T_allocator_type	&vector_base<T, Allocator>::get_T_allocator() {
 		return (this->t_alloc);
 	}
 
 
 	template <class T, class Allocator>
-	inline const typename vector_base<T, Allocator>::T_allocator_type&	vector_base<T, Allocator>::get_T_allocator() const {
+	inline const typename vector_base<T, Allocator>::T_allocator_type	&vector_base<T, Allocator>::get_T_allocator() const {
 		return (this->t_alloc);
 	}
 
@@ -240,24 +240,24 @@ namespace ft {
 
 
 	template <class T, class Allocator>
-	vector<T, Allocator>::vector(const Allocator& alloc) : Base(alloc) { }
+	vector<T, Allocator>::vector(const Allocator &alloc) : Base(alloc) { }
 
 
 	template <class T, class Allocator>
-	vector<T, Allocator>::vector(size_type count, const T& value, const Allocator& alloc) : Base(validate_init_length(count), alloc) {
+	vector<T, Allocator>::vector(size_type count, const T &value, const Allocator &alloc) : Base(validate_init_length(count), alloc) {
 		this->_end = ft::uninitialized_fill_n_alloc(this->_begin, count, value, this->t_alloc);
 	}
 
 
 	template <class T, class Allocator>
-	vector<T, Allocator>::vector(const vector& other) : Base(other.size(), other.get_T_allocator()) {
+	vector<T, Allocator>::vector(const vector &other) : Base(other.size(), other.get_T_allocator()) {
 		this->_end = ft::uninitialized_copy_alloc(other._begin, other._end, this->_begin, this->t_alloc);
 	}
 
 
 	template <class T, class Allocator>
 	template <class InputIt>
-	vector<T, Allocator>::vector(InputIt first, InputIt last, const Allocator& alloc) : Base(alloc) {
+	vector<T, Allocator>::vector(InputIt first, InputIt last, const Allocator &alloc) : Base(alloc) {
 		init_dispatch(first, last, typename ft::is_integral<InputIt>::type());
 	}
 
@@ -437,7 +437,7 @@ namespace ft {
 
 
 	template <class T, class Allocator>
-	typename vector<T, Allocator>::iterator	vector<T, Allocator>::insert(const_iterator pos, const value_type& value) {
+	typename vector<T, Allocator>::iterator	vector<T, Allocator>::insert(const_iterator pos, const value_type &value) {
 		if (this->_end != this->end_cap)				// if there is no problem, end is always smaller than end_cap
 			insert_no_realloc(const_cast<iterator>(pos), value);
 		else
@@ -447,7 +447,7 @@ namespace ft {
 
 
 	template <class T, class Allocator>
-	void		vector<T, Allocator>::insert(const_iterator pos, size_type count, const value_type& value) {
+	void		vector<T, Allocator>::insert(const_iterator pos, size_type count, const value_type &value) {
 		insert_fill(const_cast<iterator>(pos), count, value);
 	}
 
@@ -478,7 +478,7 @@ namespace ft {
 	inline void vector<T, Allocator>::insert_range(iterator pos, InputIt first, InputIt last, ft::input_iterator_tag) {
 		if (pos == this->_end) {
 			for (; first != last; ++first)
-				insert(this->_end, *first);	//	call insert(const_iterator pos, const value_type& value)
+				insert(this->_end, *first);	//	call insert(const_iterator pos, const value_type &value)
 		}
 		else if (first != last) {
 			vector temp(first, last, this->t_alloc);
@@ -574,7 +574,7 @@ namespace ft {
 	template <class T, class Allocator>
 	template <class Integral>
 	inline void vector<T, Allocator>::assign_dispatch(Integral count, Integral value, ft::true_type) {
-		assign_fill(count, value);
+		assign_values(count, value);
 	}
 
 
@@ -607,7 +607,7 @@ namespace ft {
 
 
 	template <class T, class Allocator>
-	void	vector<T, Allocator>::push_back(const T& value) {
+	void	vector<T, Allocator>::push_back(const T &value) {
 		if (this->_end != this->end_cap)	//	end < end_cap
 			this->t_alloc.construct((this->_end)++, value);
 		else
@@ -632,7 +632,7 @@ namespace ft {
 
 
 	template <class T, class Allocator>
-	void	vector<T, Allocator>::swap(vector& other) {
+	void	vector<T, Allocator>::swap(vector &other) {
 		pointer	begin_temp = this->_begin;
 		pointer	end_temp = this->_end;
 		pointer	end_cap_temp = this->end_cap;
@@ -650,7 +650,7 @@ namespace ft {
 // other member functions
 
 	template <class T, class Allocator>
-	vector<T, Allocator>&	vector<T, Allocator>::operator=(const vector& other) {
+	vector<T, Allocator>	&vector<T, Allocator>::operator=(const vector &other) {
 		if (this != &other) {	// operator & is not overloaded.
 			const size_type other_len = other.size();
 			if (other_len > capacity()) {
@@ -660,7 +660,7 @@ namespace ft {
 				this->_begin = temp;
 				this->end_cap = this->_begin + other_len;
 			}
-			else if (size() >= other_len) {
+			else if (other_len <= size()) {
 				ft::destroy_range(ft::copy(other._begin, other._end, this->_begin), this->_end, this->t_alloc);
 			}
 			else {
@@ -680,8 +680,8 @@ namespace ft {
 
 
 	template <class T, class Allocator>
-	void	vector<T, Allocator>::assign(size_type count, const T& value) {
-		assign_fill(count, value);
+	void	vector<T, Allocator>::assign(size_type count, const T &value) {
+		assign_values(count, value);
 	}
 
 
@@ -695,43 +695,43 @@ namespace ft {
 // non-member functions
 
 	template <class T, class Allocator>
-	bool	operator==(const ft::vector<T, Allocator>& lhs, const ft::vector<T, Allocator>& rhs) {
+	bool	operator==(const ft::vector<T, Allocator> &lhs, const ft::vector<T, Allocator> &rhs) {
 		return (lhs.size() == rhs.size() && std::equal(lhs.begin(), lhs.end(), rhs.begin()));
 	}
 
 
 	template <class T, class Allocator>
-	bool	operator!=(const ft::vector<T, Allocator>& lhs, const ft::vector<T, Allocator>& rhs) {
+	bool	operator!=(const ft::vector<T, Allocator> &lhs, const ft::vector<T, Allocator> &rhs) {
 		return (!(lhs == rhs));
 	}
 
 
 	template <class T, class Allocator>
-	bool	operator<(const ft::vector<T, Allocator>& lhs, const ft::vector<T, Allocator>& rhs) {
+	bool	operator<(const ft::vector<T, Allocator> &lhs, const ft::vector<T, Allocator> &rhs) {
 		return (ft::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end()));
 	}
 
 
 	template <class T, class Allocator>
-	bool	operator<=(const ft::vector<T, Allocator>& lhs, const ft::vector<T, Allocator>& rhs) {
+	bool	operator<=(const ft::vector<T, Allocator> &lhs, const ft::vector<T, Allocator> &rhs) {
 		return (!(rhs < lhs));
 	}
 
 
 	template <class T, class Allocator>
-	bool	operator>(const ft::vector<T, Allocator>& lhs, const ft::vector<T, Allocator>& rhs) {
+	bool	operator>(const ft::vector<T, Allocator> &lhs, const ft::vector<T, Allocator> &rhs) {
 		return (rhs < lhs);
 	}
 
 
 	template <class T, class Allocator>
-	bool	operator>=(const ft::vector<T, Allocator>& lhs, const ft::vector<T, Allocator>& rhs) {
+	bool	operator>=(const ft::vector<T, Allocator> &lhs, const ft::vector<T, Allocator> &rhs) {
 		return (!(lhs < rhs));
 	}
 
 
 	template <class T, class Allocator>
-	void	swap(ft::vector<T, Allocator>& lhs, ft::vector<T, Allocator>& rhs) {
+	void	swap(ft::vector<T, Allocator> &lhs, ft::vector<T, Allocator> &rhs) {
 		lhs.swap(rhs);
 	}
 
@@ -778,13 +778,13 @@ namespace ft {
 
 	
 	template <class T, class Allocator>
-	typename vector<T, Allocator>::size_type	vector<T, Allocator>::choose_max_size(const T_allocator_type& alloc) {
+	typename vector<T, Allocator>::size_type	vector<T, Allocator>::choose_max_size(const T_allocator_type &alloc) {
 		return (ft::min<ptrdiff_t>(std::numeric_limits<ptrdiff_t>::max() / sizeof(T), alloc.max_size()));
 	}
 
 
 	template <class T, class Allocator>
-	inline void vector<T, Allocator>::assign_fill(size_type count, const T &value)
+	inline void vector<T, Allocator>::assign_values(size_type count, const T &value)
 	{
 		if (count > capacity()) {
 			vector<T, Allocator> temp(count, value, this->t_alloc);
@@ -807,7 +807,7 @@ namespace ft {
 
 		try {
 			ft::uninitialized_copy_alloc(first, last, result, this->t_alloc); 	// std::uninitialized_copy with allocator
-			return result;
+			return (result);
 		} catch (...) {
 			deallocate(result, count);
 			throw;
