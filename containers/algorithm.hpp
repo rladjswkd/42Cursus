@@ -219,5 +219,34 @@ namespace ft {
 	inline OutputIt	fill_n(OutputIt first, Size n, const T &value) {
 		return (ft::wrap_random_access_around(first, fill_n_impl(ft::unwrap_iterator(first), n, value)));
 	}
+
+
+	template <typename BidirectionalIt1, typename BidirectionalIt2>
+	inline BidirectionalIt2	copy_backward_impl(BidirectionalIt1 first, BidirectionalIt1 last, BidirectionalIt2 result, ft::input_iterator_tag) {
+		while (first != last)
+			*--result = *--last;
+		return (result);
+	}
+
+	template <typename BidirectionalIt1, typename BidirectionalIt2>
+	inline BidirectionalIt2	copy_backward_impl(BidirectionalIt1 first, BidirectionalIt1 last, BidirectionalIt2 result, ft::random_access_iterator_tag) {
+		typename iterator_traits<_BI1>::difference_type	diff;
+		for (diff = last - first; diff > 0; --diff)
+			*--result = *--last;
+		return (result);
+	}
+
+	template <typename BidirectionalIt1, typename BidirectionalIt2>
+	inline BidirectionalIt2	copy_backward_helper(BidirectionalIt1 first, BidirectionalIt1 last, BidirectionalIt2 result) {
+		return (copy_backward_impl(first, last, result, typename ft::iterator_traits<BidirectionalIt1>::iterator_category()));
+	}
+
+	template <typename BidirectionalIt1, typename BidirectionalIt2>
+	inline BidirectionalIt2	copy_backward(BidirectionalIt1 first, BidirectionalIt1 last, BidirectionalIt2 result) {
+	return (ft::wrap_random_access_around(result, ft::copy_backward_helper(
+		ft::__niter_base(first),
+		ft::__niter_base(last),
+		ft::__niter_base(result))));
+	}
 }
 #endif

@@ -1,11 +1,11 @@
-#ifndef	ALLOCATE_HPP
-# define ALLOCATE_HPP
+#ifndef	MEMORY_HPP
+# define MEMORY_HPP
 
 namespace ft {
 	template <class ForwardIt, class Allocator>
 	void	destroy_range(ForwardIt first, ForwardIt last, Allocator& alloc) {
 		for (; first != last; ++first)
-			alloc.destroy(alloc.address(*first));
+			alloc.destroy(alloc.address(*first));	// this is just (*first).~value_type(); (value_type is typedef-ed through ft::iterator_traits<ForwardIt>::value_type)
 	}
 
 	template <class InputIterator, class ForwardIterator, class Allocator>

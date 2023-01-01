@@ -122,8 +122,8 @@ namespace ft {
 		static size_type	choose_max_size(const T_allocator_type& alloc);
 		pointer				allocate_and_copy(size_type count, pointer first, pointer last);
 		void				erase_from_pos(pointer pos);
-		void				insert_no_realloc(iterator pos, const value_type& value);
-		void				insert_realloc(iterator pos, const value_type& value);
+		void				insert_value(iterator pos, const value_type& value);
+		void				insert_value_realloc(iterator pos, const value_type& value);
 		void				insert_fill(iterator pos, size_type count, const value_type& value);
 		template <class Integral>
 		void				insert_dispatch(iterator pos, Integral count, Integral value, ft::true_type);
@@ -436,9 +436,9 @@ namespace ft {
 	template <class T, class Allocator>
 	typename vector<T, Allocator>::iterator	vector<T, Allocator>::insert(const_iterator pos, const value_type& value) {
 		if (this->_end != this->end_cap)				// if there is no problem, end is always smaller than end_cap
-			insert_no_realloc(const_cast<iterator>(pos), value);
+			insert_value(const_cast<iterator>(pos), value);
 		else
-			insert_realloc(const_cast<iterator>(pos), value);
+			insert_value_realloc(const_cast<iterator>(pos), value);
 		return (iterator(pos));
 	}
 
@@ -631,7 +631,7 @@ namespace ft {
 		if (this->_end != this->end_cap)	//	end < end_cap
 			this->t_alloc.construct((this->_end)++, value);
 		else
-			insert_realloc(this->_end, value);
+			insert_value_realloc(this->_end, value);
 	}
 
 
@@ -852,7 +852,7 @@ namespace ft {
 
 
 	template <class T, class Allocator>
-	inline void vector<T, Allocator>::insert_no_realloc(iterator pos, const value_type &value) {
+	inline void vector<T, Allocator>::insert_value(iterator pos, const value_type &value) {
 		T	copy;
 
 		if (pos == this->_end) {
@@ -870,7 +870,7 @@ namespace ft {
 
 
 	template <class T, class Allocator>
-	inline void vector<T, Allocator>::insert_realloc(iterator pos, const value_type &value) {
+	inline void vector<T, Allocator>::insert_value_realloc(iterator pos, const value_type &value) {
 		const size_type	len = validate_length(size_type(1), "vector::insert");
 		const size_type	elems_before = pos - this->_begin;
 		pointer			old_begin = this->_begin;
