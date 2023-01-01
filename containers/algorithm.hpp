@@ -1,7 +1,7 @@
 #ifndef ALGORITHM_HPP
 # define ALGORITHM_HPP
-# include <cstring>			//memcmp
-# include <algorithm>		//min	Todo
+# include <cstring>			//memcmp, memset
+// # include <algorithm>		//min	Todo: remove
 # include <stdlib.h>
 # include "type_traits.hpp"
 # include "iterator.hpp"
@@ -9,7 +9,7 @@
 namespace ft {
 	template <bool B>
 	struct _equal {
-		template <class InputIt1, class InputIt2>
+		template <typename InputIt1, typename InputIt2>
 		static bool equal(InputIt1 first1, InputIt1 last1, InputIt2 first2) {
 			for (; first1 != last1; (void)++first1, (void)++first2)
 				if (*first1 != *first2)
@@ -21,7 +21,7 @@ namespace ft {
 
 	template <>
 	struct _equal<true> {
-		template <class InputIt1, class InputIt2>
+		template <typename InputIt1, typename InputIt2>
 		static bool equal(InputIt1 first1, InputIt1 last1, InputIt2 first2) {
 			if (const size_t len = (last1 - first1))
 				return (!std::memcmp(first1, first2, (last1 - first1))); // on mac, ubuntu, ... this way is way faster than for loop 
@@ -30,7 +30,7 @@ namespace ft {
 	};
 	
 
-	template <class InputIt1, class InputIt2>
+	template <typename InputIt1, typename InputIt2>
 	inline bool equal_auxiliary(InputIt1 first1, InputIt1 last1, InputIt2 first2) {
 		typedef typename iterator_traits<InputIt1>::value_type	v1;
 		typedef typename iterator_traits<InputIt2>::value_type	v2;
@@ -42,13 +42,13 @@ namespace ft {
 	}
 
 
-	template <class InputIt1, class InputIt2>
+	template <typename InputIt1, typename InputIt2>
 	inline bool equal(InputIt1 first1, InputIt1 last1, InputIt2 first2) {
 		return (equal_auxiliary<InputIt1, InputIt2>(first1, last1, first2));
 	}
 
 
-	template <class InputIt1, class InputIt2, class BinaryPredicate>
+	template <typename InputIt1, typename InputIt2, typename BinaryPredicate>
 	inline bool equal(InputIt1 first1, InputIt1 last1, InputIt2 first2, BinaryPredicate p) {
 			for (; first1 != last1; (void)++first1, (void)++first2)
 				if (!p(*first1, *first2))
@@ -57,7 +57,7 @@ namespace ft {
 	}
 	
 
-	template <class InputIt1, class InputIt2>
+	template <typename InputIt1, typename InputIt2>
 	bool lexicographical_compare(InputIt1 first1, InputIt1 last1, InputIt2 first2, InputIt2 last2) {
 		for (; first1 != last1 && first2 != last2; ++first1, ++first2) {
 			if (*first1 < *first2)
@@ -69,7 +69,7 @@ namespace ft {
 	}
 	
 
-	template <class InputIt1, class InputIt2, class Compare>
+	template <typename InputIt1, typename InputIt2, typename Compare>
 	bool lexicographical_compare(InputIt1 first1, InputIt1 last1, InputIt2 first2, InputIt2 last2, Compare comp) {
 		for (; first1 != last1 && first2 != last2; ++first1, ++first2) {
 			if (comp(*first1, *first2))
@@ -100,7 +100,7 @@ namespace ft {
 
 
 	template <typename T>
-	inline const T	&min(const T& a, const T& b) {
+	inline const T	&min(const T &a, const T &b) {
 		if (b < a)
 			return (b);
 		return (a);
@@ -108,7 +108,7 @@ namespace ft {
 
 
 	template <typename T>
-	inline const T	&max(const T& a, const T& b)
+	inline const T	&max(const T &a, const T &b)
 	{
 		if (a < b)
 			return (b);
@@ -123,7 +123,7 @@ namespace ft {
 	}
 
 	// defensive programming?	Todo: have to decide to(if not used) or not to remove this.
-	template<typename RandomAccessIter>
+	template <typename RandomAccessIter>
 	inline RandomAccessIter
 	wrap_random_access_around(const RandomAccessIter&, RandomAccessIter res) {
 		return (res);
@@ -161,6 +161,63 @@ namespace ft {
 			ft::unwrap_iterator(first),
 			ft::unwrap_iterator(last),
 			ft::unwrap_iterator(result))));
+	}
+
+
+	template <typename ForwardIt, typename T>
+	inline typename ft::enable_if<!is_scalar<T>::value, void>::type	fill_impl(ForwardIt first, ForwardIt last, const T &value)
+	{
+		for (; first != last; ++first)
+			*first = value;
+	}
+
+	template <typename ForwardIt, typename T>
+	inline typename ft::enable_if<is_scalar<T>::value, void>::type	fill_impl(ForwardIt first, ForwardIt last, const T &value)
+	{
+		const T	temp = value;
+
+		for (; first != last; ++first)
+			*first = temp;
+	}
+
+	template <typename T>
+	inline typename ft::enable_if<is_byte<T>::value, void>::type	fill_impl(T *first, T *last, const T &value)
+	{
+		const T	temp = value;
+		if (const size_t len = last - first)
+			std::memset(first, static_cast<unsigned char>(temp), len);
+	}
+
+	template <typename ForwardIt, typename T>
+	inline void	fill(ForwardIt first, ForwardIt last, const T &value) {
+		fill_impl(ft::unwrap_iterator(first), ft::unwrap_iterator(last), value);
+	}
+
+
+	template<typename OutputIt, typename Size, typename T>
+	inline typename ft::enable_if<!is_scalar<T>::value, OutputIt>::type	fill_n_impl(OutputIt first, Size n, const T &value) {
+		for (size_t niter = n; niter > 0; (void)--niter, (void) ++first)
+			*first = value;
+		return (first);
+	}
+
+	template<typename OutputIt, typename Size, typename T>
+	inline typename ft::enable_if<is_scalar<T>::value, OutputIt>::type	fill_n_impl(OutputIt first, Size n, const T &value) {
+		const T tmp = value;
+		for (size_t niter = n; niter > 0; (void)--niter, (void) ++first)
+			*first = tmp;
+		return (first);
+	}
+
+	template<typename Size, typename T>
+	inline typename ft::enable_if<is_byte<T>::value, T*>::type	fill_n_impl(T* first, Size n, const T &c) {
+		fill_impl(first, first + n, c);
+		return (first + n);
+	}
+
+	template <typename OutputIt, typename Size, typename T>
+	inline OutputIt	fill_n(OutputIt first, Size n, const T &value) {
+		return (ft::wrap_random_access_around(first, fill_n_impl(ft::unwrap_iterator(first), n, value)));
 	}
 }
 #endif

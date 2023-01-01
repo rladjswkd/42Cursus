@@ -2,27 +2,29 @@
 # define TYPE_TRAITS_HPP
 
 namespace ft {
-	template <class T>
+	template <typename T>
 	struct is_pointer {
 		enum {value = 0};
 	};
 
-	template <class T>
+	template <typename T>
 	struct is_pointer<T*> {
 		enum {value = 1};
 	};
 
-	template <class, class>
+
+	template <typename, typename>
 	struct are_same {
 		enum {value = 0};
 	};
 
-	template <class T>
+	template <typename T>
 	struct are_same<T, T> {
 		enum {value = 1};
 	};
 
-	template <class T, T v>
+
+	template <typename T, T v>
 	struct integral_constant {
 		static const T				value = v;
 		typedef T					value_type;
@@ -30,7 +32,7 @@ namespace ft {
 		operator value_type() const;
 	};
 
-	template <class T, T v>
+	template <typename T, T v>
 	integral_constant<T, v>::operator value_type() const {
 		return value;
 	}
@@ -38,6 +40,7 @@ namespace ft {
 	typedef integral_constant<bool, true>	true_type;
 	
 	typedef integral_constant<bool, false>	false_type;
+
 
 	template <typename T>
 	struct remove_const {
@@ -63,6 +66,7 @@ namespace ft {
 	struct remove_cv {
 		typedef typename remove_const<typename remove_volatile<T>::type>::type	type;
 	};
+
 
 	template <typename>
 	struct is_integral : public false_type {};
@@ -115,12 +119,66 @@ namespace ft {
 	template <>
 	struct is_integral<__uint128_t> : public true_type {};
 
-	template <bool B, class T = void>
+
+	template <bool B, typename T = void>
 	struct enable_if {};
 
-	template <class T>
+	template <typename T>
 	struct enable_if<true, T> {
 		typedef T type;
+	};
+
+
+	template <typename T>
+	struct is_floating {
+		enum {value = 0};
+	};
+
+	template <>
+	struct is_floating<float> {
+		enum {value = 1};
+	};
+
+	template <>
+	struct is_floating<double> {
+		enum {value = 1};
+	};
+
+	template <>
+	struct is_floating<long double> {
+		enum {value = 1};
+	};
+
+
+	template <typename First, typename Second>
+	struct traitor {
+		enum {value = bool(First::value) || bool(Second::value)};	//	using anonymous enum as template argument is invalid before c++11. casting to bool is required here.
+	};
+
+	template <typename T>
+	struct is_arithmetic : public traitor< is_integral<T>, is_floating<T> > { };
+
+	template <typename T>
+	struct is_scalar : public traitor< is_arithmetic<T>, is_pointer<T> > { };
+
+	template <typename T>
+	struct is_byte {
+		enum {value = 0};
+	};
+
+	template <>
+	struct is_byte<char> {
+		enum {value = 1};
+	};
+
+	template <>
+	struct is_byte<signed char> {
+		enum {value = 1};
+	};
+
+	template <>
+	struct is_byte<unsigned char> {
+		enum {value = 1};
 	};
 }
 #endif

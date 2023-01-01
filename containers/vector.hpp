@@ -7,6 +7,7 @@
 # include "iterator.hpp"
 # include "algorithm.hpp"
 # include "allocate.hpp"
+# include "iterator_base_funcs.hpp"
 
 namespace ft {
 	template<typename T, typename Allocator>
@@ -791,12 +792,12 @@ namespace ft {
 			this->swap(temp);
 		}
 		else if (count > size()) {
-			std::fill(this->_begin, this->_end, value);
+			ft::fill(this->_begin, this->_end, value);
 			const size_type diff = count - size();
 			this->_end = ft::uninitialized_fill_n_alloc(this->_end, diff, value, this->t_alloc);
 		}
 		else
-			erase_from_pos(std::fill_n(this->_begin, count, value));
+			erase_from_pos(ft::fill_n(this->_begin, count, value));
 	}
 
 
@@ -919,13 +920,13 @@ namespace ft {
 				ft::uninitialized_copy_alloc(old_end - count, old_end, old_end, this->t_alloc);	//	memory blocks after end need "construct"
 				this->_end += count;
 				std::copy_backward(pos.base(), old_end - count, old_end);	//	"construct" is unnecessary
-				std::fill(pos.base(), pos.base() + count, copy);
+				ft::fill(pos.base(), pos.base() + count, copy);
 			}
 			else {
 				this->_end =	ft::uninitialized_fill_n_alloc(old_end, count - elems_after, copy, this->t_alloc);	//	fill "copy" after end
 				ft::uninitialized_copy_alloc(pos.base(), old_end, this->_end, this->t_alloc);	//	fill original values after new end
 				this->_end += elems_after;	//	end is old_end + count now
-				std::fill(pos.base(), old_end, copy);
+				ft::fill(pos.base(), old_end, copy);
 			}
 		}
 		else {
