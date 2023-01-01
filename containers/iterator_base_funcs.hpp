@@ -23,5 +23,36 @@ namespace ft {
 	inline typename iterator_traits<InputIt>::difference_type distance(InputIt first, InputIt last) {
 		return ft::distance_impl(first, last, ft::iterator_traits<InputIt>::iterator_category());
 	}
+
+
+	template <typename InputIt, typename Distance>
+	inline void	advance_impl(InputIt &it, Distance n, ft::input_iterator_tag)	{
+		while (n--)
+			++it;
+	}
+
+
+	template <typename BidirectionalIt, typename Distance>
+	inline void	advance_impl(BidirectionalIt &it, Distance n, ft::bidirectional_iterator_tag) {
+		if (n > 0)
+			while (n--)
+				++it;
+		else
+			while (n++)
+				--it;
+	}
+
+
+	template <typename RandomAccessIt, typename Distance>
+	inline void	advance_impl(RandomAccessIt &it, Distance n, ft::random_access_iterator_tag) {
+		it += n;
+	}
+
+
+	template <typename InputIt, typename Distance>
+	inline void	advance(InputIt &it, Distance d) {
+		typename iterator_traits<InputIt>::difference_type diff = d;
+		advance_impl(it, diff, typename ft::iterator_traits<InputIt>::iterator_category());
+	}
 }
 #endif
