@@ -230,7 +230,7 @@ namespace ft {
 
 	template <typename BidirectionalIt1, typename BidirectionalIt2>
 	inline BidirectionalIt2	copy_backward_impl(BidirectionalIt1 first, BidirectionalIt1 last, BidirectionalIt2 result, ft::random_access_iterator_tag) {
-		typename iterator_traits<_BI1>::difference_type	diff;
+		typename iterator_traits<BidirectionalIt1>::difference_type	diff;
 		for (diff = last - first; diff > 0; --diff)
 			*--result = *--last;
 		return (result);
@@ -244,9 +244,9 @@ namespace ft {
 	template <typename BidirectionalIt1, typename BidirectionalIt2>
 	inline BidirectionalIt2	copy_backward(BidirectionalIt1 first, BidirectionalIt1 last, BidirectionalIt2 result) {
 	return (ft::wrap_random_access_around(result, ft::copy_backward_helper(
-		ft::__niter_base(first),
-		ft::__niter_base(last),
-		ft::__niter_base(result))));
+		ft::unwrap_iterator(first),
+		ft::unwrap_iterator(last),
+		ft::unwrap_iterator(result))));
 	}
 }
 #endif
