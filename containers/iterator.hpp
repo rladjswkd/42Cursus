@@ -298,8 +298,14 @@ namespace ft {
 
 
 	template <typename Iter>
-	inline reverse_iterator<Iter>	operator-(typename reverse_iterator<Iter>::difference_type n, const reverse_iterator<Iter>& it) {
-		return (reverse_iterator<Iter>(it.base() + n));
+	inline typename reverse_iterator<Iter>::difference_type	operator-(const reverse_iterator<Iter> &lhs, const reverse_iterator<Iter> &rhs) {
+		return (rhs.base() - lhs.base());
+	}
+
+
+	template <typename Iter1, typename Iter2>
+	inline typename reverse_iterator<Iter1>::difference_type	operator-(const reverse_iterator<Iter1> &lhs, const reverse_iterator<Iter2> &rhs) {
+		return (rhs.base() - lhs.base());
 	}
 
 
@@ -456,11 +462,17 @@ namespace ft {
 	
 
 	template <typename Iter, typename Container>
-	random_access_iterator<Iter, Container>	operator-(typename random_access_iterator<Iter, Container>::difference_type n, const random_access_iterator<Iter, Container>& it) {
-		return (random_access_iterator<Iter, Container>(it.base() - n));
+	inline typename random_access_iterator<Iter, Container>::difference_type	operator-(const random_access_iterator<Iter, Container> &lhs, const random_access_iterator<Iter, Container> &rhs) {
+		return (rhs.base() - lhs.base());
 	}
 
 
+	template <typename Iter1, typename Iter2, typename Container>
+	inline typename random_access_iterator<Iter1, Container>::difference_type	operator-(const random_access_iterator<Iter1, Container> &lhs, const random_access_iterator<Iter2, Container> &rhs) {
+		return (rhs.base() - lhs.base());
+	}
+
+	
 ///////////////////////////////////////////////////////////////////////
 // other functions
 ///////////////////////////////////////////////////////////////////////
