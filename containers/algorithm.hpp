@@ -21,10 +21,10 @@ namespace ft {
 
 	template <>
 	struct _equal<true> {
-		template <typename InputIt1, typename InputIt2>
-		static bool equal(InputIt1 first1, InputIt1 last1, InputIt2 first2) {
+		template <typename T>
+		static bool equal(const T *first1, const T *last1, const T *first2) {
 			if (const size_t len = (last1 - first1))
-				return (!std::memcmp(first1, first2, (last1 - first1))); // on mac, ubuntu, ... this way is way faster than for loop 
+				return (!std::memcmp(first1, first2, sizeof(T) * len)); // on mac, ubuntu, ... this way is way faster than for loop 
 			return (true);
 		}
 	};
@@ -32,12 +32,12 @@ namespace ft {
 
 	template <typename InputIt1, typename InputIt2>
 	inline bool equal_auxiliary(InputIt1 first1, InputIt1 last1, InputIt2 first2) {
-		typedef typename iterator_traits<InputIt1>::value_type	v1;
-		typedef typename iterator_traits<InputIt2>::value_type	v2;
-		const bool simple = ((is_integral<v1>::value || is_pointer<v1>::value)
+		typedef typename iterator_traits<InputIt1>::value_type	V1;
+		typedef typename iterator_traits<InputIt2>::value_type	V2;
+		const bool simple = ((is_integral<V1>::value || is_pointer<V1>::value)
 							&& is_pointer<InputIt1>::value
 							&& is_pointer<InputIt2>::value
-							&& are_same<v1, v2>::value);
+							&& are_same<V1, V2>::value);
 		return (_equal<simple>::equal(first1, last1, first2));
 	}
 

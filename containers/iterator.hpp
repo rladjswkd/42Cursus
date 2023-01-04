@@ -99,7 +99,7 @@ namespace ft {
 		reverse_iterator();
 		explicit reverse_iterator(iterator_type x);
 		template <typename U> reverse_iterator(const reverse_iterator<U>& other);
-		template <typename U> reverse_iterator&	operator=(const reverse_iterator<U>& other);	// not standard. it is implemented just for compatibility between const and non-const.
+		template <typename U> reverse_iterator &operator=(const reverse_iterator<U>& other);	// not standard. it is implemented just for compatibility between const and non-const.
 		iterator_type		base() const;
 		reference			operator*() const;
 		pointer				operator->() const;
@@ -128,9 +128,10 @@ namespace ft {
 		typedef typename iterator_traits<Iter>::reference			reference;
 
 		random_access_iterator();
-		random_access_iterator(const random_access_iterator<Iter, typename ft::enable_if<ft::are_same<Iter, typename Container::pointer>::value, Container>::type> &other);
-		random_access_iterator(const Iter &it);	// for operator+, operator-, operator++(int), operator--(int) returning random_access_iterator (not reference).
-		random_access_iterator<Iter, Container>	&operator=(const random_access_iterator<Iter, typename ft::enable_if<(ft::are_same<Iter, typename Container::pointer>::value), Container>::type> &other);
+		explicit random_access_iterator(const Iter &it);
+		template <typename U> // copy assignable
+		random_access_iterator(const random_access_iterator<Iter, typename ft::enable_if<(ft::are_same<Iter, typename Container::pointer>::value), Container>::type> &other);
+		// random_access_iterator<Iter, Container>	&operator=(const random_access_iterator<Iter, typename ft::enable_if<(ft::are_same<Iter, typename Container::pointer>::value), Container>::type> &other);
 		~random_access_iterator();
 		iterator_type			base() const;
 		reference				operator*() const;
@@ -165,7 +166,7 @@ namespace ft {
 
 	template <typename Iter>
 	template <typename U>
-	inline reverse_iterator<Iter>& reverse_iterator<Iter>::operator=(const reverse_iterator<U>& other) {
+	inline reverse_iterator<Iter> &reverse_iterator<Iter>::operator=(const reverse_iterator<U>& other) {
 		this->current = other.current;
 		return (*this);
 	}
@@ -318,6 +319,7 @@ namespace ft {
 
 
 	template <typename Iter, typename Container>
+	template <typename U>
 	inline random_access_iterator<Iter, Container>::random_access_iterator(const random_access_iterator<Iter, typename ft::enable_if<ft::are_same<Iter, typename Container::pointer>::value, Container>::type> &other)
 	: current(other.current) { }
 
@@ -326,11 +328,11 @@ namespace ft {
 	inline random_access_iterator<Iter, Container>::random_access_iterator(const Iter &it) : current(it) { }
 
 
-	template <typename Iter, typename Container>
-	inline random_access_iterator<Iter, Container> &random_access_iterator<Iter, Container>::operator=(const random_access_iterator<Iter, typename ft::enable_if<(ft::are_same<Iter, typename Container::pointer>::value), Container>::type> &other) {
-		this->current = other.current;
-		return (*this);
-	}
+	// template <typename Iter, typename Container>
+	// inline random_access_iterator<Iter, Container> &random_access_iterator<Iter, Container>::operator=(const random_access_iterator<Iter, typename ft::enable_if<(ft::are_same<Iter, typename Container::pointer>::value), Container>::type> &other) {
+	// 	this->current = other.current;
+	// 	return (*this);
+	// }
 	
 
 	template <typename Iter, typename Container>

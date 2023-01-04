@@ -490,7 +490,7 @@ namespace ft {
 		if (this->_end != this->end_cap)	//	end < end_cap
 			this->t_alloc.construct((this->_end)++, value);
 		else
-			insert_value_realloc(this->_end, value);
+			insert_value_realloc(end(), value);
 	}
 
 
@@ -505,7 +505,7 @@ namespace ft {
 		if (count < size())
 			erase_from_pos(this->_begin + count);
 		else if (count > size())
-			insert_values(this->_end, count - size(), value);	//	if capacity is less than count, reallocation occurs here
+			insert_values(end(), count - size(), value);	//	if capacity is less than count, reallocation occurs here
 	}
 
 
@@ -726,7 +726,7 @@ namespace ft {
 		if (first == last)
 			erase_from_pos(cur);
 		else
-			insert_from_iterator(this->_end, first, last, typename ft::iterator_traits<InputIt>::type());
+			insert_from_iterator(end(), first, last, typename ft::iterator_traits<InputIt>::type());
 	}
 
 
@@ -737,7 +737,7 @@ namespace ft {
 
 		if (len > capacity()) {
 			validate_init_length(len);
-			pointer	temp = allocate_and_copy(len, first, last);
+			pointer	temp = allocate_and_copy(len, first.base(), last.base());
 			ft::destroy_range(this->_begin, this->_end, this->t_alloc);
 			deallocate(this->_begin, this->end_cap - this->_begin);
 			this->_begin = temp;
