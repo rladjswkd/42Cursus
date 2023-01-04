@@ -479,7 +479,7 @@ namespace ft {
 		if (first != last) {
 			if (last != this->_end)
 				ft::copy(last, this->_end, first);
-			erase_from_pos(first.base() + this->_end - last);
+			erase_from_pos(first.base() + this->_end - last.base());
 		}
 		return (first);
 	}
@@ -574,7 +574,7 @@ namespace ft {
 
 	template <class T, class Allocator>
 	bool	operator==(const ft::vector<T, Allocator> &lhs, const ft::vector<T, Allocator> &rhs) {
-		return (lhs.size() == rhs.size() && std::equal(lhs.begin(), lhs.end(), rhs.begin()));
+		return (lhs.size() == rhs.size() && ft::equal(lhs.begin(), lhs.end(), rhs.begin()));
 	}
 
 

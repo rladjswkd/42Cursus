@@ -128,7 +128,7 @@ namespace ft {
 		typedef typename iterator_traits<Iter>::reference			reference;
 
 		random_access_iterator();
-		random_access_iterator(const random_access_iterator<Iter, typename ft::enable_if<(ft::are_same< Iter, typename Container::pointer >::value), Container>::type> &other);
+		random_access_iterator(const random_access_iterator<Iter, typename ft::enable_if<ft::are_same<Iter, typename Container::pointer>::value, Container>::type> &other);
 		random_access_iterator(const Iter &it);	// for operator+, operator-, operator++(int), operator--(int) returning random_access_iterator (not reference).
 		random_access_iterator<Iter, Container>	&operator=(const random_access_iterator<Iter, typename ft::enable_if<(ft::are_same<Iter, typename Container::pointer>::value), Container>::type> &other);
 		~random_access_iterator();
@@ -318,7 +318,7 @@ namespace ft {
 
 
 	template <typename Iter, typename Container>
-	inline random_access_iterator<Iter, Container>::random_access_iterator(const random_access_iterator<Iter, typename ft::enable_if<(ft::are_same<Iter, typename Container::pointer>::value), Container>::type> &other)
+	inline random_access_iterator<Iter, Container>::random_access_iterator(const random_access_iterator<Iter, typename ft::enable_if<ft::are_same<Iter, typename Container::pointer>::value, Container>::type> &other)
 	: current(other.current) { }
 
 
@@ -463,13 +463,13 @@ namespace ft {
 
 	template <typename Iter, typename Container>
 	inline typename random_access_iterator<Iter, Container>::difference_type	operator-(const random_access_iterator<Iter, Container> &lhs, const random_access_iterator<Iter, Container> &rhs) {
-		return (rhs.base() - lhs.base());
+		return (lhs.base() - rhs.base());
 	}
 
 
 	template <typename Iter1, typename Iter2, typename Container>
 	inline typename random_access_iterator<Iter1, Container>::difference_type	operator-(const random_access_iterator<Iter1, Container> &lhs, const random_access_iterator<Iter2, Container> &rhs) {
-		return (rhs.base() - lhs.base());
+		return (lhs.base() - rhs.base());
 	}
 
 	
