@@ -161,13 +161,13 @@ namespace ft {
 
 	template <typename Iter>
 	template <typename U>
-	inline reverse_iterator<Iter>::reverse_iterator(const reverse_iterator<U> &other) : current(other.current) { }
+	inline reverse_iterator<Iter>::reverse_iterator(const reverse_iterator<U> &other) : current(other.base()) { }
 
 
 	template <typename Iter>
 	template <typename U>
 	inline reverse_iterator<Iter> &reverse_iterator<Iter>::operator=(const reverse_iterator<U>& other) {
-		this->current = other.current;
+		this->current = other.base();
 		return (*this);
 	}
 
