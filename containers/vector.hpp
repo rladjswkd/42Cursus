@@ -869,7 +869,7 @@ namespace ft {
 		pointer			new_end = new_begin;
 		try {
 			new_end = ft::uninitialized_copy_alloc(this->_begin, pos.base(), new_begin, this->t_alloc);
-			new_end = ft::uninitialized_fill_n_alloc(new_end, count, value, this->t_alloc);
+			new_end = ft::uninitialized_fill_n_alloc(new_end, count, copy, this->t_alloc);
 			new_end = ft::uninitialized_copy_alloc(pos.base(), this->_end, new_end, this->t_alloc);
 		} catch (...) {
 			ft::destroy_range(new_begin, new_end, this->t_alloc);
