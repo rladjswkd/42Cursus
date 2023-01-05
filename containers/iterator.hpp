@@ -270,25 +270,25 @@ namespace ft {
 
 	template <typename Iter1, typename Iter2>
 	inline bool operator<(const reverse_iterator<Iter1>& lhs, const reverse_iterator<Iter2>& rhs) {
-		return (lhs.base() < rhs.base());
-	}
-
-
-	template <typename Iter1, typename Iter2>
-	inline bool operator<=(const reverse_iterator<Iter1>& lhs, const reverse_iterator<Iter2>& rhs) {
-		return (lhs.base() <= rhs.base());
-	}
-
-
-	template <typename Iter1, typename Iter2>
-	inline bool operator>(const reverse_iterator<Iter1>& lhs, const reverse_iterator<Iter2>& rhs) {
 		return (lhs.base() > rhs.base());
 	}
 
 
 	template <typename Iter1, typename Iter2>
-	inline bool operator>=(const reverse_iterator<Iter1>& lhs, const reverse_iterator<Iter2>& rhs) {
+	inline bool operator<=(const reverse_iterator<Iter1>& lhs, const reverse_iterator<Iter2>& rhs) {
 		return (lhs.base() >= rhs.base());
+	}
+
+
+	template <typename Iter1, typename Iter2>
+	inline bool operator>(const reverse_iterator<Iter1>& lhs, const reverse_iterator<Iter2>& rhs) {
+		return (lhs.base() < rhs.base());
+	}
+
+
+	template <typename Iter1, typename Iter2>
+	inline bool operator>=(const reverse_iterator<Iter1>& lhs, const reverse_iterator<Iter2>& rhs) {
+		return (lhs.base() <= rhs.base());
 	}
 
 
