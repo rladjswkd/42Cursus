@@ -321,7 +321,7 @@ namespace ft {
 	template <typename Iter, typename Container>
 	template <typename U>
 	inline random_access_iterator<Iter, Container>::random_access_iterator(const random_access_iterator<U, typename ft::enable_if<(ft::are_same<U, typename Container::pointer>::value), Container>::type> &other)
-	: current(other.current) { }
+	: current(other.base()) { }
 
 
 	template <typename Iter, typename Container>
