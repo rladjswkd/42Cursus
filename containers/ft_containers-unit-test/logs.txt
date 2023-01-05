@@ -1,0 +1,21 @@
+In file included from ../vector_tests/insert(std iterators).cpp:2:
+In file included from ../vector_tests/__service.ipp:3:
+../vector_tests/../../../vector.hpp:897:3: error: no matching member function for call to 'insert_from_iterator'
+                insert_from_iterator(pos, first, last, typename ft::iterator_traits<InputIt>::iterator_category());
+                ^~~~~~~~~~~~~~~~~~~~
+../vector_tests/../../../vector.hpp:465:3: note: in instantiation of function template specialization 'ft::vector<int, std::__1::allocator<int> >::insert_dispatch<std::__1::__wrap_iter<int *> >' requested here
+                insert_dispatch(pos, first, last, typename ft::is_integral<InputIt>::type());
+                ^
+../vector_tests/insert(std iterators).cpp:28:9: note: in instantiation of function template specialization 'ft::vector<int, std::__1::allocator<int> >::insert<std::__1::__wrap_iter<int *> >' requested here
+        vector.insert(vector.begin(), tmp.begin(), tmp.end());
+               ^
+../vector_tests/insert(std iterators).cpp:40:75: note: in instantiation of function template specialization 'insert_std_test<int>' requested here
+        exit(run_vector_unit_test<int>("insert(std iterators)", insert_std_test, insert_std_test));
+                                                                                 ^
+../vector_tests/../../../vector.hpp:155:11: note: candidate function template not viable: no known conversion from 'typename ft::iterator_traits<__wrap_iter<int *> >::iterator_category' (aka 'std::__1::random_access_iterator_tag') to 'ft::input_iterator_tag' for 4th argument
+                void                            insert_from_iterator(iterator pos, InputIt first, InputIt last, ft::input_iterator_tag);
+                                                ^
+../vector_tests/../../../vector.hpp:157:11: note: candidate function template not viable: no known conversion from 'typename ft::iterator_traits<__wrap_iter<int *> >::iterator_category' (aka 'std::__1::random_access_iterator_tag') to 'ft::forward_iterator_tag' for 4th argument
+                void                            insert_from_iterator(iterator pos, ForwardIt first, ForwardIt last, ft::forward_iterator_tag);
+                                                ^
+1 error generated.

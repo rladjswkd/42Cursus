@@ -369,25 +369,25 @@ namespace ft {
 
 	template <class T, class Allocator>
 	inline typename vector<T, Allocator>::reverse_iterator vector<T, Allocator>::rbegin() {
-		return (reverse_iterator(this->_end));
+		return (reverse_iterator(end()));
 	}
 
 
 	template <class T, class Allocator>
 	inline typename vector<T, Allocator>::const_reverse_iterator vector<T, Allocator>::rbegin() const {
-		return (const_reverse_iterator(this->_end));
+		return (const_reverse_iterator(end()));
 	}
 
 
 	template <class T, class Allocator>
 	inline typename vector<T, Allocator>::reverse_iterator vector<T, Allocator>::rend() {
-		return (reverse_iterator(this->_begin));
+		return (reverse_iterator(begin()));
 	}
 
 
 	template <class T, class Allocator>
 	inline typename vector<T, Allocator>::const_reverse_iterator vector<T, Allocator>::rend() const {
-		return (const_reverse_iterator(this->_begin));
+		return (const_reverse_iterator(begin()));
 	}
 
 
@@ -444,11 +444,12 @@ namespace ft {
 
 	template <class T, class Allocator>
 	typename vector<T, Allocator>::iterator	vector<T, Allocator>::insert(iterator pos, const value_type &value) {
+		difference_type	diff = pos - begin();
 		if (this->_end != this->end_cap)
 			insert_value_no_realloc(pos, value);
 		else
 			insert_value_realloc(pos, value);
-		return (iterator(pos));
+		return (iterator(this->_begin + diff));	//	this->_begin has been changed before return statement
 	}
 
 
@@ -467,8 +468,8 @@ namespace ft {
 
 	template <class T, class Allocator>
 	typename vector<T, Allocator>::iterator	vector<T, Allocator>::erase(iterator pos) {
-		if (pos + 1 != this->_end)	//	if pos is out of bounds, segmentation fault is caused.
-			ft::copy(pos + 1, this->_end, pos);
+		if (pos + 1 != end())	//	if pos is out of bounds, segmentation fault is caused.
+			ft::copy(pos + 1, end(), pos);
 		this->t_alloc.destroy(--this->_end);
 		return (pos);
 	}
@@ -477,9 +478,9 @@ namespace ft {
 	template <class T, class Allocator>
 	typename vector<T, Allocator>::iterator	vector<T, Allocator>::erase(iterator first, iterator last) {
 		if (first != last) {
-			if (last != this->_end)
-				ft::copy(last, this->_end, first);
-			erase_from_pos(first.base() + this->_end - last.base());
+			if (last.base() != this->_end)
+				ft::copy(last, end(), first);
+			erase_from_pos(first.base() + (end() - last));
 		}
 		return (first);
 	}

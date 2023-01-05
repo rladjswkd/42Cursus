@@ -128,9 +128,9 @@ namespace ft {
 		typedef typename iterator_traits<Iter>::reference			reference;
 
 		random_access_iterator();
-		explicit random_access_iterator(const Iter &it);
 		template <typename U> // copy assignable
-		random_access_iterator(const random_access_iterator<Iter, typename ft::enable_if<(ft::are_same<Iter, typename Container::pointer>::value), Container>::type> &other);
+		random_access_iterator(const random_access_iterator<U, typename ft::enable_if<(ft::are_same<U, typename Container::pointer>::value), Container>::type> &other);
+		explicit random_access_iterator(const Iter &it);
 		// random_access_iterator<Iter, Container>	&operator=(const random_access_iterator<Iter, typename ft::enable_if<(ft::are_same<Iter, typename Container::pointer>::value), Container>::type> &other);
 		~random_access_iterator();
 		iterator_type			base() const;
@@ -320,7 +320,7 @@ namespace ft {
 
 	template <typename Iter, typename Container>
 	template <typename U>
-	inline random_access_iterator<Iter, Container>::random_access_iterator(const random_access_iterator<Iter, typename ft::enable_if<ft::are_same<Iter, typename Container::pointer>::value, Container>::type> &other)
+	inline random_access_iterator<Iter, Container>::random_access_iterator(const random_access_iterator<U, typename ft::enable_if<(ft::are_same<U, typename Container::pointer>::value), Container>::type> &other)
 	: current(other.current) { }
 
 

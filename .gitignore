@@ -1,5 +1,4 @@
 .gitignore
 
-containers/*test*
 containers/a.out*
 containers/temp.cpp

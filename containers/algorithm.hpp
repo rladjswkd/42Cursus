@@ -8,7 +8,7 @@
 
 namespace ft {
 	template <bool B>
-	struct _equal {
+	struct s_equal {
 		template <typename InputIt1, typename InputIt2>
 		static bool equal(InputIt1 first1, InputIt1 last1, InputIt2 first2) {
 			for (; first1 != last1; (void)++first1, (void)++first2)
@@ -20,7 +20,7 @@ namespace ft {
 
 
 	template <>
-	struct _equal<true> {
+	struct s_equal<true> {
 		template <typename T>
 		static bool equal(const T *first1, const T *last1, const T *first2) {
 			if (const size_t len = (last1 - first1))
@@ -38,7 +38,7 @@ namespace ft {
 							&& is_pointer<InputIt1>::value
 							&& is_pointer<InputIt2>::value
 							&& are_same<V1, V2>::value);
-		return (_equal<simple>::equal(first1, last1, first2));
+		return (s_equal<simple>::equal(first1, last1, first2));
 	}
 
 
