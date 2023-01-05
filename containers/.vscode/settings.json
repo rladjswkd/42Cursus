@@ -78,6 +78,7 @@
 		"*.tcc": "cpp",
 		"clocale": "cpp",
 		"numeric": "cpp",
-		"random": "cpp"
+		"random": "cpp",
+		"__undef_macros": "cpp"
 	}
 }

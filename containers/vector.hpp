@@ -139,7 +139,6 @@ namespace ft {
 		void				assign_from_iterator(InputIt first, InputIt last, ft::input_iterator_tag);
 		template <class ForwardIt>
 		void				assign_from_iterator(ForwardIt first, ForwardIt last, ft::forward_iterator_tag);
-		static size_type	choose_max_size(const T_allocator_type &alloc);
 		pointer				allocate_and_copy(size_type count, pointer first, pointer last);
 		void				erase_from_pos(pointer pos);
 		void				insert_value_no_realloc(iterator pos, const value_type &value);
@@ -407,7 +406,7 @@ namespace ft {
 
 	template <class T, class Allocator>
 	typename vector<T, Allocator>::size_type vector<T, Allocator>::max_size() const {
-		return(choose_max_size(get_T_allocator()));
+		return(ft::min<size_type>(std::numeric_limits<difference_type>::max(), this->t_alloc.max_size()));
 	}
 
 
@@ -641,7 +640,7 @@ namespace ft {
 
 	template <class T, class Allocator>
 	inline typename vector<T, Allocator>::size_type vector<T, Allocator>::validate_init_length(size_type count) {
-		if (count > choose_max_size(get_T_allocator()))
+		if (count > max_size())
 			throw std::length_error("cannot create ft::vector larger than max_size()");
 		return (count);
 	}
@@ -753,12 +752,6 @@ namespace ft {
 			ft::copy(first, temp_it, this->_begin);
 			this->_end = ft::uninitialized_copy_alloc(temp_it, last, this->_end, this->t_alloc);
 		}
-	}
-
-
-	template <class T, class Allocator>
-	typename vector<T, Allocator>::size_type	vector<T, Allocator>::choose_max_size(const T_allocator_type &alloc) {
-		return (ft::min<ptrdiff_t>(std::numeric_limits<ptrdiff_t>::max() / sizeof(T), alloc.max_size()));
 	}
 
 
