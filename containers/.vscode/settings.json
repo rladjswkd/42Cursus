@@ -79,6 +79,7 @@
 		"clocale": "cpp",
 		"numeric": "cpp",
 		"random": "cpp",
-		"__undef_macros": "cpp"
+		"__undef_macros": "cpp",
+		"__cxx_version": "cpp"
 	}
 }

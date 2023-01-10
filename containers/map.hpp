@@ -2,29 +2,170 @@
 # define MAP_HPP
 # include <functional>
 # include <stddef.h>
+# include <exception>
 # include "pair.hpp"
 # include "iterator.hpp"
 
 namespace ft {
-	template <class Key, class T, class Compare = std::less<Key>,
-		class Allocator = std::allocator< ft::pair<const Key, T> > >
+	template <typename Key, typename T, typename Compare = std::less<Key>,
+		typename Allocator = std::allocator< ft::pair<const Key, T> > >
 	class map {
 	public:
-		typedef	Key							key_type;
-		typedef T							mapped_type;
-		typedef ft::pair<const Key, T>		value_type;
-		typedef	std::size_t					size_type;
-		typedef std::ptrdiff_t				difference_type;
-		typedef Compare						key_compare;
-		typedef Allocator					allocator_type;
-		typedef value_type&					reference;
-		typedef const value_type&			const_reference;
-		typedef Allocator::pointer			pointer;
-		typedef Allocator::const_pointer	const_pointer;
-		// typedef bidirectional iterator to value_type	iterator;
-		// typedef bidirectional iterator to const value_type	const_iterator;
-		typedef ft::reverse_iterator<iterator>	reverse_iterator;
+		typedef	Key										key_type;
+		typedef T										mapped_type;
+		typedef ft::pair<const Key, T>					value_type;
+		typedef	std::size_t								size_type;
+		typedef std::ptrdiff_t							difference_type;
+		typedef Compare									key_compare;
+		typedef Allocator								allocator_type;
+		typedef value_type&								reference;
+		typedef const value_type&						const_reference;
+		typedef Allocator::pointer						pointer;
+		typedef Allocator::const_pointer				const_pointer;
+		typedef /*bidirectional iterator to value_type*/ T*	iterator;
+		typedef /*bidirectional iterator to const value_type*/ const T*	const_iterator;
+		typedef ft::reverse_iterator<iterator>			reverse_iterator;
 		typedef ft::reverse_iterator<const_iterator>	const_reverse_iterator;
+
+		class value_compare : std::binary_function<value_type, value_type, bool> {
+			friend map<Key, T, Compare, Allocator>;
+		protected:
+			Compare	comp;
+			value_compare(Compare c);
+		public:
+			bool	operator()(const value_type &lhs, const value_type &rhs) const;
+		};
+
+		map();
+		explicit
+		map(const Compare &comp = Compare(), const Allocator &alloc = Allocator());
+		template <typename InputIt>
+		map(InputIt first, InputIt last, const Compare &comp = Compare(), const Allocator &alloc = Allocator());
+		map(const map &other);
+		~map();
+		map											&operator=(const map &other) const;
+		allocator_type								get_allocator() const;
+		size_type									count(const Key &key) const;
+		iterator									find(const Key &key);
+		const_iterator								find(const Key &key) const;
+		iterator									lower_bound(const Key &key);
+		const_iterator								lower_bound(const Key &key) const;
+		iterator									upper_bound(const Key &key);
+		const_iterator								upper_bound(const Key &key) const;
+		ft::pair<iterator, iterator>				equal_range(const Key &key);
+		ft::pair<const_iterator, const_iterator>	equal_range(const Key &key) const;
+		key_compare									key_comp() const;
+		value_compare								value_comp() const;
+		T											&at(const Key &key);
+		const T										&at(const Key &key) const;
 	};
+
+///////////////////////////////////////////////////////////////////////
+// map::value_compare
+///////////////////////////////////////////////////////////////////////
+	template <typename Key, typename T, typename Compare, typename Allocator>
+	inline map<Key, T, Compare, Allocator>::value_compare::value_compare(Compare c) : comp(c) { }	//	just comp? not value_compare::comp or something?
+
+	template <typename Key, typename T, typename Compare, typename Allocator>
+	inline bool	map<Key, T, Compare, Allocator>::value_compare::operator()(const value_type &lhs, const value_type &rhs) const {
+		return (comp(lhs.first, rhs.first));
+	}
+
+	template <typename Key, typename T, typename Compare, typename Allocator>
+	inline map<Key, T, Compare, Allocator>::map() /* tree() */{ }
+
+	template <typename Key, typename T, typename Compare, typename Allocator>
+	inline map<Key, T, Compare, Allocator>::map(const Compare &comp, const Allocator &alloc) /* tree(comp, alloc) */ {
+	}
+
+	template <typename Key, typename T, typename Compare, typename Allocator>
+	template <typename InputIt>
+	inline map<Key, T, Compare, Allocator>::map(InputIt first, InputIt last, const Compare &comp, const Allocator &alloc) /* tree(comp, alloc)*/ {
+		/* tree.insertblahblah(first, last);*/
+	}
+
+	template <typename Key, typename T, typename Compare, typename Allocator>
+	inline map<Key, T, Compare, Allocator>::map(const map &other) /* tree(other.tree) */ {	}
+
+	template <typename Key, typename T, typename Compare, typename Allocator>
+	inline map<Key, T, Compare, Allocator>::~map() {}
+
+	template <typename Key, typename T, typename Compare, typename Allocator>
+	inline map<Key, T, Compare, Allocator>	&map<Key, T, Compare, Allocator>::operator=(const map &other) const {
+		/* tree = other.tree */
+		return (*this);
+	}
+
+	template <typename Key, typename T, typename Compare, typename Allocator>
+	inline typename map<Key, T, Compare, Allocator>::allocator_type	map<Key, T, Compare, Allocator>::get_allocator() const {
+		return (allocator_type(/*tree.get_allocator()*/))
+	}
+
+	template <typename Key, typename T, typename Compare, typename Allocator>
+	inline typename map<Key, T, Compare, Allocator>::size_type map<Key, T, Compare, Allocator>::count(const Key &key) const {
+		return (/*size_type(tree.find() != tree.end())*/);
+	}
+	
+	template <typename Key, typename T, typename Compare, typename Allocator>
+	inline typename map<Key, T, Compare, Allocator>::iterator map<Key, T, Compare, Allocator>::find(const Key &key) {
+		return (/*tree.find(key)*/);
+	}
+
+	template <typename Key, typename T, typename Compare, typename Allocator>
+	inline typename map<Key, T, Compare, Allocator>::const_iterator map<Key, T, Compare, Allocator>::find(const Key &key) const {
+		return (/*tree.find(key)*/);
+	}
+
+	template <typename Key, typename T, typename Compare, typename Allocator>
+	inline typename map<Key, T, Compare, Allocator>::iterator	map<Key, T, Compare, Allocator>::lower_bound(const Key &key) {
+
+		return (/*tree.lower_bound(key)*/);
+	}
+
+	template <typename Key, typename T, typename Compare, typename Allocator>
+	inline typename map<Key, T, Compare, Allocator>::const_iterator	map<Key, T, Compare, Allocator>::lower_bound(const Key &key) const {
+		return (/*tree.lower_bound(key)*/);
+	}
+
+	template <typename Key, typename T, typename Compare, typename Allocator>
+	inline typename map<Key, T, Compare, Allocator>::iterator map<Key, T, Compare, Allocator>::upper_bound(const Key &key) {
+		return (/*tree.upper_bound(key)*/);
+	}
+
+	template <typename Key, typename T, typename Compare, typename Allocator>
+	inline typename map<Key, T, Compare, Allocator>::const_iterator map<Key, T, Compare, Allocator>::upper_bound(const Key &key) const {
+		return (/*tree.upper_bound(key)*/);
+	}
+
+	template <typename Key, typename T, typename Compare, typename Allocator>
+	inline ft::pair<typename map<Key, T, Compare, Allocator>::iterator, typename map<Key, T, Compare, Allocator>::iterator> map<Key, T, Compare, Allocator>::equal_range(const Key &key) {
+		return (/*tree.equal_range(key)*/);
+	}
+
+	template <typename Key, typename T, typename Compare, typename Allocator>
+	inline ft::pair<typename map<Key, T, Compare, Allocator>::const_iterator, typename map<Key, T, Compare, Allocator>::const_iterator> map<Key, T, Compare, Allocator>::equal_range(const Key &key) const {
+		return (/*tree.equal_range(key)*/);
+	}
+
+	template <typename Key, typename T, typename Compare, typename Allocator>
+	inline typename map<Key, T, Compare, Allocator>::key_compare	map<Key, T, Compare, Allocator>::key_comp() const {
+		return (/*tree.key_comp()*/);
+	}
+
+	template <typename Key, typename T, typename Compare, typename Allocator>
+	inline typename map<Key, T, Compare, Allocator>::value_compare	map<Key, T, Compare, Allocator>::value_comp() const {
+		return (value_comp(/*tree.key_comp()*/));
+	}
+
+	template <typename Key, typename T, typename Compare, typename Allocator>
+	inline T	&map<Key, T, Compare, Allocator>::at(const Key &key) {
+		iterator	e = lower_bound(key);
+		if (key == end() || )
+	}
+
+	template <typename Key, typename T, typename Compare, typename Allocator>
+	inline const T	&map<Key, T, Compare, Allocator>::at(const Key &key) const {
+
+	}
 }
 #endif
