@@ -4,7 +4,8 @@
 # include <stddef.h>
 # include <exception>
 # include "pair.hpp"
-# include "iterator.hpp"
+# include "iterator.hpp"	// remove
+# include "tree.hpp"
 
 namespace ft {
 	template <typename Key, typename T, typename Compare = std::less<Key>,
@@ -22,10 +23,10 @@ namespace ft {
 		typedef const value_type&							const_reference;
 		typedef typename allocator_type::pointer			pointer;
 		typedef typename allocator_type::const_pointer		const_pointer;
-		typedef /*bidirectional iterator to value_type*/ T*	iterator;
-		typedef /*bidirectional iterator to const value_type*/ const T*	const_iterator;
-		typedef ft::reverse_iterator<iterator>				reverse_iterator;
-		typedef ft::reverse_iterator<const_iterator>		const_reverse_iterator;
+		typedef /*bidirectional iterator to value_type*/ T*	iterator;					//	rb_tree::iterator
+		typedef /*bidirectional iterator to const value_type*/ const T*	const_iterator;	//	rb_tree::const_iterator
+		typedef ft::reverse_iterator<iterator>				reverse_iterator;			//	rb_tree::reverse_iterator
+		typedef ft::reverse_iterator<const_iterator>		const_reverse_iterator;		//	rb_tree::const_reverse_iterator
 
 		class value_compare : std::binary_function<value_type, value_type, bool> {
 			friend map<Key, T, Compare, Allocator>;
@@ -127,7 +128,7 @@ namespace ft {
 
 	template <typename Key, typename T, typename Compare, typename Allocator>
 	inline typename map<Key, T, Compare, Allocator>::size_type map<Key, T, Compare, Allocator>::count(const Key &key) const {
-		return (/*size_type(tree.find() != tree.end())*/);
+		return (/*size_type(tree.find(key) != tree.end())*/);
 	}
 	
 	template <typename Key, typename T, typename Compare, typename Allocator>
@@ -238,7 +239,7 @@ namespace ft {
 	template <typename Key, typename T, typename Compare, typename Allocator>
 	template <class InputIt>
 	inline void	map<Key, T, Compare, Allocator>::insert(InputIt first, InputIt last) {
-		/*tree.insert(first, last);
+		/*tree.insert(first, last);*/
 	}
 
 	template <typename Key, typename T, typename Compare, typename Allocator>

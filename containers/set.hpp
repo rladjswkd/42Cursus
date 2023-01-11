@@ -4,7 +4,8 @@
 # include <stddef.h>
 # include <exception>
 # include "pair.hpp"
-# include "iterator.hpp"
+# include "iterator.hpp"	//	remove
+# include "tree.hpp"
 
 namespace ft {
 	template <typename Key, typename Compare = std::less<Key>, typename Allocator = std::allocator<Key> >
@@ -66,6 +67,8 @@ namespace ft {
 		const_reverse_iterator						rbegin() const;
 		reverse_iterator							rend();
 		const_reverse_iterator						rend() const;
+	private:
+		rb_tree<Key, Key, Key, Compare, Allocator>	tree;
 	};
 
 	template <typename Key, typename Compare, typename Allocator>
