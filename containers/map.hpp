@@ -11,21 +11,21 @@ namespace ft {
 		typename Allocator = std::allocator< ft::pair<const Key, T> > >
 	class map {
 	public:
-		typedef	Key										key_type;
-		typedef T										mapped_type;
-		typedef ft::pair<const Key, T>					value_type;
-		typedef	std::size_t								size_type;
-		typedef std::ptrdiff_t							difference_type;
-		typedef Compare									key_compare;
-		typedef Allocator								allocator_type;
-		typedef value_type&								reference;
-		typedef const value_type&						const_reference;
-		typedef Allocator::pointer						pointer;
-		typedef Allocator::const_pointer				const_pointer;
+		typedef	Key											key_type;
+		typedef T											mapped_type;
+		typedef ft::pair<const Key, T>						value_type;
+		typedef	std::size_t									size_type;
+		typedef std::ptrdiff_t								difference_type;
+		typedef Compare										key_compare;
+		typedef Allocator									allocator_type;
+		typedef value_type&									reference;
+		typedef const value_type&							const_reference;
+		typedef typename allocator_type::pointer			pointer;
+		typedef typename allocator_type::const_pointer		const_pointer;
 		typedef /*bidirectional iterator to value_type*/ T*	iterator;
 		typedef /*bidirectional iterator to const value_type*/ const T*	const_iterator;
-		typedef ft::reverse_iterator<iterator>			reverse_iterator;
-		typedef ft::reverse_iterator<const_iterator>	const_reverse_iterator;
+		typedef ft::reverse_iterator<iterator>				reverse_iterator;
+		typedef ft::reverse_iterator<const_iterator>		const_reverse_iterator;
 
 		class value_compare : std::binary_function<value_type, value_type, bool> {
 			friend map<Key, T, Compare, Allocator>;
@@ -92,6 +92,9 @@ namespace ft {
 		return (comp(lhs.first, rhs.first));
 	}
 
+///////////////////////////////////////////////////////////////////////
+// map
+///////////////////////////////////////////////////////////////////////
 	template <typename Key, typename T, typename Compare, typename Allocator>
 	inline map<Key, T, Compare, Allocator>::map() /* tree() */{ }
 
@@ -102,14 +105,14 @@ namespace ft {
 	template <typename Key, typename T, typename Compare, typename Allocator>
 	template <typename InputIt>
 	inline map<Key, T, Compare, Allocator>::map(InputIt first, InputIt last, const Compare &comp, const Allocator &alloc) /* tree(comp, alloc)*/ {
-		/* tree.insertblahblah(first, last);*/
+		/* tree.insert(first, last);*/
 	}
 
 	template <typename Key, typename T, typename Compare, typename Allocator>
 	inline map<Key, T, Compare, Allocator>::map(const map &other) /* tree(other.tree) */ {	}
 
 	template <typename Key, typename T, typename Compare, typename Allocator>
-	inline map<Key, T, Compare, Allocator>::~map() {}
+	inline map<Key, T, Compare, Allocator>::~map() { }
 
 	template <typename Key, typename T, typename Compare, typename Allocator>
 	inline map<Key, T, Compare, Allocator>	&map<Key, T, Compare, Allocator>::operator=(const map &other) const {
@@ -328,8 +331,8 @@ namespace ft {
 		return (/*!(lhs < rhs)*/);
 	}
 
-	template <typename Key, typename T, typename Compare, typename Alloc>
-	inline void swap(map<Key, T, Compare, Alloc> &lhs, map<Key, T, Compare, Alloc> &rhs) {
+	template <typename Key, typename T, typename Compare, typename Allocator>
+	inline void swap(map<Key, T, Compare, Allocator> &lhs, map<Key, T, Compare, Allocator> &rhs) {
 		lhs.swap(rhs);		
 	}
 }
