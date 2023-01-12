@@ -1,4 +1,5 @@
 .gitignore
 
 containers/a.out*
-containers/temp.cpp
+containers/*temp*
+containers/.vscode
