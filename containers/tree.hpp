@@ -6,6 +6,7 @@
 # include "iterator.hpp"
 # include "algorithm.hpp"
 # include "memory.hpp"
+
 namespace ft {
 
 	enum	color_type {red, black};
@@ -26,25 +27,27 @@ namespace ft {
 	class rb_tree {
 		
 	public:
-		typedef Allocator								allocator_type;
-		typedef	Key										key_type;
-		typedef	Value									value_type;
-		typedef Compare									key_compare;
-		typedef size_t									size_type;
-		typedef ptrdiff_t								difference_type;
-		typedef bidirectional_iterator					iterator;
-		typedef const_bidirectional_iterator			const_iterator;
-		typedef ft::reverse_iterator<iterator>			reverse_iterator;
-		typedef ft::reverse_iterator<const_iterator>	const_reverse_iterator;
-		typedef rb_tree_node_base						node_base_type;
-		typedef rb_tree_node<Value>						node_type;
+		typedef Allocator													allocator_type;
+		typedef	Key															key_type;
+		typedef	Value														value_type;
+		typedef Compare														key_compare;
+		typedef size_t														size_type;
+		typedef ptrdiff_t													difference_type;
+		typedef bidirectional_iterator										iterator;
+		typedef const_bidirectional_iterator								const_iterator;
+		typedef ft::reverse_iterator<iterator>								reverse_iterator;
+		typedef ft::reverse_iterator<const_iterator>						const_reverse_iterator;
+		typedef rb_tree_node_base											node_base_type;
+		typedef rb_tree_node<Value>											node_type;
+		typedef typename allocator_type::template rebind<node_type>::other	node_allocator_type;
 
-	protected:
+	private:
 		rb_tree_node_base	sentinel;	//	this tracks root, leftmost, rightmost
 		size_type			node_count;
 		Compare				comp;
 		KeyOfValue			get_key;
 		allocator_type		allocator;
+		node_allocator_type	node_allocator;
 
 	public:
 		rb_tree();
@@ -85,10 +88,40 @@ namespace ft {
 		size_type 									erase(const key_type& k);
 		void 										erase(iterator first, iterator last);
 		void										swap(rb_tree &other);
+
+	private:
+		void										remove_all(node_type *cur);
+		void										reset_sentinel_and_count();
 	};
 
 	template <typename Key, typename Value, typename KeyOfValue, typename Compare, typename Allocator>
-	inline rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::allocator_type rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::get_allocator() const {
+	inline rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::rb_tree()
+	: comp(), allocator(), get_key(), node_allocator() {
+		sentinel.color = red;
+		reset_sentinel_and_count();
+	}
+
+	template <typename Key, typename Value, typename KeyOfValue, typename Compare, typename Allocator>
+	inline rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::rb_tree(const Compare &comp, const Allocator &alloc)
+	: comp(comp), allocator(alloc), get_key(), node_allocator() {
+		sentinel.color = red;
+		reset_sentinel_and_count();
+	}
+
+	// template <typename Key, typename Value, typename KeyOfValue, typename Compare, typename Allocator>
+	// inline rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::rb_tree(const rb_tree &other)
+	// : comp(other.comp), allocator(other.allocator), node_count(other.node_count), sentinel(), get_key(), node_allocator() {
+
+	// }
+
+	template <typename Key, typename Value, typename KeyOfValue, typename Compare, typename Allocator>
+	inline rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::~rb_tree()
+	{
+	}
+
+	template <typename Key, typename Value, typename KeyOfValue, typename Compare, typename Allocator>
+	inline rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::allocator_type rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::get_allocator() const
+	{
 		return (allocator);
 	}
 
@@ -143,7 +176,14 @@ namespace ft {
 	}
 
 	template <typename Key, typename Value, typename KeyOfValue, typename Compare, typename Allocator>
-	inline rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::iterator rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::begin() {
+	inline void rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::clear() {
+		remove_all(sentinel.upper);
+		reset_sentinel_and_count();
+	}
+
+	template <typename Key, typename Value, typename KeyOfValue, typename Compare, typename Allocator>
+	inline rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::iterator rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::begin()
+	{
 		return (iterator(sentinel.left));	// it should be done in O(1)	//	leftmost value in this container
 	}
 
@@ -181,7 +221,7 @@ namespace ft {
 	inline rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::const_reverse_iterator rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::rend() const {
 		return (const_reverse_iterator(end()));
 	}
-
+	
 	template <typename Key, typename Value, typename KeyOfValue, typename Compare, typename Allocator>
 	inline bool	operator==(const rb_tree<Key, Value, KeyOfValue, Compare, Allocator> &lhs, const rb_tree<Key, Value, KeyOfValue, Compare, Allocator> &rhs) {
 		return (lhs.size() == rhs.size() && ft::equal(lhs.begin(), lhs.end(), rhs.begin()));
@@ -289,6 +329,57 @@ namespace ft {
 			return (ft::pair<const_iterator, const_iterator>(lbound, lbound));
 		const_iterator rbound = lbound;
 		return ft::pair<const_iterator, const_iterator>(lbound, ++rbound);
+	}
+
+	template <typename Key, typename Value, typename KeyOfValue, typename Compare, typename Allocator>
+	inline void rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::swap(rb_tree &other) {
+		if (sentinel.upper == 0) {
+			if (other.sentinel.upper != 0) {
+				sentinel.color = other.sentinel.color;
+				sentinel.upper = other.sentinel.upper;
+				sentinel.left = other.sentinel.left;
+				sentinel.right = other.sentinel.right;
+				sentinel.upper->upper = &sentinel;
+				node_count = other.node_count;
+				other.reset_sentinel_and_count();
+			}
+		}
+		else if (other.sentinel.upper == 0)
+			other._M_impl._M_move_data(_M_impl);
+		else {
+			std::swap(sentinel.upper,other.sentinel.upper);
+			std::swap(_M_leftmost(),other._M_leftmost());
+			std::swap(_M_rightmost(),other._M_rightmost());
+
+			sentinel.upper->_M_parent = _M_end();
+			other.sentinel.upper->_M_parent = other._M_end();
+			std::swap(this->_M_impl._M_node_count, other._M_impl._M_node_count);
+		}
+		// No need to swap header's color as it does not change.
+		std::swap(this->_M_impl._M_key_compare, other._M_impl._M_key_compare);
+
+		// _Alloc_traits::_S_on_swap(_M_get_Node_allocator(), other._M_get_Node_allocator());
+	}
+
+	template <typename Key, typename Value, typename KeyOfValue, typename Compare, typename Allocator>
+	inline void rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::remove_all(node_type *cur)
+	{
+		node_type	*right;
+		while (cur) {
+			remove_all(cur->left);
+			right = cur->right;
+			allocator.destroy(&(cur->value));
+			allocator.deallocate(&(cur->value), 1);
+			cur = right;
+		}
+	}
+
+	template <typename Key, typename Value, typename KeyOfValue, typename Compare, typename Allocator>
+	inline void rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::reset_sentinel_and_count() {
+		sentinel.upper = 0;
+		sentinel.left = &sentinel;	//	for iterator functions
+		sentinel.right = &sentinel;
+		node_count = 0;
 	}
 }
 #endif
