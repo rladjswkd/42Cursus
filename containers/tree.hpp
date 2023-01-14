@@ -16,6 +16,8 @@ namespace ft {
 		rb_tree_node_base	*upper;
 		rb_tree_node_base	*left;
 		rb_tree_node_base	*right;
+
+		rb_tree_node_base	&operator=(rb_tree_node_base &other);
 	};
 	
 	template <typename Value>
@@ -56,7 +58,7 @@ namespace ft {
 		rb_tree(const rb_tree &other);
 		~rb_tree();
 
-		rb_tree										&operator=(const rb_tree &other) const;
+		rb_tree										&operator=(const rb_tree &other) const; // deep copy
 		allocator_type								get_allocator()	const;
 
 		iterator									find(const Key &key);
@@ -92,6 +94,14 @@ namespace ft {
 	private:
 		void										remove_all(node_type *cur);
 		void										reset_sentinel_and_count();
+		void										take_data_from(rb_tree &other);
+		void										swap_data(rb_tree_node_base &lhs, rb_tree_node_base &rhs);
+		template <typename T>
+		void										swap_data(T &lhs, T &rhs);
+		node_type									*copy_subtree(const node_type *copy_target, node_base_type *upper);
+		node_base_type								*leftmost_base_ptr(node_base_type *root);
+		node_base_type								*rightmost_base_ptr(node_base_type *root);
+		node_type									*create_node(const node_type *copy_target, node_base_type *upper);
 	};
 
 	template <typename Key, typename Value, typename KeyOfValue, typename Compare, typename Allocator>
@@ -108,25 +118,28 @@ namespace ft {
 		reset_sentinel_and_count();
 	}
 
-	// template <typename Key, typename Value, typename KeyOfValue, typename Compare, typename Allocator>
-	// inline rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::rb_tree(const rb_tree &other)
-	// : comp(other.comp), allocator(other.allocator), node_count(other.node_count), sentinel(), get_key(), node_allocator() {
-
-	// }
-
 	template <typename Key, typename Value, typename KeyOfValue, typename Compare, typename Allocator>
-	inline rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::~rb_tree()
-	{
+	inline rb_tree<Key, Value, KeyOfValue, Compare, Allocator> &rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::operator=(const rb_tree &other) const {
+		if (this != &other) {
+			clear();
+			comp = other.comp;
+			if (other.sentinel.upper) {	// conversion to node_type* is needed because we should copy it's value.
+				sentinel.upper = copy_subtree(static_cast<const node_type*>(other.sentinel.upper), &sentinel);
+				sentinel.left = leftmost_base_ptr(sentinel.upper);
+				sentinel.right = rightmost_base_ptr(sentinel.upper);
+				node_count = other.node_count;
+			}
+		}
+		return (*this);
 	}
 
 	template <typename Key, typename Value, typename KeyOfValue, typename Compare, typename Allocator>
-	inline rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::allocator_type rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::get_allocator() const
-	{
+	inline typename rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::allocator_type rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::get_allocator() const {
 		return (allocator);
 	}
 
 	template <typename Key, typename Value, typename KeyOfValue, typename Compare, typename Allocator>
-	inline rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::iterator rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::find(const Key &key)
+	inline typename rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::iterator rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::find(const Key &key)
 	{
 		node_type	*cur = sentinel.upper;
 		node_type	*bound = &sentinel;
@@ -144,7 +157,7 @@ namespace ft {
 	}
 
 	template <typename Key, typename Value, typename KeyOfValue, typename Compare, typename Allocator>
-	inline rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::const_iterator rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::find(const Key &key) const {
+	inline typename rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::const_iterator rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::find(const Key &key) const {
 		node_type	*cur = sentinel.upper;
 		node_type	*bound = &sentinel;
 		while (cur) {
@@ -161,7 +174,7 @@ namespace ft {
 	}
 
 	template <typename Key, typename Value, typename KeyOfValue, typename Compare, typename Allocator>
-	inline rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::key_compare rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::key_comp() const {
+	inline typename rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::key_compare rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::key_comp() const {
 		return (key_compare());
 	}
 
@@ -171,7 +184,7 @@ namespace ft {
 	}
 
 	template <typename Key, typename Value, typename KeyOfValue, typename Compare, typename Allocator>
-	inline rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::size_type rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::size() const {
+	inline typename rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::size_type rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::size() const {
 		return (node_count);
 	}
 
@@ -182,43 +195,43 @@ namespace ft {
 	}
 
 	template <typename Key, typename Value, typename KeyOfValue, typename Compare, typename Allocator>
-	inline rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::iterator rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::begin()
+	inline typename rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::iterator rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::begin()
 	{
 		return (iterator(sentinel.left));	// it should be done in O(1)	//	leftmost value in this container
 	}
 
 	template <typename Key, typename Value, typename KeyOfValue, typename Compare, typename Allocator>
-	inline rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::const_iterator rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::begin() const {
+	inline typename rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::const_iterator rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::begin() const {
 		return (const_iterator(sentinel.left));	// it should be done in O(1)	//	leftmost value in this container
 	}
 
 	template <typename Key, typename Value, typename KeyOfValue, typename Compare, typename Allocator>
-	inline rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::iterator rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::end() {
+	inline typename rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::iterator rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::end() {
 		return (iterator(&sentinel));	// it should be done in O(1)	//	next to rightmost value in this container
 	}
 
 	template <typename Key, typename Value, typename KeyOfValue, typename Compare, typename Allocator>
-	inline rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::const_iterator rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::end() const {
+	inline typename rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::const_iterator rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::end() const {
 		return (const_iterator(&sentinel));	// it should be done in O(1)	//	next to rightmost value in this container
 	}
 
 	template <typename Key, typename Value, typename KeyOfValue, typename Compare, typename Allocator>
-	inline rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::reverse_iterator rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::rbegin() {
+	inline typename rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::reverse_iterator rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::rbegin() {
 		return (reverse_iterator(begin()));
 	}
 
 	template <typename Key, typename Value, typename KeyOfValue, typename Compare, typename Allocator>
-	inline rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::const_reverse_iterator rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::rbegin() const {
+	inline typename rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::const_reverse_iterator rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::rbegin() const {
 		return (const_reverse_iterator(begin()));
 	}
 
 	template <typename Key, typename Value, typename KeyOfValue, typename Compare, typename Allocator>
-	inline rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::reverse_iterator rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::rend() {
+	inline typename rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::reverse_iterator rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::rend() {
 		return (reverse_iterator(end()));
 	}
 
 	template <typename Key, typename Value, typename KeyOfValue, typename Compare, typename Allocator>
-	inline rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::const_reverse_iterator rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::rend() const {
+	inline typename rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::const_reverse_iterator rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::rend() const {
 		return (const_reverse_iterator(end()));
 	}
 	
@@ -253,7 +266,7 @@ namespace ft {
 	}
 
 	template <typename Key, typename Value, typename KeyOfValue, typename Compare, typename Allocator>
-	inline rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::iterator rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::lower_bound(const Key &key)
+	inline typename rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::iterator rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::lower_bound(const Key &key)
 	{
 		node_type	*cur = sentinel.upper;	//	root
 		node_type	*bound = &sentinel;
@@ -269,7 +282,7 @@ namespace ft {
 	}
 
 	template<typename Key, typename Value, typename KeyOfValue, typename Compare, typename Allocator>
-	inline rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::const_iterator rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::lower_bound(const Key & key) const {
+	inline typename rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::const_iterator rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::lower_bound(const Key & key) const {
 		node_type	*cur = sentinel.upper;
 		node_type	*bound = &sentinel;
 		while (cur) {
@@ -284,7 +297,7 @@ namespace ft {
 	}
 
 	template <typename Key, typename Value, typename KeyOfValue, typename Compare, typename Allocator>
-	inline rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::iterator rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::upper_bound(const Key &key) {
+	inline typename rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::iterator rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::upper_bound(const Key &key) {
 		node_type	*cur = sentinel.upper;
 		node_type	*bound = &sentinel;
 		while (cur) {
@@ -299,7 +312,7 @@ namespace ft {
 	}
 
 	template <typename Key, typename Value, typename KeyOfValue, typename Compare, typename Allocator>
-	inline rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::const_iterator rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::upper_bound(const Key &key) const {
+	inline typename rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::const_iterator rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::upper_bound(const Key &key) const {
 		node_type	*cur = sentinel.upper;
 		node_type	*bound = &sentinel;
 		while (cur) {
@@ -333,32 +346,15 @@ namespace ft {
 
 	template <typename Key, typename Value, typename KeyOfValue, typename Compare, typename Allocator>
 	inline void rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::swap(rb_tree &other) {
-		if (sentinel.upper == 0) {
-			if (other.sentinel.upper != 0) {
-				sentinel.color = other.sentinel.color;
-				sentinel.upper = other.sentinel.upper;
-				sentinel.left = other.sentinel.left;
-				sentinel.right = other.sentinel.right;
-				sentinel.upper->upper = &sentinel;
-				node_count = other.node_count;
-				other.reset_sentinel_and_count();
-			}
+		if (sentinel.upper && other.sentinel.upper) {
+			swap_data(sentinel, other.sentinel);
+			swap_data(node_count, other.node_count);
 		}
-		else if (other.sentinel.upper == 0)
-			other._M_impl._M_move_data(_M_impl);
-		else {
-			std::swap(sentinel.upper,other.sentinel.upper);
-			std::swap(_M_leftmost(),other._M_leftmost());
-			std::swap(_M_rightmost(),other._M_rightmost());
-
-			sentinel.upper->_M_parent = _M_end();
-			other.sentinel.upper->_M_parent = other._M_end();
-			std::swap(this->_M_impl._M_node_count, other._M_impl._M_node_count);
-		}
-		// No need to swap header's color as it does not change.
-		std::swap(this->_M_impl._M_key_compare, other._M_impl._M_key_compare);
-
-		// _Alloc_traits::_S_on_swap(_M_get_Node_allocator(), other._M_get_Node_allocator());
+		else if (sentinel.upper)
+			other.take_data_from(*this);
+		else
+			take_data_from(other);
+		swap_data(comp, other.comp);
 	}
 
 	template <typename Key, typename Value, typename KeyOfValue, typename Compare, typename Allocator>
@@ -381,5 +377,83 @@ namespace ft {
 		sentinel.right = &sentinel;
 		node_count = 0;
 	}
+	
+	template <typename Key, typename Value, typename KeyOfValue, typename Compare, typename Allocator>
+	inline void rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::take_data_from(rb_tree &other) {
+		sentinel.color = other.sentinel.color;
+		sentinel.upper = other.sentinel.upper;
+		sentinel.left = other.sentinel.left;
+		sentinel.right = other.sentinel.right;
+		// just to represent that there's no upper node for sentinel.upper (root)
+		// null is only used for root when there is no nodes in the tree (size() == 0) 
+		sentinel.upper->upper = &sentinel;
+		node_count = other.node_count;
+		other.reset_sentinel_and_count();
+	}
+	
+	template <typename Key, typename Value, typename KeyOfValue, typename Compare, typename Allocator>
+	template <typename T>
+	inline void rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::swap_data(T &lhs, T &rhs) {
+		T	temp = rhs;
+		rhs = lhs;
+		lhs = temp;
+	}
+
+	template <typename Key, typename Value, typename KeyOfValue, typename Compare, typename Allocator>
+	inline void rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::swap_data(rb_tree_node_base &lhs, rb_tree_node_base &rhs) {
+		rb_tree_node_base	temp = rhs;
+		rhs = lhs;
+		lhs = temp;
+		lhs.upper->upper = &lhs;	//	before this statement, lhs.upper->upper is &rhs
+		rhs.upper->upper = &rhs;	//	same
+	}
+
+	template <typename Key, typename Value, typename KeyOfValue, typename Compare, typename Allocator>
+	inline typename rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::node_type *rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::copy_subtree(const node_type *copy_target, node_base_type *upper) {
+		node_type	*cur = create_node(copy_target, upper);
+		try {
+			if(copy_target->right)
+				cur->right = copy_subtree(static_cast<const node_type*>(copy_target->right), cur);
+
+			copy_target = static_cast<node_type *>(copy_target->left);
+			upper = cur;
+			node_type* cur_left;
+			while (copy_target) {
+				cur_left = create_node(copy_target, upper);
+				upper->left = cur_left;
+				if(copy_target->right)
+					cur_left->right = copy_subtree(static_cast<const node_type*>(copy_target->right), cur_left);
+			}
+		} catch(...) {
+			remove_all(cur);
+			throw;
+		}
+		return (cur);
+	}
+
+	template <typename Key, typename Value, typename KeyOfValue, typename Compare, typename Allocator>
+	inline typename rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::node_base_type *rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::leftmost_base_ptr(node_base_type *root) {
+		while (root->left)
+			root = root->left;
+		return (root);
+	}
+
+	template <typename Key, typename Value, typename KeyOfValue, typename Compare, typename Allocator>
+	inline typename rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::node_base_type *rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::rightmost_base_ptr(node_base_type *root) 	{
+		while (root->right)
+			root = root->right;
+		return (root);
+	}
+	
+	// template <typename Key, typename Value, typename KeyOfValue, typename Compare, typename Allocator>
+	// inline typename rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::node_type *rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::create_node(const node_type *copy_target, node_base_type *upper) {
+	// 	node_type	*created = node_allocator.allocate(sizeof(node_type));
+
+	// 	created->right = NULL;
+	// 	created->left = NULL;
+	// 	created->upper = upper;
+	// 	created->color = copy_target->color;
+	// 	return (created);
+	// }
 }
 #endif
