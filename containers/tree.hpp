@@ -102,6 +102,9 @@ namespace ft {
 		node_base_type								*leftmost_base_ptr(node_base_type *root);
 		node_base_type								*rightmost_base_ptr(node_base_type *root);
 		node_type									*create_node(const node_type *copy_target, node_base_type *upper);
+		node_type									*create_node(const value_type &value);
+		node_type									*allocate_node();
+		void										construct_value(node_type &node, const value_type &value);
 	};
 
 	template <typename Key, typename Value, typename KeyOfValue, typename Compare, typename Allocator>
@@ -358,8 +361,7 @@ namespace ft {
 	}
 
 	template <typename Key, typename Value, typename KeyOfValue, typename Compare, typename Allocator>
-	inline void rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::remove_all(node_type *cur)
-	{
+	inline void rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::remove_all(node_type *cur) {
 		node_type	*right;
 		while (cur) {
 			remove_all(cur->left);
@@ -444,16 +446,37 @@ namespace ft {
 			root = root->right;
 		return (root);
 	}
-	
-	// template <typename Key, typename Value, typename KeyOfValue, typename Compare, typename Allocator>
-	// inline typename rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::node_type *rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::create_node(const node_type *copy_target, node_base_type *upper) {
-	// 	node_type	*created = node_allocator.allocate(sizeof(node_type));
 
-	// 	created->right = NULL;
-	// 	created->left = NULL;
-	// 	created->upper = upper;
-	// 	created->color = copy_target->color;
-	// 	return (created);
-	// }
+	template <typename Key, typename Value, typename KeyOfValue, typename Compare, typename Allocator>
+	inline typename rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::node_type *rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::create_node(const node_type *copy_target, node_base_type *upper) {
+		node_type	*created = create_node(copy_target->value);
+		created->right = 0;
+		created->left = 0;
+		created->upper = upper;
+		created->color = copy_target->color;
+		return (created);
+	}
+	
+	template <typename Key, typename Value, typename KeyOfValue, typename Compare, typename Allocator>
+	inline typename rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::node_type *rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::create_node(const value_type &value) {
+		node_type	*created = allocate_node();
+		construct_value(created, value);
+		return (created);
+	}
+	
+	template <typename Key, typename Value, typename KeyOfValue, typename Compare, typename Allocator>
+	inline typename rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::node_type *rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::allocate_node() {
+		return (node_allocator.allocate(sizeof(node_type)));
+	}
+	
+	template <typename Key, typename Value, typename KeyOfValue, typename Compare, typename Allocator>
+	inline void rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::construct_value(node_type &node, const value_type &value) {
+		try {
+			allocator.construct(&(node->value), value);
+		} catch (...) {
+			allocator.deallocate(node, 1);
+			throw ;
+		}
+	}
 }
 #endif
