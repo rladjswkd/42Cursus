@@ -130,6 +130,8 @@ namespace ft {
 		node_type									*create_node(const value_type &value);
 		node_type									*allocate_node();
 		void										construct_value(node_type &node, const value_type &value);
+		ft::pair<iterator, bool>					insert_value(const value_type &value);
+		node_type									*get_unique_position(const key_type &key, bool &insert_flag);
 	};
 
 	template <typename Key, typename Value, typename KeyOfValue, typename Compare, typename Allocator>
@@ -285,6 +287,11 @@ namespace ft {
 	template <typename Key, typename Value, typename KeyOfValue, typename Compare, typename Allocator>
 	inline typename rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::const_reverse_iterator rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::rend() const {
 		return (const_reverse_iterator(end()));
+	}
+
+	template <typename Key, typename Value, typename KeyOfValue, typename Compare, typename Allocator>
+	inline ft::pair<typename rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::iterator, bool> rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::insert(const value_type &value) {
+		
 	}
 
 	template <typename Key, typename Value, typename KeyOfValue, typename Compare, typename Allocator>
@@ -506,7 +513,41 @@ namespace ft {
 			throw ;
 		}
 	}
-	
+
+	template <typename Key, typename Value, typename KeyOfValue, typename Compare, typename Allocator>
+	inline ft::pair<typename rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::iterator, bool> rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::insert_value(const value_type &value) {
+		ft::pair<node_base_type *, node_base_type *>	res = get_unique_position(get_key(value));
+		if (res.second) {
+			_Alloc_node	__an(*this);
+			return ft::pair<iterator, bool>(_M_insert_(res.first, res.second, value, __an), true);
+		}
+		return ft::pair<iterator, bool>(iterator(res.first), false);
+	}
+
+	template <typename Key, typename Value, typename KeyOfValue, typename Compare, typename Allocator>
+	inline typename rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::node_type *rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::get_unique_position(const key_type &key, bool &insert_flag) {
+		node_type		*cur = sentinel.upper;
+		node_base_type	*lower_bound = &sentinel;
+		bool 			is_before = true;
+		while (cur) {
+			lower_bound = cur;
+			is_before = comp(key, get_key(cur->value));
+			if (is_before)
+				cur = static_cast<node_type*>(cur->left);	//	if this while ends with this line, key "goes before" cur->value's key
+			else
+				cur = static_cast<node_type*>(cur->right);	//	if this while ends with this line, key "goes after" cur->value's key or "equivalent to" it
+		}
+		if (is_before) {	//	here, key "goes before" lower_bound(previous cur)
+			if (lower_bound == sentinel.left)	//	if lower_bound is leftmost, lower_bound is the position we are looking for
+				return ft::pair<node_base_type*, node_base_type*>(cur, lower_bound);
+			else	//	decrease lower_bound by one so make key "to go after or equivalent to" lower_bound(previous cur)
+				lower_bound = decrease_base(lower_bound);
+		}
+		if (comp(get_key(static_cast<node_type*>(lower_bound)->value), key))	// at this point, key "goes after or equivalent to" lower_bound. so if this is true, key "goes after" lower_bound.
+			return ft::pair<node_base_type*, node_base_type*>(cur, lower_bound);
+		return ft::pair<node_base_type*, node_base_type*>(lower_bound, 0);
+	}
+
 	template <typename T, typename Pointer, typename Reference>
 	inline bidirectional_iterator<T, Pointer, Reference>::bidirectional_iterator()
 	: it() { }
