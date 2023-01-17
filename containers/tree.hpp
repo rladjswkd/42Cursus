@@ -19,7 +19,7 @@ namespace ft {
 	};
 
 	rb_tree_node_base	*leftmost_base(const rb_tree_node_base *node);
-	rb_tree_node_base	*rightmost_base(const rb_tree_node_base *node);	
+	rb_tree_node_base	*rightmost_base(const rb_tree_node_base *node);
 	rb_tree_node_base	*increase_base(const rb_tree_node_base *node);
 	rb_tree_node_base	*decrease_base(const rb_tree_node_base *node);
 
@@ -236,6 +236,12 @@ namespace ft {
 	}
 
 	template <typename Key, typename Value, typename KeyOfValue, typename Compare, typename Allocator>
+	inline typename rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::size_type rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::max_size() const {
+		// return (ft::min<size_type>(std::numeric_limits<difference_type>::max() / sizeof(node_type), this->t_alloc.max_size()));
+		return (ft::min<size_type>(std::numeric_limits<difference_type>::max(), allocator.max_size()));
+	}
+
+	template <typename Key, typename Value, typename KeyOfValue, typename Compare, typename Allocator>
 	inline void rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::clear() {
 		remove_all(sentinel.upper);
 		reset_sentinel_and_count();
@@ -280,7 +286,7 @@ namespace ft {
 	inline typename rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::const_reverse_iterator rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::rend() const {
 		return (const_reverse_iterator(end()));
 	}
-	
+
 	template <typename Key, typename Value, typename KeyOfValue, typename Compare, typename Allocator>
 	inline bool	operator==(const rb_tree<Key, Value, KeyOfValue, Compare, Allocator> &lhs, const rb_tree<Key, Value, KeyOfValue, Compare, Allocator> &rhs) {
 		return (lhs.size() == rhs.size() && ft::equal(lhs.begin(), lhs.end(), rhs.begin()));
@@ -353,7 +359,7 @@ namespace ft {
 			else
 				cur = cur->right;
 		}
-		return (iterator(bound));	
+		return (iterator(bound));
 	}
 
 	template <typename Key, typename Value, typename KeyOfValue, typename Compare, typename Allocator>
@@ -453,7 +459,6 @@ namespace ft {
 		try {
 			if(copy_target->right)
 				cur->right = copy_subtree(static_cast<const node_type*>(copy_target->right), cur);
-
 			copy_target = static_cast<node_type *>(copy_target->left);
 			upper = cur;
 			node_type* cur_left;
