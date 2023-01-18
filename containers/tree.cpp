@@ -77,18 +77,19 @@ namespace ft{
 			if (upper == sentinel->right)
 				sentinel->right = node;	//	update sentinel info
 		}
-
-		while((node != root) && (node->upper->color == red)) {
+ // if node is root, this tree is empty before this insertion
+ // if node->upper->color is black, red property is not violated
+		while ((node != root) && (node->upper->color == red)) {
 			rb_tree_node_base* const double_upper = node->upper->upper;
-			if (node->upper == double_upper->left) {
-				rb_tree_node_base* const temp = double_upper->right;
-				if (temp && (temp->color == red)) {
+			if (node->upper == double_upper->left) {					//	if node->upper is node->upper->upper's left
+				rb_tree_node_base* const temp = double_upper->right;	//	sibling of node->upper
+				if (temp && (temp->color == red)) {			
 					node->upper->color = black;
 					temp->color = black;
 					double_upper->color = red;
 					node = double_upper;
 				}
-				else {
+				else {													//	temp is black node or null
 					if (node->upper && node == node->upper->right) {
 						node = node->upper;
 						rotate_left(node, root);
@@ -98,15 +99,15 @@ namespace ft{
 					rotate_right(double_upper, root);
 				}
 			}
-			else {
-				rb_tree_node_base* const temp = double_upper->left;
+			else {														//	if node->upper is node->upper->upper's right
+				rb_tree_node_base* const temp = double_upper->left;		//	sibling of node->upper
 				if (temp && (temp->color == red)) {
 					node->upper->color = black;
 					temp->color = black;
 					double_upper->color = red;
 					node = double_upper;
 				}
-				else {
+				else {													//	temp is black node or null
 					if (node == node->upper->left) {
 						node = node->upper;
 						rotate_right(node, root);
