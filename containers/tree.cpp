@@ -54,4 +54,36 @@ namespace ft{
 		}
 		return (const_cast<rb_tree_node_base *>(temp));
 	}
+
+	void rotate_left(rb_tree_node_base *node, rb_tree_node_base *&root) {
+		rb_tree_node_base* const rotated_upper = node->right;
+		node->right = rotated_upper->left;
+		if(rotated_upper->left)
+			rotated_upper->left->upper = node;
+		rotated_upper->upper = node->upper;
+		if(node == root)
+			root = rotated_upper;
+		else if(node == node->upper->left)
+			node->upper->left = rotated_upper;
+		else
+			node->upper->right = rotated_upper;
+		rotated_upper->left = node;
+		node->upper = rotated_upper;
+	}
+	
+	void rotate_right(rb_tree_node_base *node, rb_tree_node_base *&root) {
+		rb_tree_node_base* const rotated_upper = node->left;
+		node->left = rotated_upper->right;
+		if(rotated_upper->right)
+			rotated_upper->right->upper = node;
+		rotated_upper->upper = node->upper;
+		if(node == root)
+			root = rotated_upper;
+		else if(node == node->upper->right)
+			node->upper->right = rotated_upper;
+		else
+			node->upper->left = rotated_upper;
+		rotated_upper->right = node;
+		node->upper = rotated_upper;
+	}
 }

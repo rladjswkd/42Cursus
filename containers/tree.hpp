@@ -18,10 +18,17 @@ namespace ft {
 		rb_tree_node_base	*right;
 	};
 
+	//	these functions are not for the every rb_tree_node_base type objects.
+	//	for example, leftmost_base, rightmost_base make sense only for the sentinel node
+	//	so define them in tree.cpp.
 	rb_tree_node_base	*leftmost_base(const rb_tree_node_base *node);
 	rb_tree_node_base	*rightmost_base(const rb_tree_node_base *node);
 	rb_tree_node_base	*increase_base(const rb_tree_node_base *node);
 	rb_tree_node_base	*decrease_base(const rb_tree_node_base *node);
+	void				insert_base(rb_tree_node_base *node, rb_tree_node_base *upper, rb_tree_node_base &sentinel, bool left_flag);
+	
+	void				rotate_left(rb_tree_node_base *node, rb_tree_node_base *&root);
+	// void				rotate_right(rb_tree_node_base *node, rb_tree_node_base *&root);
 
 	template <typename Value>
 	struct rb_tree_node : public rb_tree_node_base {
@@ -131,7 +138,8 @@ namespace ft {
 		node_type									*allocate_node();
 		void										construct_value(node_type &node, const value_type &value);
 		ft::pair<iterator, bool>					insert_value(const value_type &value);
-		node_type									*get_unique_position(const key_type &key, bool &insert_flag);
+		ft::pair<node_base_type*, node_base_type*>	*get_unique_position(const key_type &key);
+		iterator									insert_value_impl(node_base_type *upper, const key_type &key, const value_type &value);
 	};
 
 	template <typename Key, typename Value, typename KeyOfValue, typename Compare, typename Allocator>
@@ -516,18 +524,18 @@ namespace ft {
 
 	template <typename Key, typename Value, typename KeyOfValue, typename Compare, typename Allocator>
 	inline ft::pair<typename rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::iterator, bool> rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::insert_value(const value_type &value) {
-		ft::pair<node_base_type *, node_base_type *>	res = get_unique_position(get_key(value));
-		if (res.second) {
-			_Alloc_node	__an(*this);
-			return ft::pair<iterator, bool>(_M_insert_(res.first, res.second, value, __an), true);
-		}
-		return ft::pair<iterator, bool>(iterator(res.first), false);
+		ft::pair<node_base_type*, node_base_type*>	res = get_unique_position(get_key(value));
+		if (res.second)
+			return (ft::pair<iterator, bool>(insert_value_impl(res.second, value), true));
+		return (ft::pair<iterator, bool>(iterator(res.first), false));
 	}
 
+//	pair's first is a pointer for the value which have the same key. And in that case, pair's second will be null
+//	pair's second is a pointer for the position to insert the key.
 	template <typename Key, typename Value, typename KeyOfValue, typename Compare, typename Allocator>
-	inline typename rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::node_type *rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::get_unique_position(const key_type &key, bool &insert_flag) {
+	inline ft::pair<typename rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::node_base_type *, typename rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::node_base_type *> *rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::get_unique_position(const key_type &key) {
 		node_type		*cur = sentinel.upper;
-		node_base_type	*lower_bound = &sentinel;
+		node_base_type	*lower_bound = &sentinel;	//	we need to find lower_bound beecause we have to check equality too.
 		bool 			is_before = true;
 		while (cur) {
 			lower_bound = cur;
@@ -539,13 +547,22 @@ namespace ft {
 		}
 		if (is_before) {	//	here, key "goes before" lower_bound(previous cur)
 			if (lower_bound == sentinel.left)	//	if lower_bound is leftmost, lower_bound is the position we are looking for
-				return ft::pair<node_base_type*, node_base_type*>(cur, lower_bound);
+				return (ft::pair<node_base_type*, node_base_type*>(cur, lower_bound));	//	new node should be inserted into left of lower_bound 
 			else	//	decrease lower_bound by one so make key "to go after or equivalent to" lower_bound(previous cur)
 				lower_bound = decrease_base(lower_bound);
 		}
 		if (comp(get_key(static_cast<node_type*>(lower_bound)->value), key))	// at this point, key "goes after or equivalent to" lower_bound. so if this is true, key "goes after" lower_bound.
-			return ft::pair<node_base_type*, node_base_type*>(cur, lower_bound);
-		return ft::pair<node_base_type*, node_base_type*>(lower_bound, 0);
+			return (ft::pair<node_base_type*, node_base_type*>(cur, lower_bound));	//	new node should be inserted into right of lower_bound
+		return (ft::pair<node_base_type*, node_base_type*>(lower_bound, 0));
+	}
+
+	template <typename Key, typename Value, typename KeyOfValue, typename Compare, typename Allocator>
+	inline typename rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::iterator rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::insert_value_impl(node_base_type *upper, const key_type &key, const value_type &value) {
+		bool		left_flag = (upper == sentinel.left) || comp(key, get_key(static_cast<node_type*>(upper)->value));
+		node_type	*node = create_node(value);
+		insert_base(node, upper, &sentinel, left_flag);
+		node_count++;
+		return (iterator(node));
 	}
 
 	template <typename T, typename Pointer, typename Reference>
