@@ -25,10 +25,10 @@ namespace ft {
 	rb_tree_node_base	*rightmost_base(const rb_tree_node_base *node);
 	rb_tree_node_base	*increase_base(const rb_tree_node_base *node);
 	rb_tree_node_base	*decrease_base(const rb_tree_node_base *node);
-	void				insert_base(rb_tree_node_base *node, rb_tree_node_base *upper, rb_tree_node_base &sentinel, bool left_flag);
+	void				insert_balance(rb_tree_node_base *node, rb_tree_node_base *upper, rb_tree_node_base *sentinel, bool left_flag);
 	
 	void				rotate_left(rb_tree_node_base *node, rb_tree_node_base *&root);
-	// void				rotate_right(rb_tree_node_base *node, rb_tree_node_base *&root);
+	void				rotate_right(rb_tree_node_base *node, rb_tree_node_base *&root);
 
 	template <typename Value>
 	struct rb_tree_node : public rb_tree_node_base {
@@ -560,7 +560,7 @@ namespace ft {
 	inline typename rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::iterator rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::insert_value_impl(node_base_type *upper, const key_type &key, const value_type &value) {
 		bool		left_flag = (upper == sentinel.left) || comp(key, get_key(static_cast<node_type*>(upper)->value));
 		node_type	*node = create_node(value);
-		insert_base(node, upper, &sentinel, left_flag);
+		insert_balance(node, upper, &sentinel, left_flag);
 		node_count++;
 		return (iterator(node));
 	}

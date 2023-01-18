@@ -55,15 +55,80 @@ namespace ft{
 		return (const_cast<rb_tree_node_base *>(temp));
 	}
 
+	void insert_balance(rb_tree_node_base *node, rb_tree_node_base *upper, rb_tree_node_base *sentinel, bool left_flag) {
+		rb_tree_node_base	*&root = sentinel->upper;
+
+		node->upper = upper;
+		node->right = NULL;
+		node->left = NULL;
+		node->color = red;
+
+		if (left_flag) {
+			upper->left = node;
+			if (upper == sentinel) {	//	tree is empty before this insertion
+				sentinel->upper = node;
+				sentinel->right = node;
+			}
+			else if (upper == sentinel->left)
+				sentinel->left = node;	//	update sentinel info
+		}
+		else {
+			upper->right = node;
+			if (upper == sentinel->right)
+				sentinel->right = node;	//	update sentinel info
+		}
+
+		while((node != root) && (node->upper->color == red)) {
+			rb_tree_node_base* const double_upper = node->upper->upper;
+			if (node->upper == double_upper->left) {
+				rb_tree_node_base* const temp = double_upper->right;
+				if (temp && (temp->color == red)) {
+					node->upper->color = black;
+					temp->color = black;
+					double_upper->color = red;
+					node = double_upper;
+				}
+				else {
+					if (node->upper && node == node->upper->right) {
+						node = node->upper;
+						rotate_left(node, root);
+					}
+					node->upper->color = black;
+					double_upper->color = red;
+					rotate_right(double_upper, root);
+				}
+			}
+			else {
+				rb_tree_node_base* const temp = double_upper->left;
+				if (temp && (temp->color == red)) {
+					node->upper->color = black;
+					temp->color = black;
+					double_upper->color = red;
+					node = double_upper;
+				}
+				else {
+					if (node == node->upper->left) {
+						node = node->upper;
+						rotate_right(node, root);
+					}
+					node->upper->color = black;
+					double_upper->color = red;
+					rotate_left(double_upper, root);
+				}
+			}
+		}
+		root->color = black;
+	}
+
 	void rotate_left(rb_tree_node_base *node, rb_tree_node_base *&root) {
 		rb_tree_node_base* const rotated_upper = node->right;
 		node->right = rotated_upper->left;
-		if(rotated_upper->left)
+		if (rotated_upper->left)
 			rotated_upper->left->upper = node;
 		rotated_upper->upper = node->upper;
-		if(node == root)
+		if (node == root)
 			root = rotated_upper;
-		else if(node == node->upper->left)
+		else if (node == node->upper->left)
 			node->upper->left = rotated_upper;
 		else
 			node->upper->right = rotated_upper;
@@ -74,12 +139,12 @@ namespace ft{
 	void rotate_right(rb_tree_node_base *node, rb_tree_node_base *&root) {
 		rb_tree_node_base* const rotated_upper = node->left;
 		node->left = rotated_upper->right;
-		if(rotated_upper->right)
+		if (rotated_upper->right)
 			rotated_upper->right->upper = node;
 		rotated_upper->upper = node->upper;
-		if(node == root)
+		if (node == root)
 			root = rotated_upper;
-		else if(node == node->upper->right)
+		else if (node == node->upper->right)
 			node->upper->right = rotated_upper;
 		else
 			node->upper->left = rotated_upper;
