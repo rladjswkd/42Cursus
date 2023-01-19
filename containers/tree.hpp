@@ -122,7 +122,7 @@ namespace ft {
 		iterator									insert(iterator pos, const value_type &value);
 		template <class InputIt>
 		void 										insert(InputIt first, InputIt last);
-		void 										erase(iterator position);
+		void 										erase(iterator hint);
 		size_type 									erase(const key_type& k);
 		void 										erase(iterator first, iterator last);
 		void										swap(rb_tree &other);
@@ -139,10 +139,10 @@ namespace ft {
 		node_type									*allocate_node();
 		void										construct_value(node_type &node, const value_type &value);
 		ft::pair<iterator, bool>					insert_value(const value_type &value);
-		node_base_type								*get_unique_position(const key_type &key, bool &insert_flag);
+		ft::pair<node_base_type*, node_base_type*>	get_unique_position(const key_type &key);
 		iterator									insert_value_impl(node_base_type *upper, const key_type &key, const value_type &value);
-		ft::pair<node_base_type*, node_base_type*>	get_unique_position_hint(const_iterator pos, const key_type &key);
-		// ft::pair<node_base_type*, node_base_type*>	get_unique_position(const key_type &key);
+		iterator									insert_hint(const_iterator hint, const value_type &value);
+		ft::pair<node_base_type*, node_base_type*>	get_unique_position_hint(const_iterator hint, const key_type &key);
 	};
 
 	template <typename Key, typename Value, typename KeyOfValue, typename Compare, typename Allocator>
@@ -262,22 +262,22 @@ namespace ft {
 
 	template <typename Key, typename Value, typename KeyOfValue, typename Compare, typename Allocator>
 	inline typename rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::iterator rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::begin() {
-		return (iterator(sentinel.left));	// it should be done in O(1)	//	leftmost value in this container
+		return (iterator(sentinel.left));
 	}
 
 	template <typename Key, typename Value, typename KeyOfValue, typename Compare, typename Allocator>
 	inline typename rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::const_iterator rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::begin() const {
-		return (const_iterator(sentinel.left));	// it should be done in O(1)	//	leftmost value in this container
+		return (const_iterator(sentinel.left));
 	}
 
 	template <typename Key, typename Value, typename KeyOfValue, typename Compare, typename Allocator>
 	inline typename rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::iterator rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::end() {
-		return (iterator(&sentinel));	// it should be done in O(1)	//	next to rightmost value in this container
+		return (iterator(&sentinel));
 	}
 
 	template <typename Key, typename Value, typename KeyOfValue, typename Compare, typename Allocator>
 	inline typename rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::const_iterator rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::end() const {
-		return (const_iterator(&sentinel));	// it should be done in O(1)	//	next to rightmost value in this container
+		return (const_iterator(&sentinel));
 	}
 
 	template <typename Key, typename Value, typename KeyOfValue, typename Compare, typename Allocator>
@@ -307,7 +307,7 @@ namespace ft {
 
 	template <typename Key, typename Value, typename KeyOfValue, typename Compare, typename Allocator>
 	inline typename rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::iterator rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::insert(iterator pos, const value_type &value) {
-		
+		return (insert_hint(pos, value));
 	}
 
 	template <typename Key, typename Value, typename KeyOfValue, typename Compare, typename Allocator>
@@ -532,73 +532,71 @@ namespace ft {
 
 	template <typename Key, typename Value, typename KeyOfValue, typename Compare, typename Allocator>
 	inline ft::pair<typename rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::iterator, bool> rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::insert_value(const value_type &value) {
-		key_type	key = get_key(value);
-		bool		insert_flag;
-		node_type	*res = get_unique_position(key, insert_flag);
-		if (insert_flag) {
-			const iterator iter(insert_value_impl(res, key, value));
-			return (ft::pair<iterator, bool>(iter, true));
-		}
-		return (ft::pair<iterator, bool>(iterator(res), false));
+		key_type									key = get_key(value);
+		ft::pair<node_base_type*, node_base_type*>	res = get_unique_position(key);
+		if (res.second) 																		//	if we found insertion position
+			return (ft::pair<iterator, bool>(insert_value_impl(res.second, key, value), true));
+		return (ft::pair<iterator, bool>(iterator(res.first), false));
 	}
-// gcc-like version
-// //	pair's first is a pointer for the value which have the same key. And in that case, pair's second will be null
-// //	pair's second is a pointer for the position to insert the key.
-// 	template <typename Key, typename Value, typename KeyOfValue, typename Compare, typename Allocator>
-// 	inline ft::pair<typename rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::node_base_type *, typename rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::node_base_type *> rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::get_unique_position(const key_type &key) {
-// 		node_type		*cur = sentinel.upper;
-// 		node_base_type	*lower_bound = &sentinel;	//	we need to find lower_bound beecause we have to check equality too.
-// 		bool 			is_before = true;
-// 		while (cur) {
-// 			lower_bound = cur;
-// 			is_before = comp(key, get_key(cur->value));
-// 			if (is_before)
-// 				cur = static_cast<node_type*>(cur->left);	//	if this while ends with this line, key "goes before" cur->value's key
-// 			else
-// 				cur = static_cast<node_type*>(cur->right);	//	if this while ends with this line, key "goes after" cur->value's key or "equivalent to" it
-// 		}
-// 		if (is_before) {	//	here, key "goes before" lower_bound(previous cur)
-// 			if (lower_bound == sentinel.left)	//	if lower_bound is leftmost, lower_bound is the position we are looking for
-// 				return (ft::pair<node_base_type*, node_base_type*>(cur, lower_bound));	//	new node should be inserted into left of lower_bound 
-// 			else	//	decrease lower_bound by one so make key "to go after or equivalent to" lower_bound(previous cur)
-// 				lower_bound = decrease_base(lower_bound);
-// 		}
-// 		if (comp(get_key(static_cast<node_type*>(lower_bound)->value), key))	// at this point, key "goes after or equivalent to" lower_bound. so if this is true, key "goes after" lower_bound.
-// 			return (ft::pair<node_base_type*, node_base_type*>(cur, lower_bound));	//	new node should be inserted into right of lower_bound
-// 		return (ft::pair<node_base_type*, node_base_type*>(lower_bound, 0));
-// 	}
-
+ 
+//	pair's first is a pointer for the value which have the same key. And in that case, pair's second will be null
+//	pair's second is a pointer for the hint to insert the key.
 	template <typename Key, typename Value, typename KeyOfValue, typename Compare, typename Allocator>
-	inline rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::node_base_type *rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::get_unique_position(const key_type &key, bool &insert_flag) {
-		node_type		*current = static_cast<node_type*>(sentinel.upper);
-		node_base_type	*lbound = &sentinel;
-		node_type		*upper;
-		bool			before = true;
-
-		while (current) {
-			lbound = current;
-			before = comp(key, get_key(current->value));
-			if (before)
-				current = static_cast<node_type*>(current->left);
+	inline ft::pair<typename rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::node_base_type *, typename rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::node_base_type *> rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::get_unique_position(const key_type &key) {
+		node_type		*cur = sentinel.upper;
+		node_base_type	*lower_bound = &sentinel;										//	we need to find lower_bound beecause we have to check equality too.
+		bool 			is_before = true;
+		while (cur) {
+			lower_bound = cur;
+			is_before = comp(key, get_key(cur->value));
+			if (is_before)
+				cur = static_cast<node_type*>(cur->left);								//	if this while ends with this line, key "goes before" cur->value's key
 			else
-				current = static_cast<node_type*>(current->right);
+				cur = static_cast<node_type*>(cur->right);								//	if this while ends with this line, key "goes after" cur->value's key or "equivalent to" it
 		}
-		upper = lbound;	//	to return lbound, position we found to insert, save its' value to upper and return it when proper
-		if (before) {
-			if (lbound == sentinel.left) {
-				insert_flag = true;
-				return (lbound);
-			}
-			else
-				lbound = decrease_base(lbound);
+		if (is_before) {																//	here, key "goes before" lower_bound(previous cur)
+			if (lower_bound == sentinel.left)											//	if lower_bound is leftmost, lower_bound is the hint we are looking for
+				return (ft::pair<node_base_type*, node_base_type*>(cur, lower_bound));	//	new node should be inserted into left of lower_bound 
+			else																		//	decrease lower_bound by one so make key "to go after or equivalent to" lower_bound(previous cur)
+				lower_bound = decrease_base(lower_bound);
 		}
-		if(comp(get_key(static_cast<node_type*>(lbound)->value), key)) {
-			insert_flag = true;
-			return (upper);	//	the value we found (original lbound)
-		}
-		insert_flag = false;
-		return (lbound);
+		if (comp(get_key(static_cast<node_type*>(lower_bound)->value), key))			//	at this point, key "goes after or equivalent to" lower_bound. so if this is true, key "goes after" lower_bound.
+			return (ft::pair<node_base_type*, node_base_type*>(cur, lower_bound));		//	new node should be inserted into right of lower_bound
+		return (ft::pair<node_base_type*, node_base_type*>(lower_bound, 0));			//	lower_bound is the position where the same key is.
 	}
+
+	// EASTL implementation.
+	// upper is used to save original lbound
+	// template <typename Key, typename Value, typename KeyOfValue, typename Compare, typename Allocator>
+	// inline rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::node_base_type *rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::get_unique_position(const key_type &key, bool &insert_flag) {
+	// 	node_type		*current = static_cast<node_type*>(sentinel.upper);
+	// 	node_base_type	*lbound = &sentinel;
+	// 	node_type		*upper;
+	// 	bool			before = true;
+	// 	while (current) {
+	// 		lbound = current;
+	// 		before = comp(key, get_key(current->value));
+	// 		if (before)
+	// 			current = static_cast<node_type*>(current->left);
+	// 		else
+	// 			current = static_cast<node_type*>(current->right);
+	// 	}
+	// 	upper = lbound;	//	to return lbound, hint we found to insert, save its' value to upper and return it when proper
+	// 	if (before) {
+	// 		if (lbound == sentinel.left) {
+	// 			insert_flag = true;
+	// 			return (lbound);
+	// 		}
+	// 		else
+	// 			lbound = decrease_base(lbound);
+	// 	}
+	// 	if(comp(get_key(static_cast<node_type*>(lbound)->value), key)) {
+	// 		insert_flag = true;
+	// 		return (upper);	//	the value we found (original lbound). there is no problem if we return lbound, not upper.
+	// 	}
+	// 	insert_flag = false;
+	// 	return (lbound);
+	// }
 
 	template <typename Key, typename Value, typename KeyOfValue, typename Compare, typename Allocator>
 	inline typename rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::iterator rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::insert_value_impl(node_base_type *upper, const key_type &key, const value_type &value) {
@@ -607,6 +605,55 @@ namespace ft {
 		insert_balance(node, upper, &sentinel, left_flag);
 		node_count++;
 		return (iterator(node));
+	}
+
+	template <typename Key, typename Value, typename KeyOfValue, typename Compare, typename Allocator>
+	inline typename rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::iterator rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::insert_hint(const_iterator hint, const value_type &value) {
+		key_type									key = get_key(value);
+		ft::pair<node_base_type*, node_base_type*>	res = get_unique_position_hint(hint, key);
+		if (res.second)
+			return (insert_value_impl(res.second, key, value));
+		return (iterator(res.first));
+	}
+
+	template <typename Key, typename Value, typename KeyOfValue, typename Compare, typename Allocator>
+	inline ft::pair<typename rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::node_base_type *, typename rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::node_base_type *> rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::get_unique_position_hint(const_iterator hint, const key_type &key) {
+		iterator pos = iterator(hint);
+    	// end()
+		if (pos.it == &sentinel) {
+			if (node_count > 0 && comp(get_key(static_cast<node_type*>(sentinel.right)->value), key))	//	tree is not empty && key is "after" rightmost
+				return (ft::pair<node_base_type*, node_base_type*>(0, sentinel.right));
+			else
+				return (get_unique_position(key));														//	it is not appropriate to insert new node into position after hint. so we have to find new position
+		}
+		else if (comp(key, get_key(static_cast<node_type*>(pos.it)->value))) {							//	if key is "before" hint
+			iterator before = pos;
+			if (pos.it == sentinel.left)																//	if key is "before" hint && hint is leftmost
+				return (ft::pair<node_base_type*, node_base_type*>(sentinel.left, sentinel.left));
+			else if (comp(get_key(static_cast<node_type*>((--before).it)->value), key)) {
+				if (before.it->right == 0)
+					return (ft::pair<node_base_type*, node_base_type*>(0, before.it));
+				else
+					return (ft::pair<node_base_type*, node_base_type*>(pos.it, pos.it));
+			}
+			else
+				return (get_unique_position(key));
+		}
+		else if (comp(get_key(static_cast<node_type*>(pos.it)->value), key)) {
+			iterator after = pos;
+			if (pos.it == sentinel.right)
+				return (ft::pair<node_base_type*, node_base_type*>(0, sentinel.right));
+			else if (comp(key, get_key(static_cast<node_type*>((++after).it)->value))) {
+				if (pos.it->right == 0)
+					return (ft::pair<node_base_type*, node_base_type*>(0, pos.it));
+				else
+					return (ft::pair<node_base_type*, node_base_type*>(after.it, after.it));
+			}
+			else
+				return (get_unique_position(key));
+		}
+		else
+			return (ft::pair<node_base_type*, node_base_type*>(pos.it, 0));
 	}
 
 	template <typename T, typename Pointer, typename Reference>
