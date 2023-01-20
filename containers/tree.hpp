@@ -140,7 +140,7 @@ namespace ft {
 		void										construct_value(node_type &node, const value_type &value);
 		ft::pair<iterator, bool>					insert_value(const value_type &value);
 		ft::pair<node_base_type*, node_base_type*>	get_unique_position(const key_type &key);
-		iterator									insert_value_impl(node_base_type *upper, const key_type &key, const value_type &value);
+		iterator									insert_value_impl(bool left, node_base_type *upper, const key_type &key, const value_type &value);
 		iterator									insert_hint(const_iterator hint, const value_type &value);
 		ft::pair<node_base_type*, node_base_type*>	get_unique_position_hint(const_iterator hint, const key_type &key);
 	};
@@ -342,7 +342,7 @@ namespace ft {
 
 	template <typename Key, typename Value, typename KeyOfValue, typename Compare, typename Allocator>
 	inline typename rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::iterator rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::lower_bound(const Key &key) {
-		node_type	*cur = sentinel.upper;	//	root
+		node_type	*cur = sentinel.upper;			//	root
 		node_type	*bound = &sentinel;
 		while (cur) {
 			if (!comp(get_key(cur->value), key)) {	//	key must be before cur
@@ -425,7 +425,7 @@ namespace ft {
 			swap_data(sentinel.left, other.sentinel.left);
 			swap_data(sentinel.right, other.sentinel.right);
 			swap_data(node_count, other.node_count);
-			sentinel.upper->upper = &sentinel;	//	before this statement, lhs.upper->upper is &rhs
+			sentinel.upper->upper = &sentinel;					//	before this statement, lhs.upper->upper is &rhs
 			other.sentinel.upper->upper = &(other.sentinel);	//	same
 		}
 		else if (sentinel.upper)
@@ -535,7 +535,7 @@ namespace ft {
 		key_type									key = get_key(value);
 		ft::pair<node_base_type*, node_base_type*>	res = get_unique_position(key);
 		if (res.second) 																		//	if we found insertion position
-			return (ft::pair<iterator, bool>(insert_value_impl(res.second, key, value), true));
+			return (ft::pair<iterator, bool>(insert_value_impl((res.first != 0), res.second, key, value), true));
 		return (ft::pair<iterator, bool>(iterator(res.first), false));
 	}
  
@@ -546,7 +546,7 @@ namespace ft {
 		node_type		*cur = sentinel.upper;
 		node_base_type	*lower_bound = &sentinel;										//	we need to find lower_bound beecause we have to check equality too.
 		bool 			is_before = true;
-		while (cur) {
+		while (cur) {																	//	basically, we insert new node to "left" because cur will be null (if return value's left is non-null, new node should be inserted into left, otherwise, right.)
 			lower_bound = cur;
 			is_before = comp(key, get_key(cur->value));
 			if (is_before)
@@ -599,8 +599,10 @@ namespace ft {
 	// }
 
 	template <typename Key, typename Value, typename KeyOfValue, typename Compare, typename Allocator>
-	inline typename rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::iterator rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::insert_value_impl(node_base_type *upper, const key_type &key, const value_type &value) {
-		bool		left_flag = (upper == sentinel.left) || comp(key, get_key(static_cast<node_type*>(upper)->value));
+	inline typename rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::iterator rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::insert_value_impl(bool left, node_base_type *upper, const key_type &key, const value_type &value) {
+		bool		left_flag = left 
+						|| (upper == sentinel.left)
+						|| comp(key, get_key(static_cast<node_type*>(upper)->value));
 		node_type	*node = create_node(value);
 		insert_balance(node, upper, &sentinel, left_flag);
 		node_count++;
@@ -612,15 +614,14 @@ namespace ft {
 		key_type									key = get_key(value);
 		ft::pair<node_base_type*, node_base_type*>	res = get_unique_position_hint(hint, key);
 		if (res.second)
-			return (insert_value_impl(res.second, key, value));
+			return (insert_value_impl((res.first != 0), res.second, key, value));
 		return (iterator(res.first));
 	}
 
 	template <typename Key, typename Value, typename KeyOfValue, typename Compare, typename Allocator>
 	inline ft::pair<typename rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::node_base_type *, typename rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::node_base_type *> rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::get_unique_position_hint(const_iterator hint, const key_type &key) {
-		iterator pos = iterator(hint);
-    	// end()
-		if (pos.it == &sentinel) {
+		iterator pos(hint);
+		if (pos.it == &sentinel) {																		//	pos is end()
 			if (node_count > 0 && comp(get_key(static_cast<node_type*>(sentinel.right)->value), key))	//	tree is not empty && key is "after" rightmost
 				return (ft::pair<node_base_type*, node_base_type*>(0, sentinel.right));
 			else
@@ -629,17 +630,17 @@ namespace ft {
 		else if (comp(key, get_key(static_cast<node_type*>(pos.it)->value))) {							//	if key is "before" hint
 			iterator before = pos;
 			if (pos.it == sentinel.left)																//	if key is "before" hint && hint is leftmost
-				return (ft::pair<node_base_type*, node_base_type*>(sentinel.left, sentinel.left));
+				return (ft::pair<node_base_type*, node_base_type*>(sentinel.left, sentinel.left));		//	first sentinel.left means key should be inserted into "left" of sentinel.left
 			else if (comp(get_key(static_cast<node_type*>((--before).it)->value), key)) {
-				if (before.it->right == 0)
+				if (before.it->right == 0)																//	if key is "before" hint && key is "after" node "right before" hint && the node's right is null
 					return (ft::pair<node_base_type*, node_base_type*>(0, before.it));
-				else
+				else																					//	if key is "before" hint && key is "after" node "right before" hint && the node's right is not null
 					return (ft::pair<node_base_type*, node_base_type*>(pos.it, pos.it));
 			}
-			else
+			else																						//	key is even before the node which is before hint
 				return (get_unique_position(key));
 		}
-		else if (comp(get_key(static_cast<node_type*>(pos.it)->value), key)) {
+		else if (comp(get_key(static_cast<node_type*>(pos.it)->value), key)) {							//	if key is "after" hint and same process applies
 			iterator after = pos;
 			if (pos.it == sentinel.right)
 				return (ft::pair<node_base_type*, node_base_type*>(0, sentinel.right));
@@ -652,7 +653,7 @@ namespace ft {
 			else
 				return (get_unique_position(key));
 		}
-		else
+		else																							//	node that has same key does already exist
 			return (ft::pair<node_base_type*, node_base_type*>(pos.it, 0));
 	}
 
