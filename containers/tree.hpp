@@ -467,7 +467,14 @@ namespace ft {
 		node_count = other.node_count;
 		other.reset_sentinel_and_count();
 	}
-	
+
+	template <typename Key, typename Value, typename KeyOfValue, typename Compare, typename Allocator>
+	template <class InputIt>
+	inline void rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::insert(InputIt first, InputIt last) {
+		for (; first != last; ++first)
+			insert_hint(end(), *first);
+	}
+
 	template <typename Key, typename Value, typename KeyOfValue, typename Compare, typename Allocator>
 	template <typename T>
 	inline void rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::swap_data(T &lhs, T &rhs) {
