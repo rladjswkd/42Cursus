@@ -9,7 +9,7 @@
 
 namespace ft {
 
-	enum	color_type {red, black};
+	enum	color_type {RED, BLACK};
 
 	struct rb_tree_node_base {
 		color_type			color;
@@ -19,14 +19,14 @@ namespace ft {
 	};
 
 	//	these functions are not for the every rb_tree_node_base type objects.
-	//	for example, leftmost_base, rightmost_base make sense only for the sentinel node
+	//	for example, find_leftmost, find_rightmost make sense only for the sentinel node
 	//	so define them in tree.cpp.
-	rb_tree_node_base	*leftmost_base(const rb_tree_node_base *node);
-	rb_tree_node_base	*rightmost_base(const rb_tree_node_base *node);
-	rb_tree_node_base	*increase_base(const rb_tree_node_base *node);
-	rb_tree_node_base	*decrease_base(const rb_tree_node_base *node);
+	rb_tree_node_base	*find_leftmost(const rb_tree_node_base *node);
+	rb_tree_node_base	*find_rightmost(const rb_tree_node_base *node);
+	rb_tree_node_base	*do_increase(const rb_tree_node_base *node);
+	rb_tree_node_base	*do_decrease(const rb_tree_node_base *node);
 	void				insert_balance(rb_tree_node_base *node, rb_tree_node_base *upper, rb_tree_node_base *sentinel, bool left_flag);
-	
+	rb_tree_node_base	*rebalance_for_erase(rb_tree_node_base *target, rb_tree_node_base &sentinel);
 	void				recolor(rb_tree_node_base *node, rb_tree_node_base *temp, rb_tree_node_base *double_upper);
 	void				rotate_left(rb_tree_node_base *node, rb_tree_node_base *&root);
 	void				rotate_right(rb_tree_node_base *node, rb_tree_node_base *&root);
@@ -148,14 +148,14 @@ namespace ft {
 	template <typename Key, typename Value, typename KeyOfValue, typename Compare, typename Allocator>
 	inline rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::rb_tree()
 	: sentinel(), node_count(), comp(), allocator(), get_key(), node_allocator() {
-		sentinel.color = red;
+		sentinel.color = RED;
 		reset_sentinel_and_count();
 	}
 
 	template <typename Key, typename Value, typename KeyOfValue, typename Compare, typename Allocator>
 	inline rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::rb_tree(const Compare &comp, const Allocator &alloc)
 	: sentinel(), node_count(), comp(comp), allocator(alloc), get_key(), node_allocator() {
-		sentinel.color = red;
+		sentinel.color = RED;
 		reset_sentinel_and_count();
 	}
 
@@ -164,12 +164,12 @@ namespace ft {
 	: sentinel(), node_count(), comp(other.comp), allocator(other.allocator), get_key(), node_allocator(other.node_allocator) {
 		if (other.sentinel.upper) {
 			sentinel.upper = copy_subtree(static_cast<const node_type*>(other.sentinel.upper), &sentinel);
-			sentinel.left = leftmost_base(sentinel.upper);
-			sentinel.right = rightmost_base(sentinel.upper);
+			sentinel.left = find_leftmost(sentinel.upper);
+			sentinel.right = find_rightmost(sentinel.upper);
 			sentinel.color = other.sentinel.color;
 			node_count = other.node_count;
 		} else {
-			sentilen.color = red;
+			sentilen.color = RED;
 			reset_sentinel_and_count();
 		}
 	}
@@ -186,8 +186,8 @@ namespace ft {
 			comp = other.comp;
 			if (other.sentinel.upper) {	// conversion to node_type* is needed because we should copy it's value.
 				sentinel.upper = copy_subtree(static_cast<const node_type*>(other.sentinel.upper), &sentinel);
-				sentinel.left = leftmost_base(sentinel.upper);
-				sentinel.right = rightmost_base(sentinel.upper);
+				sentinel.left = find_leftmost(sentinel.upper);
+				sentinel.right = find_rightmost(sentinel.upper);
 				node_count = other.node_count;
 			}
 		}
@@ -308,6 +308,31 @@ namespace ft {
 	template <typename Key, typename Value, typename KeyOfValue, typename Compare, typename Allocator>
 	inline typename rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::iterator rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::insert(iterator pos, const value_type &value) {
 		return (insert_hint(pos, value));
+	}
+
+	template <typename Key, typename Value, typename KeyOfValue, typename Compare, typename Allocator>
+	inline void rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::erase(iterator hint) {
+		node_type	*node = static_cast<node_type*>(rebalance_for_erase(hint.it), sentinel);
+		allocator.destroy(&(node->value));
+		allocator.deallocate(node, 1);
+		--node_count;
+	}
+
+	template <typename Key, typename Value, typename KeyOfValue, typename Compare, typename Allocator>
+	inline rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::size_type rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::erase(const key_type &k) {
+		ft::pair<iterator, iterator>	p = equal_range(k);
+		const size_type					old_size = size();
+		erase(p.first, p.second);
+		return (old_size - size());
+	}
+
+	template <typename Key, typename Value, typename KeyOfValue, typename Compare, typename Allocator>
+	inline void rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::erase(iterator first, iterator last) {
+		if (first == begin() && last == end())
+			clear();
+		else
+			while (first != last)
+				erase(first++);
 	}
 
 	template <typename Key, typename Value, typename KeyOfValue, typename Compare, typename Allocator>
@@ -442,7 +467,7 @@ namespace ft {
 			remove_all(cur->left);
 			right = cur->right;
 			allocator.destroy(&(cur->value));
-			allocator.deallocate(&(cur->value), 1);
+			allocator.deallocate(cur, 1);
 			cur = right;
 		}
 	}
@@ -565,7 +590,7 @@ namespace ft {
 			if (lower_bound == sentinel.left)											//	if lower_bound is leftmost, lower_bound is the hint we are looking for
 				return (ft::pair<node_base_type*, node_base_type*>(cur, lower_bound));	//	new node should be inserted into left of lower_bound 
 			else																		//	decrease lower_bound by one so make key "to go after or equivalent to" lower_bound(previous cur)
-				lower_bound = decrease_base(lower_bound);
+				lower_bound = do_decrease(lower_bound);
 		}
 		if (comp(get_key(static_cast<node_type*>(lower_bound)->value), key))			//	at this point, key "goes after or equivalent to" lower_bound. so if this is true, key "goes after" lower_bound.
 			return (ft::pair<node_base_type*, node_base_type*>(cur, lower_bound));		//	new node should be inserted into right of lower_bound
@@ -595,7 +620,7 @@ namespace ft {
 	// 			return (lbound);
 	// 		}
 	// 		else
-	// 			lbound = decrease_base(lbound);
+	// 			lbound = do_decrease(lbound);
 	// 	}
 	// 	if(comp(get_key(static_cast<node_type*>(lbound)->value), key)) {
 	// 		insert_flag = true;
@@ -698,27 +723,27 @@ namespace ft {
 
 	template <typename T, typename Pointer, typename Reference>
 	inline bidirectional_iterator<T, Pointer, Reference> &bidirectional_iterator<T, Pointer, Reference>::operator++() {
-		it = increase_base(it);
+		it = do_increase(it);
 		return (*this);
 	}
 	
 	template <typename T, typename Pointer, typename Reference>
 	inline bidirectional_iterator<T, Pointer, Reference> bidirectional_iterator<T, Pointer, Reference>::operator++(int) {
 		bidirectional_iterator	temp = *this;
-		it = increase_base(it);
+		it = do_increase(it);
 		return (temp);
 	}
 	
 	template <typename T, typename Pointer, typename Reference>
 	inline bidirectional_iterator<T, Pointer, Reference> &bidirectional_iterator<T, Pointer, Reference>::operator--() {
-		it = decrease_base(it);
+		it = do_decrease(it);
 		return (*this);
 	}
 	
 	template <typename T, typename Pointer, typename Reference>
 	inline bidirectional_iterator<T, Pointer, Reference> bidirectional_iterator<T, Pointer, Reference>::operator--(int) {
 		bidirectional_iterator	temp = *this;
-		it = decrease_base(it);
+		it = do_decrease(it);
 		return (temp);
 	}
 }

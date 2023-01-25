@@ -1,5 +1,19 @@
 {
 	"files.associations": {
-		"map": "cpp"
+		"map": "cpp",
+		"__hash_table": "cpp",
+		"__tree": "cpp",
+		"deque": "cpp",
+		"list": "cpp",
+		"set": "cpp",
+		"string": "cpp",
+		"unordered_map": "cpp",
+		"vector": "cpp",
+		"__node_handle": "cpp",
+		"iterator": "cpp",
+		"type_traits": "cpp",
+		"algorithm": "cpp",
+		"stdexcept": "cpp",
+		"locale": "cpp"
 	}
 }
