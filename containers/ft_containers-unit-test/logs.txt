@@ -1,21 +1,16 @@
-In file included from ../vector_tests/insert(std iterators).cpp:2:
-In file included from ../vector_tests/__service.ipp:3:
-../vector_tests/../../../vector.hpp:897:3: error: no matching member function for call to 'insert_from_iterator'
-                insert_from_iterator(pos, first, last, typename ft::iterator_traits<InputIt>::iterator_category());
-                ^~~~~~~~~~~~~~~~~~~~
-../vector_tests/../../../vector.hpp:465:3: note: in instantiation of function template specialization 'ft::vector<int, std::__1::allocator<int> >::insert_dispatch<std::__1::__wrap_iter<int *> >' requested here
-                insert_dispatch(pos, first, last, typename ft::is_integral<InputIt>::type());
-                ^
-../vector_tests/insert(std iterators).cpp:28:9: note: in instantiation of function template specialization 'ft::vector<int, std::__1::allocator<int> >::insert<std::__1::__wrap_iter<int *> >' requested here
-        vector.insert(vector.begin(), tmp.begin(), tmp.end());
-               ^
-../vector_tests/insert(std iterators).cpp:40:75: note: in instantiation of function template specialization 'insert_std_test<int>' requested here
-        exit(run_vector_unit_test<int>("insert(std iterators)", insert_std_test, insert_std_test));
-                                                                                 ^
-../vector_tests/../../../vector.hpp:155:11: note: candidate function template not viable: no known conversion from 'typename ft::iterator_traits<__wrap_iter<int *> >::iterator_category' (aka 'std::__1::random_access_iterator_tag') to 'ft::input_iterator_tag' for 4th argument
-                void                            insert_from_iterator(iterator pos, InputIt first, InputIt last, ft::input_iterator_tag);
-                                                ^
-../vector_tests/../../../vector.hpp:157:11: note: candidate function template not viable: no known conversion from 'typename ft::iterator_traits<__wrap_iter<int *> >::iterator_category' (aka 'std::__1::random_access_iterator_tag') to 'ft::forward_iterator_tag' for 4th argument
-                void                            insert_from_iterator(iterator pos, ForwardIt first, ForwardIt last, ft::forward_iterator_tag);
-                                                ^
-1 error generated.
+Undefined symbols for architecture x86_64:
+  "ft::do_decrease(ft::rb_tree_node_base const*)", referenced from:
+      ft::rb_tree<int, int, ft::use_self<int>, std::__1::less<int>, std::__1::allocator<int> >::get_unique_position(int const&) in constructor-5d4440.o
+      ft::bidirectional_iterator<int, int*, int&>::operator--() in constructor-5d4440.o
+  "ft::do_increase(ft::rb_tree_node_base const*)", referenced from:
+      ft::bidirectional_iterator<int, int const*, int const&>::operator++(int) in constructor-5d4440.o
+      ft::bidirectional_iterator<int, int const*, int const&>::operator++() in constructor-5d4440.o
+      ft::bidirectional_iterator<int, int*, int&>::operator++() in constructor-5d4440.o
+  "ft::find_leftmost(ft::rb_tree_node_base const*)", referenced from:
+      ft::rb_tree<int, int, ft::use_self<int>, std::__1::less<int>, std::__1::allocator<int> >::rb_tree(ft::rb_tree<int, int, ft::use_self<int>, std::__1::less<int>, std::__1::allocator<int> > const&) in constructor-5d4440.o
+  "ft::find_rightmost(ft::rb_tree_node_base const*)", referenced from:
+      ft::rb_tree<int, int, ft::use_self<int>, std::__1::less<int>, std::__1::allocator<int> >::rb_tree(ft::rb_tree<int, int, ft::use_self<int>, std::__1::less<int>, std::__1::allocator<int> > const&) in constructor-5d4440.o
+  "ft::insert_rebalance(ft::rb_tree_node_base*, ft::rb_tree_node_base*, ft::rb_tree_node_base*, bool)", referenced from:
+      ft::rb_tree<int, int, ft::use_self<int>, std::__1::less<int>, std::__1::allocator<int> >::insert_value_impl(bool, ft::rb_tree_node_base*, int const&, int const&) in constructor-5d4440.o
+ld: symbol(s) not found for architecture x86_64
+clang: error: linker command failed with exit code 1 (use -v to see invocation)

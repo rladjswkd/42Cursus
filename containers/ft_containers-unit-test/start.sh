@@ -14,7 +14,7 @@ fi
 if [[ (($1 = -m || $1 = --map) && ($2 = -fast || $2 = '')) || (($2 = -m || $2 = --map) && $1 = -fast) ]]
 then
   cat credits/header
-  clang++ $fast_flag run_map.cpp && ./a.out
+  clang++ $fast_flag run_map.cpp ~/workspace/42Cursus/containers/tree.cpp && ./a.out
 elif [[ (($1 = -v || $1 = --vector) && ($2 = -fast || $2 = '')) || (($2 = -v || $2 = --vector) && $1 = -fast) ]]
 then
   cat credits/header
@@ -22,7 +22,7 @@ then
 elif [[ (($1 = -s || $1 = --set) && ($2 = -fast || $2 = '')) || (($2 = -s || $2 = --set) && $1 = -fast) ]]
 then
   cat credits/header
-  clang++ $fast_flag run_set.cpp && ./a.out
+  clang++ $fast_flag run_set.cpp ~/workspace/42Cursus/containers/tree.cpp && ./a.out
 elif [[ (($1 = -u || $1 = --utils) && ($2 = -fast || $2 = '')) || (($2 = -u || $2 = --utils) && $1 = -fast) ]]
 then
   cat credits/header
@@ -37,7 +37,7 @@ then
   clang++ $fast_flag run_vector.cpp && ./a.out
   clang++ $fast_flag run_utilities.cpp && ./a.out
   clang++ $fast_flag run_stack.cpp && ./a.out
-  clang++ $fast_flag run_map.cpp && ./a.out
+  clang++ $fast_flag run_map.cpp ~/workspace/42Cursus/containers/tree.cpp && ./a.out
   clang++ libbass.dylib -Ibass24 -Lbass24 check_results.cpp && ./a.out
 elif [[ (($1 = -b || $1 = --bonus) && $2 = -fast) || (($2 = -b || $2 = --bonus) && $1 = -fast) ]]
 then
@@ -45,8 +45,8 @@ then
   clang++ $fast_flag run_vector.cpp && ./a.out
   clang++ $fast_flag run_utilities.cpp && ./a.out
   clang++ $fast_flag run_stack.cpp && ./a.out
-  clang++ $fast_flag run_map.cpp && ./a.out
-  clang++ $fast_flag run_set.cpp && ./a.out
+  clang++ $fast_flag run_map.cpp ~/workspace/42Cursus/containers/tree.cpp && ./a.out
+  clang++ $fast_flag run_set.cpp ~/workspace/42Cursus/containers/tree.cpp && ./a.out
   clang++ libbass.dylib -Ibass24 -Lbass24 check_results.cpp && ./a.out
 elif [[ $1 = -h || $1 = --help ]]
 then

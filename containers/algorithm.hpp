@@ -1,7 +1,6 @@
 #ifndef ALGORITHM_HPP
 # define ALGORITHM_HPP
 # include <cstring>			//memcmp, memset
-// # include <algorithm>		//min	Todo: remove
 # include <stdlib.h>
 # include "type_traits.hpp"
 # include "iterator.hpp"
