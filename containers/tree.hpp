@@ -36,23 +36,22 @@ namespace ft {
 		Value			value;
 	};
 
-	template <typename T, typename Pointer, typename Reference>
+
+	template <typename T>
 	struct bidirectional_iterator {
-		typedef T 												value_type;
-		typedef Pointer 										pointer;
-		typedef Reference										reference;
-		typedef rb_tree_node_base								node_base_type;
-		typedef	rb_tree_node<value_type>						node_type;
-		typedef bidirectional_iterator_tag						iterator_category;
-		
-		typedef bidirectional_iterator<T, T*, T&>				iterator;
-		typedef bidirectional_iterator<T, const T*, const T&>	const_iterator;
+		typedef T 							value_type;
+		typedef T*		 					pointer;
+		typedef T&							reference;
+		typedef rb_tree_node_base			node_base_type;
+		typedef	rb_tree_node<value_type>	node_type;
+		typedef bidirectional_iterator_tag	iterator_category;
+		typedef ptrdiff_t					difference_type;
+		typedef size_t						size_type;
 
 		node_base_type	*it;
 
 		bidirectional_iterator();
-		explicit bidirectional_iterator(node_base_type* node_base);
-		bidirectional_iterator(const iterator &other);
+		explicit bidirectional_iterator(const node_base_type* node_base);
 		~bidirectional_iterator();
 
 		bidirectional_iterator&	operator=(const bidirectional_iterator &other);
@@ -63,25 +62,54 @@ namespace ft {
 		bidirectional_iterator&	operator--();
 		bidirectional_iterator	operator--(int);
 	};
+
+	template <typename T>
+	struct const_bidirectional_iterator {
+		typedef T 							value_type;
+		typedef const T* 					pointer;
+		typedef const T&					reference;
+		typedef rb_tree_node_base			node_base_type;
+		typedef	rb_tree_node<value_type>	node_type;
+		typedef bidirectional_iterator_tag	iterator_category;
+		typedef ptrdiff_t					difference_type;
+		typedef size_t						size_type;
+
+		typedef bidirectional_iterator<T>	iterator;
+
+		const node_base_type	*it;
+
+		const_bidirectional_iterator();
+		explicit const_bidirectional_iterator(const node_base_type* node_base);
+		const_bidirectional_iterator(const iterator &other);
+		~const_bidirectional_iterator();
+
+		const_bidirectional_iterator&	operator=(const const_bidirectional_iterator &other);
+		reference						operator*() const;
+		pointer							operator->() const;
+		const_bidirectional_iterator&	operator++();
+		const_bidirectional_iterator	operator++(int);
+		const_bidirectional_iterator&	operator--();
+		const_bidirectional_iterator	operator--(int);
+	};
 	
-	
+
 	template < typename Key, typename Value, typename KeyOfValue, typename Compare, typename Allocator = std::allocator<Value> >
 	class rb_tree {
 		
 	public:
-		typedef Allocator																	allocator_type;
-		typedef	Key																			key_type;
-		typedef	Value																		value_type;
-		typedef Compare																		key_compare;
-		typedef size_t																		size_type;
-		typedef ptrdiff_t																	difference_type;
-		typedef bidirectional_iterator<value_type, value_type*, value_type&>				iterator;
-		typedef bidirectional_iterator<value_type, const value_type*, const value_type&>	const_iterator;
-		typedef ft::reverse_iterator<iterator>												reverse_iterator;
-		typedef ft::reverse_iterator<const_iterator>										const_reverse_iterator;
-		typedef rb_tree_node_base															node_base_type;
-		typedef rb_tree_node<Value>															node_type;
-		typedef typename allocator_type::template rebind<node_type>::other					node_allocator_type;
+		typedef Allocator													allocator_type;
+		typedef	Key															key_type;
+		typedef	Value														value_type;
+		typedef Compare														key_compare;
+		typedef size_t														size_type;
+		typedef ptrdiff_t													difference_type;
+		typedef bidirectional_iterator<value_type>							iterator;
+		typedef const_bidirectional_iterator<value_type>					const_iterator;
+		typedef ft::reverse_iterator<iterator>								reverse_iterator;
+		typedef ft::reverse_iterator<const_iterator>						const_reverse_iterator;
+		typedef rb_tree_node_base											node_base_type;
+		typedef rb_tree_node<Value>											node_type;
+		typedef typename allocator_type::template rebind<node_type>::other	node_allocator_type;
 
 	private:
 		rb_tree_node_base	sentinel;	//	this tracks root, leftmost, rightmost
@@ -122,7 +150,7 @@ namespace ft {
 		reverse_iterator							rend();
 		const_reverse_iterator						rend() const;
 		ft::pair<iterator, bool>					insert(const value_type &value);
-		iterator									insert(iterator pos, const value_type &value);
+		iterator									insert(const_iterator pos, const value_type &value);
 		template <class InputIt>
 		void 										insert(InputIt first, InputIt last);
 		void 										erase(iterator hint);
@@ -309,13 +337,13 @@ namespace ft {
 	}
 
 	template <typename Key, typename Value, typename KeyOfValue, typename Compare, typename Allocator>
-	inline typename rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::iterator rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::insert(iterator pos, const value_type &value) {
+	inline typename rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::iterator rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::insert(const_iterator pos, const value_type &value) {
 		return (insert_hint(pos, value));
 	}
 
 	template <typename Key, typename Value, typename KeyOfValue, typename Compare, typename Allocator>
 	inline void rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::erase(iterator hint) {
-		node_type	*node = static_cast<node_type*>(rebalance_for_erase(hint.it), sentinel);
+		node_type	*node = static_cast<node_type*>(rebalance_for_erase(hint.it, sentinel));
 		allocator.destroy(&(node->value));
 		node_allocator.deallocate(node, 1);
 		--node_count;
@@ -370,15 +398,15 @@ namespace ft {
 
 	template <typename Key, typename Value, typename KeyOfValue, typename Compare, typename Allocator>
 	inline typename rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::iterator rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::lower_bound(const Key &key) {
-		node_type	*cur = sentinel.upper;			//	root
-		node_type	*bound = &sentinel;
+		node_type	*cur = static_cast<node_type*>(sentinel.upper);
+		node_type	*bound = static_cast<node_type*>(&sentinel);
 		while (cur) {
 			if (!comp(get_key(cur->value), key)) {	//	key must be before cur
 				bound = cur;
-				cur = cur->left;
+				cur = static_cast<node_type*>(cur->left);
 			}
 			else
-				cur = cur->right;
+				cur = static_cast<node_type*>(cur->right);
 		}
 		return (iterator(bound));
 	}
@@ -390,10 +418,10 @@ namespace ft {
 		while (cur) {
 			if (!comp(get_key(cur->value), key)) {
 				bound = cur;
-				cur = cur->left;
+				cur = static_cast<node_type*>(cur->left);
 			}
 			else
-				cur = cur->right;
+				cur = static_cast<node_type*>(cur->right);
 		}
 		return (const_iterator(bound));	
 	}
@@ -431,7 +459,7 @@ namespace ft {
 	template <typename Key, typename Value, typename KeyOfValue, typename Compare, typename Allocator>
 	inline ft::pair<typename rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::iterator, typename rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::iterator> rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::equal_range(const Key &key) {
 		const iterator lbound = lower_bound(key);
-		if((lbound == &sentinel) || compare(key, get_key(*lbound)))
+		if ((lbound.it == &sentinel) || comp(key, get_key(static_cast<node_type*>(lbound.it)->value)))
 			return (ft::pair<iterator, iterator>(lbound, lbound));
 		iterator rbound = lbound;
 		return ft::pair<iterator, iterator>(lbound, ++rbound);
@@ -440,7 +468,7 @@ namespace ft {
 	template <typename Key, typename Value, typename KeyOfValue, typename Compare, typename Allocator>
 	inline ft::pair<typename rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::const_iterator, typename rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::const_iterator> rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::equal_range(const Key &key) const {
 		const const_iterator lbound = lower_bound(key);
-		if((lbound == &sentinel) || compare(key, get_key(*lbound)))
+		if((lbound == &sentinel) || comp(key, get_key(*lbound)))
 			return (ft::pair<const_iterator, const_iterator>(lbound, lbound));
 		const_iterator rbound = lbound;
 		return ft::pair<const_iterator, const_iterator>(lbound, ++rbound);
@@ -525,6 +553,8 @@ namespace ft {
 				upper->left = cur_left;
 				if(copy_target->right)
 					cur_left->right = copy_subtree(static_cast<const node_type*>(copy_target->right), cur_left);
+				copy_target = static_cast<node_type*>(copy_target->left);
+				upper = cur_left;
 			}
 		} catch(...) {
 			remove_all(cur);
@@ -636,7 +666,7 @@ namespace ft {
 	template <typename Key, typename Value, typename KeyOfValue, typename Compare, typename Allocator>
 	inline typename rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::iterator rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::insert_value_impl(bool left, node_base_type *upper, const key_type &key, const value_type &value) {
 		bool		left_flag = left 
-						|| (upper == sentinel.left)
+						|| (upper == &sentinel)
 						|| comp(key, get_key(static_cast<node_type*>(upper)->value));
 		node_type	*node = create_node(value);
 		insert_rebalance(node, upper, &sentinel, left_flag);
@@ -692,71 +722,137 @@ namespace ft {
 			return (ft::pair<node_base_type*, node_base_type*>(pos.it, 0));
 	}
 
-	template <typename T, typename Pointer, typename Reference>
-	inline bidirectional_iterator<T, Pointer, Reference>::bidirectional_iterator()
+	template <typename T>
+	inline bidirectional_iterator<T>::bidirectional_iterator()
 	: it() { }
 
-	template <typename T, typename Pointer, typename Reference>
-	inline bidirectional_iterator<T, Pointer, Reference>::bidirectional_iterator(node_base_type *node_base)
-	: it(node_base) { }
+	template <typename T>
+	inline bidirectional_iterator<T>::bidirectional_iterator(const node_base_type *node_base)
+	: it(const_cast<node_base_type*>(node_base)) { }
 
-	template <typename T, typename Pointer, typename Reference>
-	inline bidirectional_iterator<T, Pointer, Reference>::bidirectional_iterator(const iterator &other)
-	: it(other.it) { }
-
-	template <typename T, typename Pointer, typename Reference>
-	inline bidirectional_iterator<T, Pointer, Reference>::~bidirectional_iterator()
+	template <typename T>
+	inline bidirectional_iterator<T>::~bidirectional_iterator()
 	{ }
 	
-	template <typename T, typename Pointer, typename Reference>
-	inline bidirectional_iterator<T, Pointer, Reference> &bidirectional_iterator<T, Pointer, Reference>::operator=(const bidirectional_iterator &other) {
+	template <typename T>
+	inline bidirectional_iterator<T> &bidirectional_iterator<T>::operator=(const bidirectional_iterator &other) {
 		it = other.it;
 		return (*this);
 	}
 
-	template <typename T, typename Pointer, typename Reference>
-	inline typename bidirectional_iterator<T, Pointer, Reference>::reference bidirectional_iterator<T, Pointer, Reference>::operator*() const {
+	template <typename T>
+	inline typename bidirectional_iterator<T>::reference bidirectional_iterator<T>::operator*() const {
 		return (static_cast<node_type *>(it)->value);
 	}
 	
-	template <typename T, typename Pointer, typename Reference>
-	inline typename bidirectional_iterator<T, Pointer, Reference>::pointer bidirectional_iterator<T, Pointer, Reference>::operator->() const {
+	template <typename T>
+	inline typename bidirectional_iterator<T>::pointer bidirectional_iterator<T>::operator->() const {
 		return (&(static_cast<node_type *>(it)->value));
 	}
 
-	template <typename T, typename Pointer, typename Reference>
-	inline bidirectional_iterator<T, Pointer, Reference> &bidirectional_iterator<T, Pointer, Reference>::operator++() {
+	template <typename T>
+	inline bidirectional_iterator<T> &bidirectional_iterator<T>::operator++() {
 		it = ft::do_increase(it);
 		return (*this);
 	}
 	
-	template <typename T, typename Pointer, typename Reference>
-	inline bidirectional_iterator<T, Pointer, Reference> bidirectional_iterator<T, Pointer, Reference>::operator++(int) {
+	template <typename T>
+	inline bidirectional_iterator<T> bidirectional_iterator<T>::operator++(int) {
 		bidirectional_iterator	temp = *this;
 		it = ft::do_increase(it);
 		return (temp);
 	}
 	
-	template <typename T, typename Pointer, typename Reference>
-	inline bidirectional_iterator<T, Pointer, Reference> &bidirectional_iterator<T, Pointer, Reference>::operator--() {
+	template <typename T>
+	inline bidirectional_iterator<T> &bidirectional_iterator<T>::operator--() {
 		it = ft::do_decrease(it);
 		return (*this);
 	}
 	
-	template <typename T, typename Pointer, typename Reference>
-	inline bidirectional_iterator<T, Pointer, Reference> bidirectional_iterator<T, Pointer, Reference>::operator--(int) {
+	template <typename T>
+	inline bidirectional_iterator<T> bidirectional_iterator<T>::operator--(int) {
 		bidirectional_iterator	temp = *this;
 		it = ft::do_decrease(it);
 		return (temp);
 	}
 
-	template <typename T, typename Pointer, typename Reference>
-	inline bool	operator==(const bidirectional_iterator<T, Pointer, Reference> &lhs, const bidirectional_iterator<T, Pointer, Reference> &rhs) {
+	template <typename T>
+	inline bool	operator==(const bidirectional_iterator<T> &lhs, const bidirectional_iterator<T> &rhs) {
 		return (lhs.it == rhs.it);
 	}
 
-	template <typename T, typename Pointer, typename Reference>
-	inline bool	operator!=(const bidirectional_iterator<T, Pointer, Reference> &lhs, const bidirectional_iterator<T, Pointer, Reference> &rhs) {
+	template <typename T>
+	inline bool	operator!=(const bidirectional_iterator<T> &lhs, const bidirectional_iterator<T> &rhs) {
+		return (lhs.it != rhs.it);
+	}
+
+	template <typename T>
+	inline const_bidirectional_iterator<T>::const_bidirectional_iterator()
+	: it() { }
+
+	template <typename T>
+	inline const_bidirectional_iterator<T>::const_bidirectional_iterator(const node_base_type *node_base)
+	: it(const_cast<node_base_type*>(node_base)) { }
+
+	//	this is for conversion from bidirectional_iterator to const_bidirectional_iterator.
+	//	we use this when, for example, insert_hint's first argument is non-const iterator
+	template <typename T>
+	inline const_bidirectional_iterator<T>::const_bidirectional_iterator(const iterator &other)
+	: it(other.it) { }
+
+	template <typename T>
+	inline const_bidirectional_iterator<T>::~const_bidirectional_iterator()
+	{ }
+	
+	template <typename T>
+	inline const_bidirectional_iterator<T> &const_bidirectional_iterator<T>::operator=(const const_bidirectional_iterator &other) {
+		it = other.it;
+		return (*this);
+	}
+
+	template <typename T>
+	inline typename const_bidirectional_iterator<T>::reference const_bidirectional_iterator<T>::operator*() const {
+		return (static_cast<const node_type *>(it)->value);
+	}
+	
+	template <typename T>
+	inline typename const_bidirectional_iterator<T>::pointer const_bidirectional_iterator<T>::operator->() const {
+		return (&(static_cast<const node_type*>(it)->value));
+	}
+
+	template <typename T>
+	inline const_bidirectional_iterator<T> &const_bidirectional_iterator<T>::operator++() {
+		it = ft::do_increase(it);
+		return (*this);
+	}
+	
+	template <typename T>
+	inline const_bidirectional_iterator<T> const_bidirectional_iterator<T>::operator++(int) {
+		const_bidirectional_iterator	temp = *this;
+		it = ft::do_increase(it);
+		return (temp);
+	}
+	
+	template <typename T>
+	inline const_bidirectional_iterator<T> &const_bidirectional_iterator<T>::operator--() {
+		it = ft::do_decrease(it);
+		return (*this);
+	}
+	
+	template <typename T>
+	inline const_bidirectional_iterator<T> const_bidirectional_iterator<T>::operator--(int) {
+		const_bidirectional_iterator	temp = *this;
+		it = ft::do_decrease(it);
+		return (temp);
+	}
+
+	template <typename T>
+	inline bool	operator==(const const_bidirectional_iterator<T> &lhs, const const_bidirectional_iterator<T> &rhs) {
+		return (lhs.it == rhs.it);
+	}
+
+	template <typename T>
+	inline bool	operator!=(const const_bidirectional_iterator<T> &lhs, const const_bidirectional_iterator<T> &rhs) {
 		return (lhs.it != rhs.it);
 	}
 }
