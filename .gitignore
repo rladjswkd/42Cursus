@@ -3,3 +3,5 @@
 containers/a.out*
 containers/*temp*
 containers/.vscode
+containers/.vscode/*
+containers/*test*
