@@ -97,7 +97,7 @@ namespace ft {
 		rb_tree(const rb_tree &other);
 		~rb_tree();
 
-		rb_tree										&operator=(const rb_tree &other) const; // deep copy
+		rb_tree										&operator=(const rb_tree &other); // deep copy
 		allocator_type								get_allocator()	const;
 
 		iterator									find(const Key &key);
@@ -183,7 +183,7 @@ namespace ft {
 	}
 
 	template <typename Key, typename Value, typename KeyOfValue, typename Compare, typename Allocator>
-	inline rb_tree<Key, Value, KeyOfValue, Compare, Allocator> &rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::operator=(const rb_tree &other) const {
+	inline rb_tree<Key, Value, KeyOfValue, Compare, Allocator> &rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::operator=(const rb_tree &other) {
 		if (this != &other) {
 			clear();
 			comp = other.comp;
