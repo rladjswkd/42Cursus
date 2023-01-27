@@ -107,8 +107,7 @@ namespace ft {
 
 
 	template <typename T>
-	inline const T	&max(const T &a, const T &b)
-	{
+	inline const T	&max(const T &a, const T &b) {
 		if (a < b)
 			return (b);
 		return (a);
@@ -129,28 +128,35 @@ namespace ft {
 	}
 
 
-	template <typename InputIt, typename OutputIt, typename Category>
-	inline OutputIt copy_impl(InputIt first, InputIt last, OutputIt result, ft::input_iterator_tag) {
-		for (; first != last; (void)++result, (void)++first)
-			*result = *first;
-		return (result);
-	}
-
-
-	template <typename InputIt, typename OutputIt>
-	inline OutputIt	copy_impl(InputIt first, InputIt last, OutputIt result, ft::random_access_iterator_tag) {
-		for(typename iterator_traits<InputIt>::difference_type d = last - first; d > 0; --d) {
-			*result = *first;
-			++first;
-			++result;
+	template <typename Category>
+	struct copy_category_classifier {
+		template <typename InputIt, typename OutputIt>
+		static OutputIt copy_impl(InputIt first, InputIt last, OutputIt result) {
+			for (; first != last; (void)++result, (void)++first)
+				*result = *first;
+			return (result);
 		}
-		return (result);
-	}
+	};
+	
+
+	template <>
+	struct copy_category_classifier<random_access_iterator_tag> {
+		template <typename InputIt, typename OutputIt>
+		static OutputIt	copy_impl(InputIt first, InputIt last, OutputIt result) {
+			for(typename iterator_traits<InputIt>::difference_type d = last - first; d > 0; --d) {
+				*result = *first;
+				++first;
+				++result;
+			}
+			return (result);
+		}
+	};
+	
 
 
 	template <typename InputIt, typename OutputIt>
 	inline OutputIt	copy_helper(InputIt first, InputIt last, OutputIt result) {
-		return (copy_impl(first, last, result, typename ft::iterator_traits<InputIt>::iterator_category()));
+		return (copy_category_classifier<typename ft::iterator_traits<InputIt>::iterator_category>::copy_impl(first, last, result));
 	}	
 
 

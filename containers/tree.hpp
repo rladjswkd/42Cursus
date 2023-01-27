@@ -64,9 +64,9 @@ namespace ft {
 		bidirectional_iterator	operator--(int);
 
 		template <typename _T>
-		friend bool				operator==(const const_bidirectional_iterator<_T> &lhs, const const_bidirectional_iterator<_T> &rhs);
+		friend bool				operator==(const bidirectional_iterator<_T> &lhs, const bidirectional_iterator<_T> &rhs);
 		template <typename _T>
-		friend bool				operator!=(const const_bidirectional_iterator<_T> &lhs, const const_bidirectional_iterator<_T> &rhs);
+		friend bool				operator!=(const bidirectional_iterator<_T> &lhs, const bidirectional_iterator<_T> &rhs);
 	};
 
 	template <typename T>
