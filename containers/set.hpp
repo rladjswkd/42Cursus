@@ -76,6 +76,11 @@ namespace ft {
 		const_reverse_iterator						rbegin() const;
 		reverse_iterator							rend();
 		const_reverse_iterator						rend() const;
+
+		template <typename _Key, typename _Compare, typename _Allocator>
+		friend bool									operator==(const set<_Key, _Compare, _Allocator> &lhs, const set<_Key, _Compare, _Allocator> &rhs);
+		template <typename _Key, typename _Compare, typename _Allocator>
+		friend bool									operator<(const set<_Key, _Compare, _Allocator> &lhs, const set<_Key, _Compare, _Allocator> &rhs);
 	};
 
 	template <typename Key, typename Compare, typename Allocator>

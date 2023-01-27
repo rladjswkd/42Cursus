@@ -52,7 +52,7 @@ namespace ft {
 		node_base_type	*it;
 
 		bidirectional_iterator();
-		explicit bidirectional_iterator(const node_base_type* node_base);
+		explicit bidirectional_iterator(node_base_type *node_base);
 		~bidirectional_iterator();
 
 		bidirectional_iterator&	operator=(const bidirectional_iterator &other);
@@ -62,6 +62,11 @@ namespace ft {
 		bidirectional_iterator	operator++(int);
 		bidirectional_iterator&	operator--();
 		bidirectional_iterator	operator--(int);
+
+		template <typename _T>
+		friend bool				operator==(const const_bidirectional_iterator<_T> &lhs, const const_bidirectional_iterator<_T> &rhs);
+		template <typename _T>
+		friend bool				operator!=(const const_bidirectional_iterator<_T> &lhs, const const_bidirectional_iterator<_T> &rhs);
 	};
 
 	template <typename T>
@@ -80,7 +85,7 @@ namespace ft {
 		const node_base_type	*it;
 
 		const_bidirectional_iterator();
-		explicit const_bidirectional_iterator(const node_base_type* node_base);
+		explicit const_bidirectional_iterator(const node_base_type *node_base);
 		const_bidirectional_iterator(const iterator &other);
 		~const_bidirectional_iterator();
 
@@ -91,6 +96,16 @@ namespace ft {
 		const_bidirectional_iterator	operator++(int);
 		const_bidirectional_iterator&	operator--();
 		const_bidirectional_iterator	operator--(int);
+
+//		these functions should be friend because of set.
+//		set's iterator is, by definition, a const_iterator.
+//		and in erase(const_iterator first, const_iterator last), first == begin() is evaluated.
+//		here, begin() is always non_const (because red black tree object in set is non_const) and first is const.
+//		so, to evaluate const_iterator == iterator, operator== should be able to access converting constructor or some conversion function(member) 
+		template <typename _T>
+		friend bool						operator==(const const_bidirectional_iterator<_T> &lhs, const const_bidirectional_iterator<_T> &rhs);
+		template <typename _T>
+		friend bool						operator!=(const const_bidirectional_iterator<_T> &lhs, const const_bidirectional_iterator<_T> &rhs);
 	};
 	
 
@@ -154,9 +169,11 @@ namespace ft {
 		iterator									insert(const_iterator pos, const value_type &value);
 		template <class InputIt>
 		void 										insert(InputIt first, InputIt last);
-		void 										erase(iterator hint);
+		void										erase(iterator hint);
+		void 										erase(const_iterator hint);
 		size_type 									erase(const key_type& k);
-		void 										erase(iterator first, iterator last);
+		void										erase(iterator first, iterator last);
+		void 										erase(const_iterator first, const_iterator last);
 		void										swap(rb_tree &other);
 
 	private:
@@ -233,15 +250,15 @@ namespace ft {
 
 	template <typename Key, typename Value, typename KeyOfValue, typename Compare, typename Allocator>
 	inline typename rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::iterator rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::find(const Key &key) {
-		node_type	*cur = sentinel.upper;
-		node_type	*bound = &sentinel;
+		node_type	*cur = static_cast<node_type*>(sentinel.upper);
+		node_type	*bound = static_cast<node_type*>(const_cast<node_base_type*>(&sentinel));
 		while (cur) {
 			if (!comp(get_key(cur->value), key)) {
 				bound = cur;
-				cur = cur->left;
+				cur = static_cast<node_type*>(cur->left);
 			}
 			else
-				cur = cur->right;
+				cur = static_cast<node_type*>(cur->right);
 		}	//	after this while statement, bound is equal to &sentinel or smallest node among nodes whose values are bigger than or equal to key
 		if (comp(key, get_key(bound->value)))
 			return (iterator(&sentinel));
@@ -250,15 +267,15 @@ namespace ft {
 
 	template <typename Key, typename Value, typename KeyOfValue, typename Compare, typename Allocator>
 	inline typename rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::const_iterator rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::find(const Key &key) const {
-		node_type	*cur = sentinel.upper;
-		node_type	*bound = &sentinel;
+		node_type	*cur = static_cast<node_type*>(sentinel.upper);
+		node_type	*bound = static_cast<node_type*>(const_cast<node_base_type*>(&sentinel));
 		while (cur) {
 			if (!comp(get_key(cur->value), key)) {
 				bound = cur;
-				cur = cur->left;
+				cur = static_cast<node_type*>(cur->left);
 			}
 			else
-				cur = cur->right;
+				cur = static_cast<node_type*>(cur->right);
 		}
 		if (comp(key, get_key(bound->value)))
 			return (const_iterator(&sentinel));
@@ -304,7 +321,7 @@ namespace ft {
 
 	template <typename Key, typename Value, typename KeyOfValue, typename Compare, typename Allocator>
 	inline typename rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::iterator rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::end() {
-		return (iterator(&sentinel));
+		return (iterator(const_cast<node_base_type*>(&sentinel)));
 	}
 
 	template <typename Key, typename Value, typename KeyOfValue, typename Compare, typename Allocator>
@@ -347,6 +364,14 @@ namespace ft {
 		node_type	*node = static_cast<node_type*>(rebalance_for_erase(hint.it, sentinel));
 		allocator.destroy(&(node->value));
 		node_allocator.deallocate(node, 1);
+		--node_count;		
+	}
+
+	template <typename Key, typename Value, typename KeyOfValue, typename Compare, typename Allocator>
+	inline void rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::erase(const_iterator hint) {
+		node_type	*node = static_cast<node_type*>(rebalance_for_erase(const_cast<node_base_type*>(hint.it), sentinel));
+		allocator.destroy(&(node->value));
+		node_allocator.deallocate(node, 1);
 		--node_count;
 	}
 
@@ -357,10 +382,20 @@ namespace ft {
 		erase(p.first, p.second);
 		return (old_size - size());
 	}
-
+	// for set (erase(const key_type &))
 	template <typename Key, typename Value, typename KeyOfValue, typename Compare, typename Allocator>
 	inline void rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::erase(iterator first, iterator last) {
 		if (first == begin() && last == end())
+			clear();
+		else
+			while (first != last)
+				erase(first++);
+	}
+
+	template <typename Key, typename Value, typename KeyOfValue, typename Compare, typename Allocator>
+	inline void rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::erase(const_iterator first, const_iterator last) {
+		if (first == begin() && last == end())
+
 			clear();
 		else
 			while (first != last)
@@ -400,7 +435,7 @@ namespace ft {
 	template <typename Key, typename Value, typename KeyOfValue, typename Compare, typename Allocator>
 	inline typename rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::iterator rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::lower_bound(const Key &key) {
 		node_type	*cur = static_cast<node_type*>(sentinel.upper);
-		node_type	*bound = static_cast<node_type*>(&sentinel);
+		node_type	*bound = static_cast<node_type*>(const_cast<node_base_type*>(&sentinel));
 		while (cur) {
 			if (!comp(get_key(cur->value), key)) {	//	key must be before cur
 				bound = cur;
@@ -414,8 +449,8 @@ namespace ft {
 
 	template<typename Key, typename Value, typename KeyOfValue, typename Compare, typename Allocator>
 	inline typename rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::const_iterator rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::lower_bound(const Key & key) const {
-		node_type	*cur = sentinel.upper;
-		node_type	*bound = &sentinel;
+		node_type	*cur = static_cast<node_type*>(sentinel.upper);
+		node_type	*bound = static_cast<node_type*>(const_cast<node_base_type*>(&sentinel));
 		while (cur) {
 			if (!comp(get_key(cur->value), key)) {
 				bound = cur;
@@ -429,37 +464,37 @@ namespace ft {
 
 	template <typename Key, typename Value, typename KeyOfValue, typename Compare, typename Allocator>
 	inline typename rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::iterator rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::upper_bound(const Key &key) {
-		node_type	*cur = sentinel.upper;
-		node_type	*bound = &sentinel;
+		node_type	*cur = static_cast<node_type*>(sentinel.upper);
+		node_type	*bound = static_cast<node_type*>(const_cast<node_base_type*>(&sentinel));
 		while (cur) {
 			if (comp(key, get_key(cur->value))) {
 				bound = cur;
-				cur = cur->left;
+				cur = static_cast<node_type*>(cur->left);
 			}
 			else
-				cur = cur->right;
+				cur = static_cast<node_type*>(cur->right);
 		}
 		return (iterator(bound));
 	}
 
 	template <typename Key, typename Value, typename KeyOfValue, typename Compare, typename Allocator>
 	inline typename rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::const_iterator rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::upper_bound(const Key &key) const {
-		node_type	*cur = sentinel.upper;
-		node_type	*bound = &sentinel;
+		node_type	*cur = static_cast<node_type*>(sentinel.upper);
+		node_type	*bound = static_cast<node_type*>(const_cast<node_base_type*>(&sentinel));
 		while (cur) {
 			if (comp(key, get_key(cur->value))) {
 				bound = cur;
-				cur = cur->left;
+				cur = static_cast<node_type*>(cur->left);
 			}
 			else
-				cur = cur->right;
+				cur = static_cast<node_type*>(cur->right);
 		}
 		return (const_iterator(bound));	
 	}
 
 	template <typename Key, typename Value, typename KeyOfValue, typename Compare, typename Allocator>
 	inline ft::pair<typename rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::iterator, typename rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::iterator> rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::equal_range(const Key &key) {
-		const iterator lbound = lower_bound(key);
+		const iterator	lbound = lower_bound(key);
 		if ((lbound.it == &sentinel) || comp(key, get_key(static_cast<node_type*>(lbound.it)->value)))
 			return (ft::pair<iterator, iterator>(lbound, lbound));
 		iterator rbound = lbound;
@@ -468,8 +503,8 @@ namespace ft {
 
 	template <typename Key, typename Value, typename KeyOfValue, typename Compare, typename Allocator>
 	inline ft::pair<typename rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::const_iterator, typename rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::const_iterator> rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::equal_range(const Key &key) const {
-		const const_iterator lbound = lower_bound(key);
-		if((lbound == &sentinel) || comp(key, get_key(*lbound)))
+		const const_iterator	lbound = lower_bound(key);
+		if((lbound.it == &sentinel) || comp(key, get_key(*lbound)))
 			return (ft::pair<const_iterator, const_iterator>(lbound, lbound));
 		const_iterator rbound = lbound;
 		return ft::pair<const_iterator, const_iterator>(lbound, ++rbound);
@@ -687,7 +722,7 @@ namespace ft {
 
 	template <typename Key, typename Value, typename KeyOfValue, typename Compare, typename Allocator>
 	inline ft::pair<typename rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::node_base_type *, typename rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::node_base_type *> rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::get_unique_position_hint(const_iterator hint, const key_type &key) {
-		iterator pos(hint.it);
+		iterator	pos(const_cast<node_base_type*>(hint.it));
 		if (pos.it == &sentinel) {																		//	pos is end()
 			if (node_count > 0 && comp(get_key(static_cast<node_type*>(sentinel.right)->value), key))	//	tree is not empty && key is "after" rightmost
 				return (ft::pair<node_base_type*, node_base_type*>(0, sentinel.right));
@@ -729,8 +764,8 @@ namespace ft {
 	: it() { }
 
 	template <typename T>
-	inline bidirectional_iterator<T>::bidirectional_iterator(const node_base_type *node_base)
-	: it(const_cast<node_base_type*>(node_base)) { }
+	inline bidirectional_iterator<T>::bidirectional_iterator(node_base_type *node_base)
+	: it(node_base) { }
 
 	template <typename T>
 	inline bidirectional_iterator<T>::~bidirectional_iterator()
