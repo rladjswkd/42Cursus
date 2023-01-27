@@ -113,7 +113,7 @@ namespace ft {
 
 	template <typename Key, typename Compare, typename Allocator>
 	inline typename set<Key, Compare, Allocator>::size_type set<Key, Compare, Allocator>::count(const Key &key) const {
-		return (size_type(tree.find() != tree.end()));
+		return (size_type(tree.find(key) != tree.end()));
 	}
 	
 	template <typename Key, typename Compare, typename Allocator>

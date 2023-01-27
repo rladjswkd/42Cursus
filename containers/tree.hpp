@@ -179,21 +179,21 @@ namespace ft {
 
 	template <typename Key, typename Value, typename KeyOfValue, typename Compare, typename Allocator>
 	inline rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::rb_tree()
-	: sentinel(), node_count(), comp(), allocator(), get_key(), node_allocator() {
+	: sentinel(), node_count(), comp(), get_key(), allocator(), node_allocator() {
 		sentinel.color = RED;
 		reset_sentinel_and_count();
 	}
 
 	template <typename Key, typename Value, typename KeyOfValue, typename Compare, typename Allocator>
 	inline rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::rb_tree(const Compare &comp, const Allocator &alloc)
-	: sentinel(), node_count(), comp(comp), allocator(alloc), get_key(), node_allocator() {
+	: sentinel(), node_count(), comp(comp), get_key(), allocator(alloc), node_allocator() {
 		sentinel.color = RED;
 		reset_sentinel_and_count();
 	}
 
 	template <typename Key, typename Value, typename KeyOfValue, typename Compare, typename Allocator>
 	inline rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::rb_tree(const rb_tree &other)
-	: sentinel(), node_count(), comp(other.comp), allocator(other.allocator), get_key(), node_allocator(other.node_allocator) {
+	: sentinel(), node_count(), comp(other.comp), get_key(), allocator(other.allocator), node_allocator(other.node_allocator) {
 		if (other.sentinel.upper) {
 			sentinel.upper = copy_subtree(static_cast<const node_type*>(other.sentinel.upper), &sentinel);
 			sentinel.left = find_leftmost(sentinel.upper);
