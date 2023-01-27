@@ -22,8 +22,10 @@ namespace ft {
 		reference		top();
 		const_reference	top() const;
 		
-		friend bool		ft::operator==(const stack<Type, Container> &lhs, const stack<Type, Container> &rhs);
-		friend bool		ft::operator<(const stack<Type, Container> &lhs, const stack<Type, Container> &rhs);
+		template <class _Type, class _Container>
+		friend bool		operator==(const stack<_Type, _Container> &lhs, const stack<_Type, _Container> &rhs);
+		template <class _Type, class _Container>
+		friend bool		operator<(const stack<_Type, _Container> &lhs, const stack<_Type, _Container> &rhs);
 	};
 	
 	template <typename Type, typename Container>
