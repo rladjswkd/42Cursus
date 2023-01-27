@@ -2,6 +2,7 @@
 # define TREE_HPP
 # include <memory>
 # include <stddef.h>
+# include <limits>
 # include "pair.hpp"
 # include "iterator.hpp"
 # include "algorithm.hpp"
@@ -281,7 +282,7 @@ namespace ft {
 
 	template <typename Key, typename Value, typename KeyOfValue, typename Compare, typename Allocator>
 	inline typename rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::size_type rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::max_size() const {
-		// return (ft::min<size_type>(std::numeric_limits<difference_type>::max() / sizeof(node_type), this->t_alloc.max_size()));
+		// return (ft::min<size_type>(std::numeric_limits<difference_type>::max() / sizeof(node_type), this->node_allocator.max_size()));
 		return (ft::min<size_type>(std::numeric_limits<difference_type>::max(), node_allocator.max_size()));
 	}
 
@@ -619,15 +620,16 @@ namespace ft {
 			else
 				cur = static_cast<node_type*>(cur->right);								//	if this while ends with this line, key "goes after" cur->value's key or "equivalent to" it
 		}
+		node_base_type	*temp_lower_bound = lower_bound;
 		if (is_before) {																//	here, key "goes before" lower_bound(previous cur)
 			if (lower_bound == sentinel.left)											//	if lower_bound is leftmost, lower_bound is the hint we are looking for
 				return (ft::pair<node_base_type*, node_base_type*>(cur, lower_bound));	//	new node should be inserted into left of lower_bound 
 			else																		//	decrease lower_bound by one so make key "to go after or equivalent to" lower_bound(previous cur)
-				lower_bound = ft::do_decrease(lower_bound);
+				temp_lower_bound = ft::do_decrease(temp_lower_bound);
 		}
-		if (comp(get_key(static_cast<node_type*>(lower_bound)->value), key))			//	at this point, key "goes after or equivalent to" lower_bound. so if this is true, key "goes after" lower_bound.
+		if (comp(get_key(static_cast<node_type*>(temp_lower_bound)->value), key))		//	at this point, key "goes after or equivalent to" lower_bound. so if this is true, key "goes after" lower_bound.
 			return (ft::pair<node_base_type*, node_base_type*>(cur, lower_bound));		//	new node should be inserted into right of lower_bound
-		return (ft::pair<node_base_type*, node_base_type*>(lower_bound, 0));			//	lower_bound is the position where the same key is.
+		return (ft::pair<node_base_type*, node_base_type*>(temp_lower_bound, 0));			//	lower_bound is the position where the same key is.
 	}
 
 	// EASTL implementation.
