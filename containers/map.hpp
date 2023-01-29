@@ -90,6 +90,12 @@ namespace ft {
 		const_reverse_iterator						rbegin() const;
 		reverse_iterator							rend();
 		const_reverse_iterator						rend() const;
+
+		template <typename _Key, typename _T, typename _Compare, typename _Allocator>
+		friend bool	operator==(const map<_Key, _T, _Compare, _Allocator> &lhs, const map<_Key, _T, _Compare, _Allocator> &rhs);
+
+		template <typename _Key, typename _T, typename _Compare, typename _Allocator>
+		friend bool	operator<(const map<_Key, _T, _Compare, _Allocator> &lhs, const map<_Key, _T, _Compare, _Allocator> &rhs);
 	};
 
 ///////////////////////////////////////////////////////////////////////
@@ -191,7 +197,7 @@ namespace ft {
 
 	template <typename Key, typename T, typename Compare, typename Allocator>
 	inline typename map<Key, T, Compare, Allocator>::value_compare	map<Key, T, Compare, Allocator>::value_comp() const {
-		return (value_comp(tree.key_comp()));
+		return (value_compare(tree.key_comp()));
 	}
 	
 	template <typename Key, typename T, typename Compare, typename Allocator>

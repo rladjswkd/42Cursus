@@ -65,10 +65,13 @@ namespace ft {
 		bidirectional_iterator&	operator--();
 		bidirectional_iterator	operator--(int);
 
-		template <typename _T>
-		friend bool				operator==(const bidirectional_iterator<_T> &lhs, const bidirectional_iterator<_T> &rhs);
-		template <typename _T>
-		friend bool				operator!=(const bidirectional_iterator<_T> &lhs, const bidirectional_iterator<_T> &rhs);
+		friend bool				operator==(const bidirectional_iterator<T> &lhs, const bidirectional_iterator<T> &rhs) {
+			return (lhs.it == rhs.it);
+		}
+
+		friend bool				operator!=(const bidirectional_iterator<T> &lhs, const bidirectional_iterator<T> &rhs) {
+			return (lhs.it != rhs.it);
+		}
 	};
 
 	template <typename T>
@@ -104,10 +107,13 @@ namespace ft {
 //		and in erase(const_iterator first, const_iterator last), first == begin() is evaluated.
 //		here, begin() is always non_const (because red black tree object in set is non_const) and first is const.
 //		so, to evaluate const_iterator == iterator, operator== should be able to access converting constructor or some conversion function(member) 
-		template <typename _T>
-		friend bool						operator==(const const_bidirectional_iterator<_T> &lhs, const const_bidirectional_iterator<_T> &rhs);
-		template <typename _T>
-		friend bool						operator!=(const const_bidirectional_iterator<_T> &lhs, const const_bidirectional_iterator<_T> &rhs);
+		friend bool						operator==(const const_bidirectional_iterator<T> &lhs, const const_bidirectional_iterator<T> &rhs) {
+			return (lhs.it == rhs.it);
+		}
+
+		friend bool						operator!=(const const_bidirectional_iterator<T> &lhs, const const_bidirectional_iterator<T> &rhs) {
+			return (lhs.it != rhs.it);
+		}
 	};
 	
 
@@ -396,7 +402,7 @@ namespace ft {
 
 	template <typename Key, typename Value, typename KeyOfValue, typename Compare, typename Allocator>
 	inline void rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::erase(const_iterator first, const_iterator last) {
-		if (first == const_iterator(begin()) && last == const_iterator(end()))
+		if (first == begin() && last == end())
 			clear();
 		else
 			while (first != last)
@@ -815,16 +821,6 @@ namespace ft {
 	}
 
 	template <typename T>
-	inline bool	operator==(const bidirectional_iterator<T> &lhs, const bidirectional_iterator<T> &rhs) {
-		return (lhs.it == rhs.it);
-	}
-
-	template <typename T>
-	inline bool	operator!=(const bidirectional_iterator<T> &lhs, const bidirectional_iterator<T> &rhs) {
-		return (lhs.it != rhs.it);
-	}
-
-	template <typename T>
 	inline const_bidirectional_iterator<T>::const_bidirectional_iterator()
 	: it() { }
 
@@ -882,16 +878,6 @@ namespace ft {
 		const_bidirectional_iterator	temp = *this;
 		it = do_decrease(it);
 		return (temp);
-	}
-
-	template <typename T>
-	inline bool	operator==(const const_bidirectional_iterator<T> &lhs, const const_bidirectional_iterator<T> &rhs) {
-		return (lhs.it == rhs.it);
-	}
-
-	template <typename T>
-	inline bool	operator!=(const const_bidirectional_iterator<T> &lhs, const const_bidirectional_iterator<T> &rhs) {
-		return (lhs.it != rhs.it);
 	}
 }
 #endif
