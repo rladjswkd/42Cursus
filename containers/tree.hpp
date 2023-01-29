@@ -22,15 +22,17 @@ namespace ft {
 	//	these functions are not for the every rb_tree_node_base type objects.
 	//	for example, find_leftmost, find_rightmost make sense only for the sentinel node
 	//	so define them in tree.cpp.
-	rb_tree_node_base	*find_leftmost(const rb_tree_node_base *node);
-	rb_tree_node_base	*find_rightmost(const rb_tree_node_base *node);
-	rb_tree_node_base	*do_increase(const rb_tree_node_base *node);
-	rb_tree_node_base	*do_decrease(const rb_tree_node_base *node);
-	void				recolor(rb_tree_node_base *node, rb_tree_node_base *temp, rb_tree_node_base *double_upper);
-	void				rotate_left(rb_tree_node_base *node, rb_tree_node_base *&root);
-	void				rotate_right(rb_tree_node_base *node, rb_tree_node_base *&root);
-	void				insert_rebalance(rb_tree_node_base *node, rb_tree_node_base *upper, rb_tree_node_base *sentinel, bool left_flag);
-	rb_tree_node_base	*rebalance_for_erase(rb_tree_node_base *target, rb_tree_node_base &sentinel);
+	rb_tree_node_base		*find_leftmost(const rb_tree_node_base *node);
+	rb_tree_node_base		*find_rightmost(const rb_tree_node_base *node);
+	rb_tree_node_base		*do_increase(rb_tree_node_base *node);
+	const rb_tree_node_base *do_increase(const rb_tree_node_base *node);
+	rb_tree_node_base		*do_decrease(rb_tree_node_base *node);
+	const rb_tree_node_base *do_decrease(const rb_tree_node_base *node);
+	void					recolor(rb_tree_node_base *node, rb_tree_node_base *temp, rb_tree_node_base *double_upper);
+	void					rotate_left(rb_tree_node_base *node, rb_tree_node_base *&root);
+	void					rotate_right(rb_tree_node_base *node, rb_tree_node_base *&root);
+	void					insert_rebalance(rb_tree_node_base *node, rb_tree_node_base *upper, rb_tree_node_base *sentinel, bool left_flag);
+	rb_tree_node_base		*rebalance_for_erase(rb_tree_node_base *target, rb_tree_node_base &sentinel);
 
 	template <typename Value>
 	struct rb_tree_node : public rb_tree_node_base {
@@ -331,22 +333,22 @@ namespace ft {
 
 	template <typename Key, typename Value, typename KeyOfValue, typename Compare, typename Allocator>
 	inline typename rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::reverse_iterator rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::rbegin() {
-		return (reverse_iterator(begin()));
-	}
-
-	template <typename Key, typename Value, typename KeyOfValue, typename Compare, typename Allocator>
-	inline typename rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::const_reverse_iterator rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::rbegin() const {
-		return (const_reverse_iterator(begin()));
-	}
-
-	template <typename Key, typename Value, typename KeyOfValue, typename Compare, typename Allocator>
-	inline typename rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::reverse_iterator rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::rend() {
 		return (reverse_iterator(end()));
 	}
 
 	template <typename Key, typename Value, typename KeyOfValue, typename Compare, typename Allocator>
-	inline typename rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::const_reverse_iterator rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::rend() const {
+	inline typename rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::const_reverse_iterator rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::rbegin() const {
 		return (const_reverse_iterator(end()));
+	}
+
+	template <typename Key, typename Value, typename KeyOfValue, typename Compare, typename Allocator>
+	inline typename rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::reverse_iterator rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::rend() {
+		return (reverse_iterator(begin()));
+	}
+
+	template <typename Key, typename Value, typename KeyOfValue, typename Compare, typename Allocator>
+	inline typename rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::const_reverse_iterator rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::rend() const {
+		return (const_reverse_iterator(begin()));
 	}
 
 	template <typename Key, typename Value, typename KeyOfValue, typename Compare, typename Allocator>
@@ -394,8 +396,7 @@ namespace ft {
 
 	template <typename Key, typename Value, typename KeyOfValue, typename Compare, typename Allocator>
 	inline void rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::erase(const_iterator first, const_iterator last) {
-		if (first == begin() && last == end())
-
+		if (first == const_iterator(begin()) && last == const_iterator(end()))
 			clear();
 		else
 			while (first != last)
@@ -859,27 +860,27 @@ namespace ft {
 
 	template <typename T>
 	inline const_bidirectional_iterator<T> &const_bidirectional_iterator<T>::operator++() {
-		it = ft::do_increase(it);
+		it = do_increase(it);
 		return (*this);
 	}
 	
 	template <typename T>
 	inline const_bidirectional_iterator<T> const_bidirectional_iterator<T>::operator++(int) {
 		const_bidirectional_iterator	temp = *this;
-		it = ft::do_increase(it);
+		it = do_increase(it);
 		return (temp);
 	}
 	
 	template <typename T>
 	inline const_bidirectional_iterator<T> &const_bidirectional_iterator<T>::operator--() {
-		it = ft::do_decrease(it);
+		it = do_decrease(it);
 		return (*this);
 	}
 	
 	template <typename T>
 	inline const_bidirectional_iterator<T> const_bidirectional_iterator<T>::operator--(int) {
 		const_bidirectional_iterator	temp = *this;
-		it = ft::do_decrease(it);
+		it = do_decrease(it);
 		return (temp);
 	}
 

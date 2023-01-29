@@ -1,6 +1,6 @@
 #include <iostream>
 #include <deque>
-#include "stack.hpp"
+#include "../stack.hpp"
 
 int	main() {
 	ft::stack<int, std::deque<int> >	st;

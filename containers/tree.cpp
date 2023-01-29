@@ -13,8 +13,8 @@ namespace ft {
 		return (const_cast<rb_tree_node_base*>(node));
 	}
 
-	rb_tree_node_base *do_increase(const rb_tree_node_base *node) {
-		if(node->right)  {
+	rb_tree_node_base *do_increase(rb_tree_node_base *node) {
+		if (node->right)  {
 			node = node->right;
 			while (node->left)
 				node = node->left;
@@ -35,10 +35,16 @@ namespace ft {
 			if (node->right != temp)
 				node = temp;
 		}
-		return (const_cast<rb_tree_node_base*>(node));
+		return (node);
 	}
 
-	rb_tree_node_base *do_decrease(const rb_tree_node_base *node) {
+
+	const rb_tree_node_base	*do_increase(const rb_tree_node_base *node) {
+		return (do_increase(const_cast<rb_tree_node_base*>(node)));
+	}
+
+
+	rb_tree_node_base *do_decrease(rb_tree_node_base *node) {
 		if ((node->upper->upper == node) && (node->color == RED))	//	node is &sentinel, so rightmost is returned.
 			return (node->right);
 		else if (node->left) {	//	or node has left lower node, rightmost node from that subtree is returned.
@@ -53,6 +59,11 @@ namespace ft {
 			temp = temp->upper;
 		}
 		return (const_cast<rb_tree_node_base*>(temp));
+	}
+
+
+	const rb_tree_node_base *do_decrease(const rb_tree_node_base *node) {
+		return (do_decrease(const_cast<rb_tree_node_base*>(node)));
 	}
 
 
