@@ -139,7 +139,8 @@ namespace ft {
 		void				assign_from_iterator(InputIt first, InputIt last, ft::input_iterator_tag);
 		template <class ForwardIt>
 		void				assign_from_iterator(ForwardIt first, ForwardIt last, ft::forward_iterator_tag);
-		pointer				allocate_and_copy(size_type count, pointer first, pointer last);
+		template <class ForwardIt>
+		pointer				allocate_and_copy(size_type count, ForwardIt first, ForwardIt last);
 		void				erase_from_pos(pointer pos);
 		void				insert_value_no_realloc(iterator pos, const value_type &value);
 		void				insert_value_realloc(iterator pos, const value_type &value);
@@ -738,7 +739,7 @@ namespace ft {
 
 		if (len > capacity()) {
 			validate_init_length(len);
-			pointer	temp = allocate_and_copy(len, first.base(), last.base());
+			pointer	temp = allocate_and_copy(len, first, last);
 			ft::destroy_range(this->_begin, this->_end, this->t_alloc);
 			deallocate(this->_begin, this->end_cap - this->_begin);
 			this->_begin = temp;
@@ -757,7 +758,8 @@ namespace ft {
 
 
 	template <class T, class Allocator>
-	inline typename vector<T, Allocator>::pointer vector<T, Allocator>::allocate_and_copy(size_type count, pointer first, pointer last)
+	template <class ForwardIt>
+	inline typename vector<T, Allocator>::pointer vector<T, Allocator>::allocate_and_copy(size_type count, ForwardIt first, ForwardIt last)
 	{
 		pointer result = this->allocate(count);
 
