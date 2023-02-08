@@ -193,7 +193,7 @@ namespace ft {
 
 
 	template <typename Iter>
-	inline typename reverse_iterator<Iter>::reference	reverse_iterator<Iter>::operator[](reverse_iterator<Iter>::difference_type n) const {
+	inline typename reverse_iterator<Iter>::reference	reverse_iterator<Iter>::operator[](difference_type n) const {
 		return (current[-n - 1]);
 	}
 

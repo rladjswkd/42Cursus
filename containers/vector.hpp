@@ -677,6 +677,8 @@ namespace ft {
 	}
 
 
+	// A reverse_iterator across other types can be copied if the underlying iterator can be converted to the type of current.
+	// https://stackoverflow.com/questions/6449266/can-input-iterators-be-used-where-forward-iterators-are-expected
 	template <class T, class Allocator>
 	template <class ForwardIt>
 	inline void vector<T, Allocator>::init_from_iterator(ForwardIt first, ForwardIt last, ft::forward_iterator_tag)	{
