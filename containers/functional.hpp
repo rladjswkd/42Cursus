@@ -34,7 +34,7 @@ namespace ft {
 		}
 
 		const T	&operator()(const T &t) const {
-			return t;
+			return (t);
 		}
 	};
 

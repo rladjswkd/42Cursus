@@ -34,7 +34,7 @@ namespace ft {
 
 	template <typename T, T v>
 	integral_constant<T, v>::operator value_type() const {
-		return value;
+		return (value);
 	}
 
 	typedef integral_constant<bool, true>	true_type;

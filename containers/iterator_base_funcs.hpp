@@ -21,7 +21,7 @@ namespace ft {
 	
 	template <typename InputIt>
 	inline typename iterator_traits<InputIt>::difference_type distance(InputIt first, InputIt last) {
-		return ft::distance_impl(first, last, typename ft::iterator_traits<InputIt>::iterator_category());
+		return (ft::distance_impl(first, last, typename ft::iterator_traits<InputIt>::iterator_category()));
 	}
 
 

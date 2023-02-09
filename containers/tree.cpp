@@ -45,11 +45,11 @@ namespace ft {
 
 
 	rb_tree_node_base *do_decrease(rb_tree_node_base *node) {
-		if ((node->upper->upper == node) && (node->color == RED))	//	node is &sentinel, so rightmost is returned.
+		if ((node->upper->upper == node) && (node->color == RED))	//	node is &sentinel, so rightmost is returned. if color is BLACK, then node is root
 			return (node->right);
 		else if (node->left) {	//	or node has left lower node, rightmost node from that subtree is returned.
 			rb_tree_node_base	*temp = node->left;
-			while(temp->right)
+			while (temp->right)
 				temp = temp->right;
 			return (temp);
 		}
@@ -73,8 +73,7 @@ namespace ft {
 		double_upper->color = RED;
 	}
 
-	void rotate_left(rb_tree_node_base *node, rb_tree_node_base *&root)
-	{
+	void rotate_left(rb_tree_node_base *node, rb_tree_node_base *&root) {
 		rb_tree_node_base* const rotated_upper = node->right;
 		node->right = rotated_upper->left;
 		if (rotated_upper->left)
@@ -125,7 +124,7 @@ namespace ft {
 		}
 		else {
 			upper->right = node;
-			if (upper == sentinel->right)
+			if (upper == sentinel->right)								//	if upper is sentinel, then left_flag is always true
 				sentinel->right = node;									//	update sentinel info
 		}
 		// if node is root, this tree is empty before this insertion

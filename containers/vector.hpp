@@ -407,8 +407,8 @@ namespace ft {
 
 	template <class T, class Allocator>
 	inline typename vector<T, Allocator>::size_type vector<T, Allocator>::max_size() const {
-		// return (ft::min<size_type>(std::numeric_limits<difference_type>::max() / sizeof(T), this->t_alloc.max_size()));
-		return (ft::min<size_type>(std::numeric_limits<difference_type>::max(), this->t_alloc.max_size()));
+		return (ft::min<size_type>(std::numeric_limits<difference_type>::max() / sizeof(T), this->t_alloc.max_size()));
+		// return (ft::min<size_type>(std::numeric_limits<difference_type>::max(), this->t_alloc.max_size()));
 	}
 
 
