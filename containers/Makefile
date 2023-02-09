@@ -1,23 +1,32 @@
-NAME	= 
+NAME		= ftc
+STDNAME		= stdc
 
-CXX		= c++
+CXX			= c++
 CXXFLAGS	= -Wall -Wextra -Werror -std=c++98
-#RM		= rm -f 
+RM			= rm -f 
 
-SRCS	= 
-OBJS	= $(SRCS:.cpp=.o)
+SRCS		= algorithm.cpp tree.cpp main.cpp
+OBJS		= $(SRCS:.cpp=.o)
 
-all		: $(NAME)
+STDSRCS		= main.cpp
+STDOBJS		= $(STDSRCS:.cpp=.o)
+
+all		: $(NAME) $(STDNAME)
 $(NAME)	: $(OBJS)
-	$(CXX) $(CXXFLAGS) -o $(NAME) $(OBJS)
+	$(CXX) $(CXXFLAGS) -D FT_VERSION=1 -o $(NAME) $(OBJS)
 $(OBJS)	: $(SRCS)
+	$(CXX) $(CXXFLAGS) -D FT_VERSION=1 -c $(SRCS)
+
+$(STDNAME) : $(STDOBJS)
+	$(CXX) $(CXXFLAGS) -o $(STDNAME) $(STDOBJS)
+$(STDOBJS) : $(STDSRCS)
 	$(CXX) $(CXXFLAGS) -c $(SRCS)
 
 clean	:
-	$(RM) $(OBJS)
+	$(RM) $(OBJS) $(STDOBJS)
 
 fclean	: clean
-	$(RM) $(NAME)
+	$(RM) $(NAME) $(STDNAME)
 
 re		: fclean all
 
