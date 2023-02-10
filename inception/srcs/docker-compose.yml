@@ -1,10 +1,13 @@
-version: "3.9"
+version: "3.8"
+
 services:
+
   nginx:
     image: nginx:gyepark
     build: ./requirements/nginx
     ports:
       - 443:443
+
   mariadb:
     image: mariadb:gyepark
     build: ./requirements/mariadb
@@ -13,6 +16,7 @@ services:
     env_file: .env
     volumes:
       - db-wp-database:/etc/data
+
 volumes:
   # if entries under top-level volumes are empty, they use the platform's default configuration for creating a volume.
   db-wp-database:
