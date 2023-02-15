@@ -5,20 +5,37 @@ services:
   nginx:
     image: nginx:gyepark
     build: ./requirements/nginx
+    depends_on:
+      - wordpress
     ports:
       - 443:443
 
   mariadb:
     image: mariadb:gyepark
     build: ./requirements/mariadb
-    env_file: .env
     volumes:
-      - db-wp-database:/etc/data
+      - database:/etc/data
 
+  wordpress:
+    image: wordpress:gyepark
+    build: ./requirements/wordpress
+    volumes:
+      - wp-files:/wordpress
+    
 volumes:
   # if entries under top-level volumes are empty, they use the platform's default configuration for creating a volume.
-  db-wp-database:
-  db-wp-files:
+  database:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /home/gyepark/data/database
+  wp-files:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /home/gyepark/data/wp-files
 # services:
 #   frontend:
 #     image: awesome/webapp

@@ -8,15 +8,17 @@ RUN			apt update && apt install -y nginx openssl	\
 COPY		conf etc
 
 RUN			openssl req\
-				-new\
-				-newkey rsa:2048\
-				-x509\
-				-sha256\
-				-days 365\
-				-subj /C=KR/ST=Seoul/L=Gaepo/O=42Seoul/OU=Gun/CN=gyepark/emailAddress=gyepark@student.42seoul.kr\
-				# -config etc/ssl/example.conf\
-				-nodes\
-				-out /etc/ssl/certs/gyepark.42.fr.crt\
-				-keyout /etc/ssl/certs/gyepark.42.fr.key
-				
+			-new\
+			-newkey rsa:2048\
+			-x509\
+			-sha256\
+			-days 365\
+			-subj /C=KR/ST=Seoul/L=Gaepo/O=42Seoul/OU=Gun/CN=gyepark/emailAddress=gyepark@student.42seoul.kr\
+			# -config etc/ssl/example.conf\
+			-nodes\
+			-out /etc/ssl/certs/gyepark.42.fr.crt\
+			-keyout /etc/ssl/certs/gyepark.42.fr.key
+
+EXPOSE		443
+
 ENTRYPOINT	["nginx", "-g", "daemon off;"]
