@@ -1,76 +1,45 @@
-version: "3.8"
-
 services:
+
+  mariadb:
+    image: mariadb:gyepark
+    build: ./requirements/mariadb
+    env_file:
+      - mariadb.env
+    volumes:
+      - database:/var/lib/mysql
 
   nginx:
     image: nginx:gyepark
     build: ./requirements/nginx
+    env_file:
+      - nginx.env
+    volumes:
+      - wp-files:/var/www/html
     depends_on:
       - wordpress
     ports:
       - 443:443
 
-  mariadb:
-    image: mariadb:gyepark
-    build: ./requirements/mariadb
-    volumes:
-      - database:/etc/data
-
   wordpress:
     image: wordpress:gyepark
     build: ./requirements/wordpress
+    env_file:
+      - wordpress.env
     volumes:
       - wp-files:/wordpress
     
 volumes:
-  # if entries under top-level volumes are empty, they use the platform's default configuration for creating a volume.
+
   database:
     driver: local
     driver_opts:
       type: none
       o: bind
       device: /home/gyepark/data/database
+
   wp-files:
     driver: local
     driver_opts:
       type: none
       o: bind
       device: /home/gyepark/data/wp-files
-# services:
-#   frontend:
-#     image: awesome/webapp
-#     ports:
-#       - "443:8043"
-#     networks:
-#       - front-tier
-#       - back-tier
-#     configs:
-#       - httpd-config
-#     secrets:
-#       - server-certificate
-
-#   backend:
-#     image: awesome/database
-#     volumes:
-#       - db-data:/etc/data
-#     networks:
-#       - back-tier
-
-# volumes:
-#   db-data:
-#     driver: flocker
-#     driver_opts:
-#       size: "10GiB"
-
-# configs:
-#   httpd-config:
-#     external: true
-
-# secrets:
-#   server-certificate:
-#     external: true
-
-# networks:
-#   # The presence of these objects is sufficient to define them
-#   front-tier: {}
-#   back-tier: {}
