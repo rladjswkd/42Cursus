@@ -9,6 +9,6 @@ COPY		tools /
 
 EXPOSE		3306			
 
-# ENTRYPOINT	["/usr/local/bin/entrypoint.sh"]
+ENTRYPOINT	["/usr/local/bin/entrypoint.sh"]
 
-# CMD			["mysqld"]
+CMD			["mysqld"]
