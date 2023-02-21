@@ -1,30 +1,24 @@
 services:
 
   mariadb:
-    image: mariadb:gyepark
     build: ./requirements/mariadb
-    env_file:
-      - mariadb.env
+    image: mariadb:gyepark
     volumes:
       - database:/var/lib/mysql
 
   nginx:
-    image: nginx:gyepark
     build: ./requirements/nginx
-    env_file:
-      - nginx.env
+    image: nginx:gyepark
     volumes:
-      - wp-files:/var/www/html
-    depends_on:
-      - wordpress
+      - wp-files:/var/www/wordpress
     ports:
       - 443:443
+    depends_on:
+      - wordpress
 
   wordpress:
-    image: wordpress:gyepark
     build: ./requirements/wordpress
-    env_file:
-      - wordpress.env
+    image: wordpress:gyepark
     volumes:
       - wp-files:/wordpress
     
@@ -35,11 +29,11 @@ volumes:
     driver_opts:
       type: none
       o: bind
-      device: /home/gyepark/data/database
+      device: ${VOLUME_PATH}/database
 
   wp-files:
     driver: local
     driver_opts:
       type: none
       o: bind
-      device: /home/gyepark/data/wp-files
+      device: ${VOLUME_PATH}/wp-files

@@ -9,6 +9,8 @@ RUN     	apt update										\
 			&& rm -rf latest.tar.gz							\
 			&& apt-get clean && rm -rf /var/lib/apt/lists/*	
 
+COPY		conf /
+
 EXPOSE		9000
 
 ENTRYPOINT	["php-fpm7.3", "--nodaemonize"]
