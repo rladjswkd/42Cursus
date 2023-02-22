@@ -1,7 +1,7 @@
 FROM		debian:buster-slim
 
 RUN     	apt update										\
-			&& apt install -y php-fpm						\
+			&& apt install -y php7.3 php7.3-fpm				\
 			&& mkdir -p /run/php							\
 			&& apt install -y wget							\
 			&& wget https://wordpress.org/latest.tar.gz		\

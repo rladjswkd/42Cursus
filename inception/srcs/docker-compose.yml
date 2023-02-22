@@ -3,24 +3,30 @@ services:
   mariadb:
     build: ./requirements/mariadb
     image: mariadb:gyepark
+    env_file:
+      - .env
     volumes:
       - database:/var/lib/mysql
-
-  nginx:
-    build: ./requirements/nginx
-    image: nginx:gyepark
-    volumes:
-      - wp-files:/var/www/wordpress
-    ports:
-      - 443:443
-    depends_on:
-      - wordpress
 
   wordpress:
     build: ./requirements/wordpress
     image: wordpress:gyepark
+    env_file:
+      - .env
     volumes:
       - wp-files:/wordpress
+
+  nginx:
+    build: ./requirements/nginx
+    image: nginx:gyepark
+    env_file:
+      - .env
+    volumes:
+      - wp-files:/usr/share/nginx/www/gyepark.42.fr
+    ports:
+      - 443:443
+    depends_on:
+      - wordpress
     
 volumes:
 
