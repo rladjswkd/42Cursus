@@ -1,11 +1,13 @@
 FROM		debian:buster-slim
 
-RUN			apt update && apt install -y mariadb-server-10.3 	\
-			&& apt-get clean && rm -rf /var/lib/apt/lists/*		\
-			&& mkdir -p /run/mysqld								\
-			&& find /run/mysqld ! -user mysql -exec chown --no-dereference mysql "{}" +
+RUN			apt update && apt install -y mariadb-server-10.3 							\
+			&& mkdir -p /run/mysqld														\
+			&& find /run/mysqld ! -user mysql -exec chown --no-dereference mysql "{}" +	\
+			&& apt-get clean && rm -rf /var/lib/apt/lists/*
 
 COPY		tools /
+
+RUN			chmod 644 /etc/mysql/my.cnf
 
 EXPOSE		3306			
 

@@ -45,13 +45,17 @@ server {
 
 	root /usr/share/nginx/www/gyepark.42.fr;
 	# Add index.php to the list if you are using PHP
-	# index index.php;
+	index index.php index.html;
 
 	server_name gyepark.42.fr;
 
 	# pass PHP scripts to FastCGI server
 	location ~ \.php$ {
 		fastcgi_pass	wordpress:9000;
+		set $path_info $fastcgi_path_info;
+		fastcgi_param PATH_INFO $path_info;
+		fastcgi_index index.php;
+		include /etc/nginx/fastcgi.conf;
 	}
 	
 	location / {

@@ -6,7 +6,9 @@ services:
     env_file:
       - .env
     volumes:
-      - database:/var/lib/mysql
+      - db:/var/lib/mysql
+    networks:
+      - inception
 
   wordpress:
     build: ./requirements/wordpress
@@ -14,7 +16,11 @@ services:
     env_file:
       - .env
     volumes:
-      - wp-files:/wordpress
+      - wp:/usr/share/nginx/www/gyepark.42.fr
+    networks:
+      - inception
+    depends_on:
+      - mariadb
 
   nginx:
     build: ./requirements/nginx
@@ -22,7 +28,9 @@ services:
     env_file:
       - .env
     volumes:
-      - wp-files:/usr/share/nginx/www/gyepark.42.fr
+      - wp:/usr/share/nginx/www/gyepark.42.fr
+    networks:
+      - inception
     ports:
       - 443:443
     depends_on:
@@ -30,16 +38,19 @@ services:
     
 volumes:
 
-  database:
+  db:
     driver: local
     driver_opts:
       type: none
       o: bind
-      device: ${VOLUME_PATH}/database
+      device: ${VOLUME_PATH}/db
 
-  wp-files:
+  wp:
     driver: local
     driver_opts:
       type: none
       o: bind
-      device: ${VOLUME_PATH}/wp-files
+      device: ${VOLUME_PATH}/wp
+
+networks:
+  inception:

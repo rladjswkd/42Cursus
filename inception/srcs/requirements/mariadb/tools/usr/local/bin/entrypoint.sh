@@ -8,9 +8,9 @@
 service mysql start
 
 # create database and user
-mysql -e "CREATE DATABASE $MYSQL_DATABASE;"
-mysql -e "CREATE USER '$MYSQL_USER'@'localhost' IDENTIFIED BY '$MYSQL_PASSWORD';"
-mysql -e "GRANT ALL PRIVILEGES ON $MYSQL_DATABASE.* TO '$MYSQL_USER'@'localhost' IDENTIFIED BY '$MYSQL_PASSWORD';"
+mysql -e "CREATE DATABASE IF NOT EXISTS $MYSQL_DATABASE;"
+mysql -e "CREATE USER '$MYSQL_USER'@'%' IDENTIFIED BY '$MYSQL_PASSWORD';"
+mysql -e "GRANT ALL PRIVILEGES ON $MYSQL_DATABASE.* TO '$MYSQL_USER'@'%' IDENTIFIED BY '$MYSQL_PASSWORD';"
 
 # improving security
 mysql_secure_installation << HEREDOC
