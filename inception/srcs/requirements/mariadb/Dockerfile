@@ -7,7 +7,8 @@ RUN			apt update && apt install -y mariadb-server-10.3 							\
 
 COPY		tools /
 
-RUN			chmod 644 /etc/mysql/my.cnf
+RUN			chmod 644 /etc/mysql/my.cnf													\
+			&& chmod 100 /usr/local/bin/entrypoint.sh
 
 EXPOSE		3306			
 
