@@ -3,10 +3,10 @@ include srcs/.env
 
 up:
 	@sudo mkdir -p ${VOLUME_PATH}/db ${VOLUME_PATH}/wp
-	@sudo rm -rf ${VOLUME_PATH}/db/* ${VOLUME_PATH}/wp/*
 	@docker compose -f srcs/docker-compose.yml build
 	@docker compose -f srcs/docker-compose.yml up -d
 
+# delete line 13 after all is done.
 down:
 	@docker compose -f srcs/docker-compose.yml down
 	@docker system prune -af
