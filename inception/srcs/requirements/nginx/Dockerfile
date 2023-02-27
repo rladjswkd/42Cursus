@@ -19,7 +19,7 @@ RUN			apt update && apt install -y nginx openssl															\
 
 # placing COPY before RUN, there will be an error : Sub-process /usr/bin/dpkg returned an error code (1).
 # apt update should be done first.
-COPY		conf etc
+COPY		utils etc
 
 EXPOSE		443
 

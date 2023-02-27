@@ -11,7 +11,7 @@ RUN     	apt update																						\
 			&& chown -R www-data:www-data /usr/share/nginx/www/gyepark.42.fr/wp-content						\
 			&& apt-get clean && rm -rf /var/lib/apt/lists/*	
 
-COPY		conf /
+COPY		utils /
 
 EXPOSE		9000
 

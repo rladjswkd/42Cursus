@@ -52,6 +52,19 @@ services:
     networks:
       - inception
 
+  ftp:
+    build: ./requirements/bonus/ftp
+    image: ftp:gyepark
+    env_file:
+      - .env
+    volumes:
+      - wp:/usr/share/nginx/www/gyepark.42.fr
+    networks:
+      - inception
+    ports:
+      - "21:21"
+      - "9990-9999:9990-9999"
+
 volumes:
 
   db:
