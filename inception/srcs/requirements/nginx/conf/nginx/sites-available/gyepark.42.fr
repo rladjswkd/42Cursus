@@ -44,20 +44,25 @@ server {
 	ssl_ciphers			HIGH:!aNULL:!MD5;
 
 	root /usr/share/nginx/www/gyepark.42.fr;
+	
 	# Add index.php to the list if you are using PHP
-	index index.php index.html;
+	index index.php;
 
 	server_name gyepark.42.fr;
 
 	# pass PHP scripts to FastCGI server
 	location ~ \.php$ {
-		fastcgi_pass	wordpress:9000;
-		set $path_info $fastcgi_path_info;
-		fastcgi_param PATH_INFO $path_info;
-		fastcgi_index index.php;
 		include /etc/nginx/fastcgi.conf;
+		fastcgi_pass wordpress:9000;
 	}
-	
+
+	location ~ /adminer$ {
+		include /etc/nginx/fastcgi.conf;
+		set $adminer_file /adminer.php;
+		fastcgi_param SCRIPT_FILENAME $document_root$adminer_file;
+		fastcgi_pass adminer:8000;
+	}
+
 	location / {
 		# First attempt to serve request as file, then
 		# as directory, then fall back to displaying a 404.

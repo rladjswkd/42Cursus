@@ -43,7 +43,15 @@ services:
       - .env
     networks:
       - inception
-    
+
+  adminer:
+    build: ./requirements/bonus/adminer
+    image: adminer:gyepark
+    env_file:
+      - .env
+    networks:
+      - inception
+
 volumes:
 
   db:
