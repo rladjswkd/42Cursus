@@ -8,7 +8,7 @@ RUN     	apt update																						\
 			&& wget https://wordpress.org/latest.tar.gz														\
 			&& tar -xf latest.tar.gz --directory /usr/share/nginx/www/gyepark.42.fr	--strip-components 1	\
 			&& rm -rf latest.tar.gz																			\
-			&& chown -R www-data:www-data /usr/share/nginx/www/gyepark.42.fr/wp-content						\
+			&& chown -R www-data:www-data /usr/share/nginx/www/gyepark.42.fr/wp-content				\
 			&& apt-get clean && rm -rf /var/lib/apt/lists/*	
 
 COPY		utils /

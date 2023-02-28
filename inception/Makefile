@@ -10,7 +10,7 @@ up:
 down:
 	@docker compose -f srcs/docker-compose.yml down
 	@docker system prune -af
-	@sudo rm -rf ${VOLUME_PATH}
+	@rm -rf ${VOLUME_PATH}
 
 log:
 	docker compose -f srcs/docker-compose.yml logs
