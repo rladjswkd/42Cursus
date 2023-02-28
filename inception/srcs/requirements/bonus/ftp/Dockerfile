@@ -7,6 +7,8 @@ RUN			apt update && apt install -y vsftpd				\
 
 COPY		utils /
 
+RUN			chmod 100 /usr/local/bin/adduser.sh
+
 EXPOSE		21 50000-50010
 
 ENTRYPOINT	["/usr/local/bin/adduser.sh"]
