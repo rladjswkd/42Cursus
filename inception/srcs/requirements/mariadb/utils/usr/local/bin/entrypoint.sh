@@ -32,6 +32,6 @@ HEREDOC
 # . ok
 sleep .5
 
-service mysql stop
+killall -KILL mysqld
 
 exec "$@"
