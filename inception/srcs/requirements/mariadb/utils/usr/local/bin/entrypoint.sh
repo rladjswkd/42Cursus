@@ -9,12 +9,12 @@ service mysql start
 
 # create database and user
 mysql -e "CREATE DATABASE IF NOT EXISTS $MYSQL_DATABASE;"
-mysql -e "CREATE USER '$MYSQL_USER'@'%' IDENTIFIED BY '$MYSQL_PASSWORD';"
-mysql -e "GRANT ALL PRIVILEGES ON $MYSQL_DATABASE.* TO '$MYSQL_USER'@'%' IDENTIFIED BY '$MYSQL_PASSWORD';"
+mysql -e "CREATE USER $MYSQL_USER@% IDENTIFIED BY $MYSQL_PASSWORD;"
+mysql -e "GRANT ALL PRIVILEGES ON $MYSQL_DATABASE.* TO $MYSQL_USER@% IDENTIFIED BY $MYSQL_PASSWORD;"
 
 # improving security
-ALTER USER root@localhost IDENTIFIED VIA mysql_native_password;
-SET PASSWORD = PASSWORD($MYSQL_ROOT_PASSWORD);
+mysql -e "SET PASSWORD FOR 'root'@'localhost' = PASSWORD('${MYSQL_ROOT_PASSWORD}');"
+mysql -e "ALTER USER 'root'@'localhost' IDENTIFIED VIA mysql_native_password;"
 
 mysql_secure_installation << HEREDOC
 $MYSQL_ROOT_PASSWORD
