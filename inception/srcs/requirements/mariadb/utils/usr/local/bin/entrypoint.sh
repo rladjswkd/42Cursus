@@ -8,9 +8,9 @@
 service mysql start
 
 # create database and user
-mysql -e "CREATE DATABASE IF NOT EXISTS $MYSQL_DATABASE;"
-mysql -e "CREATE USER $MYSQL_USER@% IDENTIFIED BY $MYSQL_PASSWORD;"
-mysql -e "GRANT ALL PRIVILEGES ON $MYSQL_DATABASE.* TO $MYSQL_USER@% IDENTIFIED BY $MYSQL_PASSWORD;"
+mysql -e "CREATE DATABASE IF NOT EXISTS ${MYSQL_DATABASE};"
+mysql -e "CREATE USER '${MYSQL_USER}'@'%' IDENTIFIED BY '${MYSQL_PASSWORD}';"
+mysql -e "GRANT ALL PRIVILEGES ON ${MYSQL_DATABASE}.* TO '${MYSQL_USER}'@'%' IDENTIFIED BY '${MYSQL_PASSWORD}';"
 
 # improving security
 mysql -e "SET PASSWORD FOR 'root'@'localhost' = PASSWORD('${MYSQL_ROOT_PASSWORD}');"
@@ -32,6 +32,6 @@ HEREDOC
 # . ok
 sleep .5
 
-killall -KILL mysqld
+kill -9 $(ps aux | grep 'mysqld'| awk '{print $2}')
 
 exec "$@"

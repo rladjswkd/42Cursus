@@ -1,6 +1,6 @@
 FROM		debian:buster-slim
 
-RUN			apt update && apt install -y mariadb-server-10.3 							\
+RUN			apt update && apt install -y mariadb-server-10.3 procps						\
 			&& mkdir -p /run/mysqld														\
 			&& find /run/mysqld ! -user mysql -exec chown --no-dereference mysql "{}" +	\
 			&& apt-get clean && rm -rf /var/lib/apt/lists/*
