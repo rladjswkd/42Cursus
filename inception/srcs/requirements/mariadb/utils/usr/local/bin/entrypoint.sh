@@ -13,11 +13,12 @@ mysql -e "CREATE USER '$MYSQL_USER'@'%' IDENTIFIED BY '$MYSQL_PASSWORD';"
 mysql -e "GRANT ALL PRIVILEGES ON $MYSQL_DATABASE.* TO '$MYSQL_USER'@'%' IDENTIFIED BY '$MYSQL_PASSWORD';"
 
 # improving security
-mysql_secure_installation << HEREDOC
+ALTER USER root@localhost IDENTIFIED VIA mysql_native_password;
+SET PASSWORD = PASSWORD($MYSQL_ROOT_PASSWORD);
 
-y
+mysql_secure_installation << HEREDOC
 $MYSQL_ROOT_PASSWORD
-$MYSQL_ROOT_PASSWORD
+n
 y
 y
 y
