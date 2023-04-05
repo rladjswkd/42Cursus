@@ -6,6 +6,8 @@
 # include <string>
 # include <fstream>
 
+# define FILEPATH_EXCEPT_MSG	"Invalid File Path!"
+
 class Lexer
 {
 public:
