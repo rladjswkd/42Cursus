@@ -7,10 +7,12 @@
 # include <fstream>
 
 # define FILEPATH_EXCEPT_MSG	"Invalid File Path!"
+# define DEFALUT_FILEPATH		"./default"
 
 class Lexer
 {
 public:
+	typedef const std::string	FilePath;
 	typedef std::string			Token, Delimiter, Word;
 	typedef std::vector<Token>	Tokens;
 	typedef std::ifstream		ConfigFile;
@@ -18,6 +20,7 @@ public:
 private:
 	ConfigFile	configFile;
 
+	FilePath	FILEPATH;
 	Delimiter	WHITESPACES = " \n\t\r\f\v";
 	Delimiter	BRACKET_SEMICOLON = "{};";
 

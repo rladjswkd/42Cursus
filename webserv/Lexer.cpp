@@ -1,11 +1,8 @@
 #include "Lexer.hpp"
-#include <stdexcept>
 
-Lexer::Lexer(const char *filePath)
+Lexer::Lexer(const char *filePath) : FILEPATH(filePath)
 {
-	this->configFile.open(filePath);
-	if (!this->configFile.is_open())
-		throw (std::invalid_argument(FILEPATH_EXCEPT_MSG));
+	this->configFile.open(FILEPATH.c_str());
 }
 
 bool Lexer::isNotDelimiter(char c)
@@ -54,6 +51,8 @@ Lexer::Tokens Lexer::tokenize()
 {
 	Tokens	tokens;
 
+	if (!configFile.good())
+		throw (std::invalid_argument("Invalid file path!"));
 	while (!configFile.eof())
 		processToken(tokens);
 	configFile.close();
