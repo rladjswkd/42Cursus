@@ -12,7 +12,7 @@
 #include <string>
 #include <map>
 
-#define PORT		8080	// configuration file
+#define PORT		15325	// configuration file
 #define EPOLL_SIZE	1
 #define MAX_EVENTS	10
 #define TIMEOUT		500

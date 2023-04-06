@@ -1,0 +1,18 @@
+http {
+    server{
+		location /path/ {
+			alias https://naver.com;
+			limit_except                GET POST;
+		}
+    }
+    server             {
+
+    }
+
+
+
+
+    server						{
+
+	}server{listen 9090;}
+}
