@@ -60,9 +60,9 @@ pubulic functions
 
     - URI에 따라 location을 선택하는 기준
 
-        - location이 URI로 시작해야 한다
+        - URI가 location uri로 시작해야 한다
 
-        - 일치하는 부분이 가장 긴 location을 선택한다
+        - URI와 일치하는 부분이 가장 긴 location을 선택한다
 
         [예시 1] URI가 /temp/, location1이 /temp/, location2가 /temp/tomp/
 
