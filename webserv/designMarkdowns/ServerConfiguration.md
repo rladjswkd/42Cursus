@@ -82,8 +82,10 @@ pubulic functions
 
         [예시 5] URI가 /temptomp, location1이 /temp/, location2가 /temp/tomp/
 
-            아무 location도 선택되지 않고 404로 반환한다.
-        * 아래 특수 예시들은 temp와 tempppppp라는 디렉터리가 root에 실제로 존재할 때 nginx가 리디렉트로 응답하고 그렇지 않으면 404로 응답한다.
+            아무 location도 선택되지 않고 404로 반환한다.   
+            
+        **아래 특수 예시들은 temp와 tempppppp라는 디렉터리가 root에 실제로 존재할 때 nginx가 리디렉트로 응답하고 그렇지 않으면 404로 응답한다.**   
+        
         [특수 예시 1] URI가 /temp, location1이 /temp, location2가 /temp/
 
             우선 이 예시는 URI가 /로 끝나지 않으며, location에도 일치하는 location이 있는 경우를 말한다.
