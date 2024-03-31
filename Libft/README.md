@@ -1,4 +1,3 @@
 # Libft
-**This project aims to code a C library regrouping usual functions that you'll be use for all your next projects.**   
-
-
+---
+C 표준 라이브러리의 일부 함수와 그 밖의 유틸리티 함수들을 재구현한 과제입니다.
