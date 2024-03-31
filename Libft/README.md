@@ -1,5 +1,6 @@
 ## Libft
 C 표준 라이브러리의 일부 함수와 그 밖의 유틸리티 함수들을 재구현한 과제입니다.
+폴더 내부에서 `make`를 입력하면 `.a` 정적 라이브러리를 생성합니다.
 
 ### libc
 `isalpha` `isdigit` `isalnum` `isascii` `isprint` `strlen` `memset` `bzero` `memcpy` `memmove` `strlcpy` `strlcat` `toupper` `tolower` `strchr` `strrchr` `strncmp` `memchr` `memcmp` `strnstr` `atoi`
@@ -75,7 +76,7 @@ typedef struct s_list
 `t_list *ft_lstlast(t_list *lst);`
 - 리스트 `lst`의 마지막 노드를 반환합니다.
 
-`void ft_lstdelone(t_list *lst, void (*del)(void *));
+`void ft_lstdelone(t_list *lst, void (*del)(void *));`
 - 노드 `lst`의 `content`를 `del` 함수로 해제(free)한 후, 노드 `lst`를 해제합니다.
 
 `void ft_lstclear(t_list **lst, void (*del)(void *));`
