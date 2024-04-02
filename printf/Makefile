@@ -6,7 +6,7 @@
 #    By: gyepark <gyepark@student.42seoul.kr>       +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/12/15 15:05:52 by gyepark           #+#    #+#              #
-#    Updated: 2021/12/29 00:14:46 by gyepark          ###   ########.fr        #
+#    Updated: 2024/04/01 01:07:54 by gyepark          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -61,10 +61,11 @@ $(NAME) : $(OBJS)
 	$(AR) $(ARFLAGS) $(NAME) $(OBJS)
 
 $(OBJS) : $(SRCS)
-	$(CC) -c $(CFLAGS) $(SRCS)
-
+#	$(CC) -c $(CFLAGS) $(SRCS)
+	$(CC) -c $(SRCS)
 $(B_OBJS) : $(B_SRCS)
-	$(CC) -c $(CFLAGS) $(B_SRCS)
+#	$(CC) -c $(CFLAGS) $(B_SRCS)
+	$(CC) -c $(B_SRCS)
 	$(AR) $(ARFLAGS) $(NAME) $(B_OBJS)
 	
 all : $(NAME) bonus
