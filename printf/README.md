@@ -1,7 +1,7 @@
 ## ft_printf
 libc의 printf를 재구현하는 프로젝트입니다.
 
-```c
+```c++
 int ft_printf(const char *, ...);
 ```
 
